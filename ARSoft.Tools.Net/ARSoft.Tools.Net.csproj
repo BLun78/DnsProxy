@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>Y:\c#\DnsProxy\ARSoft.Tools.Net\ARSoft.Tools.Net.xml</DocumentationFile>
+    <DefineConstants>DEBUG</DefineConstants>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Dns\DnsRecord\DhcpIRecord.cs" />
+    <Compile Remove="IPAddressExtension.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Dns\DnsRecord\DhcpIRecord.cs" />
+    <None Include="IPAddressExtension.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Portable.BouncyCastle" Version="1.8.5.2" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,15 @@
+{
+  "HostConfig": {
+    "Hosts": [
+      {
+        "IPAddresses": [
+          "104.16.249.249",
+          "104.16.248.249"
+        ],
+        "DomainNames": [
+          "cloudflare-dns.com"
+        ]
+      }
+    ]
+  }
+}
