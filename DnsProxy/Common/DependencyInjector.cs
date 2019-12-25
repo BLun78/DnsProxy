@@ -28,10 +28,12 @@ namespace DnsProxy.Common
         {
             var services = new ServiceCollection();
 
+            // Program
             services.AddSingleton<Assembly>(Assembly.GetExecutingAssembly());
             services.AddSingleton<ApplicationInformation>();
             services.AddSingleton<DnsProxy.Dns.DnsServer>();
 
+            // Stratgies
             services.AddTransient<IDnsResolverStrategy, DohResolverStrategy>();
             services.AddTransient<IDnsResolverStrategy, DnsResolverStrategy>();
             services.AddSingleton<IDnsResolverStrategy, InternalNameServerResolverStrategy>();
@@ -43,6 +45,7 @@ namespace DnsProxy.Common
             services.AddSingleton<MulticastResolverStrategy>();
             services.AddSingleton<HostsResolverStrategy>();
 
+            // .net core frameworks
             services.AddOptions();
             services.Configure<HostsConfig>(_configuration.GetSection("HostsConfig"));
 
@@ -53,6 +56,9 @@ namespace DnsProxy.Common
                     .AddFilter("Default", LogLevel.Trace)
                     .AddFilter("System", LogLevel.Warning)
                     .AddFilter("DnsProxy.Program", LogLevel.Trace)
+                    .AddFilter("DnsProxy.Dns", LogLevel.Trace)
+                    .AddFilter("DnsProxy.Dns.DnsServer", LogLevel.Trace)
+                    .AddFilter("DnsProxy", LogLevel.Trace)
                     .AddConsole(options => { options.IncludeScopes = true; });
             });
             services.AddMemoryCache();
