@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2019 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,13 +13,14 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
-using ARSoft.Tools.Net.Dns;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using ARSoft.Tools.Net.Dns;
+using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Strategies
 {
@@ -32,14 +34,16 @@ namespace DnsProxy.Strategies
             Order = 2000;
         }
 
-        public override async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default)
+        public override async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage,
+            CancellationToken cancellationToken = default)
         {
             var result = new List<DnsRecordBase>();
             var message = dnsMessage.CreateResponseInstance();
 
-            foreach (DnsQuestion dnsQuestion in dnsMessage.Questions)
+            foreach (var dnsQuestion in dnsMessage.Questions)
             {
-                var response = await DnsClient.ResolveAsync<DnsRecordBase>(dnsQuestion.Name, dnsQuestion.RecordType, dnsQuestion.RecordClass, cancellationToken)
+                var response = await DnsClient.ResolveAsync<DnsRecordBase>(dnsQuestion.Name, dnsQuestion.RecordType,
+                        dnsQuestion.RecordClass, cancellationToken)
                     .ConfigureAwait(false);
                 result.AddRange(response);
             }

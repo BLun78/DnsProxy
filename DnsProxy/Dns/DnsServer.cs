@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2019 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,25 +13,26 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
+using System;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Models;
 using DnsProxy.Strategies;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace DnsProxy.Dns
 {
     internal class DnsServer : IDisposable
     {
         private const int DefaultDnsPort = 53;
-        private readonly ILogger<DnsServer> _logger;
         private readonly IOptionsMonitor<DnsHostConfig> _dnsHostConfigOptionsMonitor;
+        private readonly ILogger<DnsServer> _logger;
         private readonly StrategyManager _strategyManager;
 
         private ARSoft.Tools.Net.Dns.DnsServer _server;
@@ -46,15 +48,15 @@ namespace DnsProxy.Dns
             StartServer(_dnsHostConfigOptionsMonitor.CurrentValue.ListenerPort);
         }
 
+        public void Dispose()
+        {
+            ((IDisposable) _server)?.Dispose();
+        }
+
         private void DnsHostConfigListener(DnsHostConfig dnsHostConfig, string arg)
         {
             StopServer();
             StartServer(dnsHostConfig.ListenerPort);
-        }
-
-        public void Dispose()
-        {
-            ((IDisposable)_server)?.Dispose();
         }
 
         public void StartServer(int? listnerPort = null)
@@ -75,12 +77,12 @@ namespace DnsProxy.Dns
 
         private async Task<DnsMessage> DoQuery(DnsMessage dnsMessage)
         {
-            DnsMessage upstreamResponse = await _strategyManager.ResolveAsync(dnsMessage).ConfigureAwait(false);
+            var upstreamResponse = await _strategyManager.ResolveAsync(dnsMessage).ConfigureAwait(false);
             if (upstreamResponse?.AnswerRecords != null
                 && upstreamResponse.AnswerRecords.Any())
                 return upstreamResponse;
 
-            return await Task.FromResult((DnsMessage)null).ConfigureAwait(false);
+            return await Task.FromResult((DnsMessage) null).ConfigureAwait(false);
         }
 
         private async Task OnQueryReceived(object sender, QueryReceivedEventArgs e)

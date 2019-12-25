@@ -22,8 +22,6 @@ namespace DnsProxy.Models.Rules
     {
         public InternalNameServerRule(Rule rule) : base(rule)
         {
-
         }
-
     }
 }

@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2019 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,23 +13,23 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
 using System.Runtime.Serialization;
 
 namespace DnsProxy.Models
 {
-    internal enum Strategies : int
+    internal enum Strategies
     {
-        [EnumMember(Value = nameof(Strategies.Hosts))]
-        Hosts = 0,
-        [EnumMember(Value = nameof(Strategies.InternalNameServer))]
+        [EnumMember(Value = nameof(Hosts))] Hosts = 0,
+
+        [EnumMember(Value = nameof(InternalNameServer))]
         InternalNameServer = 1,
-        [EnumMember(Value = nameof(Strategies.Dns))]
-        Dns = 2,
-        [EnumMember(Value = nameof(Strategies.DoH))]
-        DoH = 3,
-        [EnumMember(Value = nameof(Strategies.Multicast))]
+        [EnumMember(Value = nameof(Dns))] Dns = 2,
+        [EnumMember(Value = nameof(DoH))] DoH = 3,
+
+        [EnumMember(Value = nameof(Multicast))]
         Multicast = 4
     }
 }

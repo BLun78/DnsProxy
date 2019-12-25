@@ -22,7 +22,6 @@ namespace DnsProxy.Models.Rules
     {
         public MulticastRule(Rule rule) : base(rule)
         {
-
         }
     }
 }

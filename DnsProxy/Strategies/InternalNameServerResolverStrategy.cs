@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2019 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,15 +13,16 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using Makaretu.Dns.Resolving;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace DnsProxy.Strategies
 {
@@ -37,16 +39,12 @@ namespace DnsProxy.Strategies
             var catalog = new Catalog();
 
             catalog.IncludeRootHints();
-            _resolver = new NameServer { Catalog = catalog };
+            _resolver = new NameServer {Catalog = catalog};
             Order = 100;
         }
 
-        private void OptionsListener(NameServerOptions nameServerOptions, string arg2)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default)
+        public override Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage,
+            CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -55,10 +53,14 @@ namespace DnsProxy.Strategies
         {
             return Models.Strategies.InternalNameServer;
         }
+
+        private void OptionsListener(NameServerOptions nameServerOptions, string arg2)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     internal class NameServerOptions
     {
-
     }
 }

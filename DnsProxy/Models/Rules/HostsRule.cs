@@ -22,9 +22,6 @@ namespace DnsProxy.Models.Rules
     {
         public HostsRule(Rule rule) : base(rule)
         {
-
         }
-
-
     }
 }

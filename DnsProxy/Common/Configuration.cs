@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2019 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,10 +13,11 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
-using Microsoft.Extensions.Configuration;
 using System.IO;
+using Microsoft.Extensions.Configuration;
 
 namespace DnsProxy.Common
 {
@@ -30,10 +32,10 @@ namespace DnsProxy.Common
 
         internal IConfigurationRoot ConfigurationRoot => new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("config.json", optional: false, reloadOnChange: true)
-            .AddJsonFile("rules.json", optional: false, reloadOnChange: true)
-            .AddJsonFile("hosts.json", optional: false, reloadOnChange: true)
-            .AddJsonFile("nameserver.json", optional: false, reloadOnChange: true)
+            .AddJsonFile("config.json", false, true)
+            .AddJsonFile("rules.json", false, true)
+            .AddJsonFile("hosts.json", false, true)
+            .AddJsonFile("nameserver.json", false, true)
             .AddEnvironmentVariables()
             .AddCommandLine(_args)
             .Build();

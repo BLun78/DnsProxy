@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2019 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,30 +13,31 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
+using System.Threading;
+using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common;
 using Makaretu.Dns;
 using Microsoft.Extensions.Logging;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace DnsProxy.Strategies
 {
     internal class MulticastResolverStrategy : BaseResolverStrategy, IDnsResolverStrategy
     {
-
         public MulticastResolverStrategy(ILogger<DnsResolverStrategy> logger) : base(logger)
         {
             Order = 5000;
         }
 
-        public override async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default)
+        public override async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage,
+            CancellationToken cancellationToken = default)
         {
             var message = dnsMessage.CreateResponseInstance();
 
-            foreach (DnsQuestion dnsQuestion in dnsMessage.Questions)
+            foreach (var dnsQuestion in dnsMessage.Questions)
             {
                 var query = new Message();
                 query.Questions.Add(new Question
@@ -50,10 +52,7 @@ namespace DnsProxy.Strategies
                     mdns.Start();
                     var response = await mdns.ResolveAsync(query, cancellation.Token).ConfigureAwait(false);
 
-                    foreach (ResourceRecord answer in response.Answers)
-                    {
-                        message.AnswerRecords.Add(answer.ToDnsRecord());
-                    }
+                    foreach (var answer in response.Answers) message.AnswerRecords.Add(answer.ToDnsRecord());
                 }
             }
 

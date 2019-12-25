@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2019 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,14 +13,15 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
-using ARSoft.Tools.Net.Dns;
-using DnsProxy.Common;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using ARSoft.Tools.Net.Dns;
+using DnsProxy.Common;
+using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Strategies
 {
@@ -31,15 +33,16 @@ namespace DnsProxy.Strategies
         {
             Logger = logger;
         }
-        public int Order { get; protected set; }
 
-        public abstract Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default);
+        public abstract Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage,
+            CancellationToken cancellationToken = default);
 
         public abstract Models.Strategies GetStrategy();
+        public int Order { get; protected set; }
 
         #region IDisposable Support
 
-        private bool disposedValue = false; // To detect redundant calls
+        private bool disposedValue; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
@@ -72,6 +75,7 @@ namespace DnsProxy.Strategies
             // TODO: uncomment the following line if the finalizer is overridden above.
             // GC.SuppressFinalize(this);
         }
+
         #endregion
     }
 }

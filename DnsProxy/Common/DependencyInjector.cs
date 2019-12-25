@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2019 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,41 +13,44 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
+using System;
+using System.Reflection;
+using DnsProxy.Dns;
 using DnsProxy.Models;
 using DnsProxy.Strategies;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Reflection;
 
 namespace DnsProxy.Common
 {
     internal class DependencyInjector
     {
         private readonly IConfigurationRoot _configuration;
-        public IServiceProvider ServiceProvider { get; private set; }
 
         public DependencyInjector(IConfigurationRoot configuration)
         {
             _configuration = configuration;
-            ServiceProvider = ConfigureDependencyInjector().BuildServiceProvider(new ServiceProviderOptions()
+            ServiceProvider = ConfigureDependencyInjector().BuildServiceProvider(new ServiceProviderOptions
             {
                 ValidateOnBuild = true,
-                ValidateScopes = true,
+                ValidateScopes = true
             });
         }
+
+        public IServiceProvider ServiceProvider { get; }
 
         private IServiceCollection ConfigureDependencyInjector()
         {
             var services = new ServiceCollection();
 
             // Program
-            services.AddSingleton<Assembly>(Assembly.GetExecutingAssembly());
+            services.AddSingleton(Assembly.GetExecutingAssembly());
             services.AddSingleton<ApplicationInformation>();
-            services.AddSingleton<DnsProxy.Dns.DnsServer>();
+            services.AddSingleton<DnsServer>();
 
             // Stratgies
             services.AddSingleton<StrategyManager>();

@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2019 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,20 +13,23 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
+using System;
+using System.Threading.Tasks;
 using DnsProxy.Common;
 using DnsProxy.Dns;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
 
 namespace DnsProxy
 {
     public sealed class Program
     {
         private static ILogger<Program> Logger;
+        private static string _title;
+        private static DnsServer _dnsServer;
         internal static ApplicationInformation ApplicationInformation { get; private set; }
         internal static Configuration Configuration { get; private set; }
         internal static DependencyInjector DependencyInjector { get; private set; }
@@ -33,20 +37,15 @@ namespace DnsProxy
 
         internal static string Title
         {
-            get { return _title; }
+            get => _title;
             set
             {
                 _title = value;
-                if (Environment.UserInteractive)
-                {
-                    Console.Title = value;
-                }
+                if (Environment.UserInteractive) Console.Title = value;
             }
         }
-        private static string _title;
-        private static DnsServer _dnsServer;
 
-        static async Task<int> Main(string[] args)
+        private static async Task<int> Main(string[] args)
         {
             try
             {
@@ -54,7 +53,7 @@ namespace DnsProxy
                 Title = ApplicationInformation.DefaultTitle;
                 ApplicationInformation.LogAssemblyInformation();
                 Logger.LogInformation("starts up {DefaultTitle}", ApplicationInformation.DefaultTitle);
-                _dnsServer = ServiceProvider.GetService<DnsProxy.Dns.DnsServer>();
+                _dnsServer = ServiceProvider.GetService<DnsServer>();
 
                 return await WaitForEndAsync().ConfigureAwait(true);
             }
@@ -75,7 +74,7 @@ namespace DnsProxy
 
         private static void Setup(string[] args)
         {
-            Program.Configuration = new Configuration(args);
+            Configuration = new Configuration(args);
             DependencyInjector = new DependencyInjector(Configuration.ConfigurationRoot);
 
             Logger = DependencyInjector.ServiceProvider.GetService<ILogger<Program>>();
@@ -98,6 +97,7 @@ namespace DnsProxy
                             break;
                     }
                 }
+
                 _dnsServer.StopServer();
                 return 0;
             });

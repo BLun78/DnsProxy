@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2019 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,31 +13,34 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
-using DnsProxy.Models.Rules;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using DnsProxy.Models.Rules;
 
 namespace DnsProxy.Models
 {
     internal class Rule : IRule
     {
-        public Strategies Strategy { get; set; }
-        public bool IsEnabled { get; set; }
-
-        public string DomainName { get; set; }
-        public string DomainNamePattern { get; set; }
         public List<string> NameServerIpAddresses { get; set; }
         public string IpAddress { get; set; }
         public bool CompressionMutation { get; set; }
 
         /// <summary>
-        /// Query timeout in seconds
+        ///     Query timeout in seconds
         /// </summary>
         public int QueryTimeout { get; set; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "<Pending>")]
+        public Strategies Strategy { get; set; }
+        public bool IsEnabled { get; set; }
+
+        public string DomainName { get; set; }
+        public string DomainNamePattern { get; set; }
+
+        [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "<Pending>")]
         public IRule GetInternalRule()
         {
             switch (Strategy)

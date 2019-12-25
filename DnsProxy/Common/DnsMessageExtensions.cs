@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2019 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,21 +13,23 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Net;
+using System.Net.Sockets;
 using ARSoft.Tools.Net;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Models;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
 
 namespace DnsProxy.Common
 {
     internal static class DnsMessageExtensions
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "<Pending>")]
+        [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "<Pending>")]
         public static List<AddressRecordBase> ToAddressRecord(this Host host, string domainName)
         {
             var result = new List<AddressRecordBase>();
@@ -45,10 +48,11 @@ namespace DnsProxy.Common
                         throw new ArgumentOutOfRangeException(nameof(ip.AddressFamily), ip.AddressFamily, null);
                 }
             }
+
             return result;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "<Pending>")]
+        [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "<Pending>")]
         public static (string, List<PtrRecord>) ToPtrRecords(this Host host, string ipAddress)
         {
             var result = new List<PtrRecord>();
@@ -67,9 +71,7 @@ namespace DnsProxy.Common
             }
 
             foreach (var domainName in host.DomainNames)
-            {
                 result.Add(new PtrRecord(DomainName.Parse(tempIpAddress), 30, DomainName.Parse(domainName)));
-            }
             return (tempIpAddress, result);
         }
     }

@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2019 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,23 +13,24 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common;
 using Makaretu.Dns;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace DnsProxy.Strategies
 {
     internal class DohResolverStrategy : BaseResolverStrategy, IDnsResolverStrategy
     {
-        private readonly IMemoryCache _memoryCache;
         private readonly DohClient _dohClient;
+        private readonly IMemoryCache _memoryCache;
 
         public DohResolverStrategy(
             ILogger<DnsResolverStrategy> logger,
@@ -42,14 +44,15 @@ namespace DnsProxy.Strategies
             Order = 1000;
         }
 
-        public override async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default)
+        public override async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage,
+            CancellationToken cancellationToken = default)
         {
             var resultMessage = dnsMessage.CreateResponseInstance();
             var requestMessage = new Message();
 
-            foreach (DnsQuestion dnsQuestion in dnsMessage.Questions)
+            foreach (var dnsQuestion in dnsMessage.Questions)
             {
-                var question = new Question()
+                var question = new Question
                 {
                     Name = dnsQuestion.Name.ToDomainName(),
                     Type = dnsQuestion.RecordType.ToDnsType(),
@@ -61,7 +64,7 @@ namespace DnsProxy.Strategies
 
             var responseMessage = await _dohClient.QueryAsync(requestMessage, cancellationToken).ConfigureAwait(false);
 
-            foreach (ResourceRecord answer in responseMessage.Answers)
+            foreach (var answer in responseMessage.Answers)
             {
                 var resultAnswer = answer.ToDnsRecord();
                 resultMessage.AnswerRecords.Add(resultAnswer);
