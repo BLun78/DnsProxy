@@ -58,7 +58,7 @@ namespace DnsProxy.Dns
 
         private async Task OnQueryReceived(object sender, QueryReceivedEventArgs e)
         {
-            if (e.Query is DnsMessage message 
+            if (e.Query is DnsMessage message
                 && message.Questions.Count == 1)
             {
                 DnsMessage upstreamResponse = await DoQuery(message).ConfigureAwait(false);
