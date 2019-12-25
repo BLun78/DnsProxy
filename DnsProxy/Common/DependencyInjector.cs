@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Reflection;
-using DnsProxy.Dns;
+﻿using DnsProxy.Dns;
 using DnsProxy.Dns.Strategies;
 using DnsProxy.Models;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Reflection;
 
 namespace DnsProxy.Common
 {
@@ -34,16 +34,18 @@ namespace DnsProxy.Common
 
             services.AddTransient<IDnsResolverStrategy, DohResolverStrategy>();
             services.AddTransient<IDnsResolverStrategy, DnsResolverStrategy>();
-            //services.AddSingleton<IDnsResolverStrategy, InternalNameServerResolverStrategy>();
+            services.AddSingleton<IDnsResolverStrategy, InternalNameServerResolverStrategy>();
+            services.AddSingleton<IDnsResolverStrategy, MulticastResolverStrategy>();
             services.AddSingleton<IDnsResolverStrategy, HostsResolverStrategy>();
             services.AddTransient<DohResolverStrategy>();
             services.AddTransient<DnsResolverStrategy>();
-            //services.AddSingleton<InternalNameServerResolverStrategy>();
+            services.AddSingleton<InternalNameServerResolverStrategy>();
+            services.AddSingleton<MulticastResolverStrategy>();
             services.AddSingleton<HostsResolverStrategy>();
 
             services.AddOptions();
-            services.Configure<HostConfig>(_configuration.GetSection("HostConfig"));
-            
+            services.Configure<HostsConfig>(_configuration.GetSection("HostsConfig"));
+
             services.AddLogging(builder =>
             {
                 builder

@@ -1,10 +1,10 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using ARSoft.Tools.Net.Dns;
+﻿using ARSoft.Tools.Net.Dns;
 using Makaretu.Dns.Resolving;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DnsProxy.Dns.Strategies
 {
@@ -19,17 +19,17 @@ namespace DnsProxy.Dns.Strategies
             _nameServerOptions = nameServerOptions;
             _nameServerOptions.OnChange(OptionsListener);
             var catalog = new Catalog();
-            
+
             catalog.IncludeRootHints();
             _resolver = new NameServer { Catalog = catalog };
             Order = 100;
         }
 
         private void OptionsListener(NameServerOptions nameServerOptions, string arg2)
-        {   
+        {
             throw new NotImplementedException();
         }
-        
+
         public Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();

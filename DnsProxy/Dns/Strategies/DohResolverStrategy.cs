@@ -1,11 +1,11 @@
-﻿using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using ARSoft.Tools.Net.Dns;
+﻿using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common;
 using Makaretu.Dns;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DnsProxy.Dns.Strategies
 {

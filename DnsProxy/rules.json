@@ -1,2 +1,16 @@
 {
+  "RulesConfig": {
+    "Rules": [
+      {
+        "DomainNamePattern": "",
+        "DomainName": "fritz.box",
+        "NameServer": "",
+        "IpAddress": "",
+        "Strategy": "",
+        "IsEnabled": true,
+        "CompressionMutation": false,
+        "QueryTimeout": 3000
+      }
+    ] 
+  }  
 }

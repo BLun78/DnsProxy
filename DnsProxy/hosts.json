@@ -1,8 +1,8 @@
 {
-  "HostConfig": {
+  "HostsConfig": {
     "Hosts": [
       {
-        "IPAddresses": [
+        "IpAddresses": [
           "104.16.249.249",
           "104.16.248.249"
         ],

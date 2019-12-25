@@ -1,9 +1,8 @@
-﻿using System;
+﻿using ARSoft.Tools.Net.Dns;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ARSoft.Tools.Net.Dns;
-using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Dns.Strategies
 {
@@ -24,11 +23,11 @@ namespace DnsProxy.Dns.Strategies
 
             foreach (DnsQuestion dnsQuestion in dnsMessage.Questions)
             {
-                var response = await DnsClient.ResolveAsync<DnsRecordBase>(dnsQuestion.Name, dnsQuestion.RecordType, dnsQuestion.RecordClass)
+                var response = await DnsClient.ResolveAsync<DnsRecordBase>(dnsQuestion.Name, dnsQuestion.RecordType, dnsQuestion.RecordClass, cancellationToken)
                     .ConfigureAwait(false);
                 result.AddRange(response);
             }
-            
+
             message.AnswerRecords.AddRange(result);
             return message;
         }

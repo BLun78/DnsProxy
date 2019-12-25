@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using ARSoft.Tools.Net.Dns;
+﻿using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common;
 using DnsProxy.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Tmds.Linux;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DnsProxy.Dns.Strategies
 {
@@ -18,14 +16,14 @@ namespace DnsProxy.Dns.Strategies
     {
         private readonly ILogger<DnsResolverStrategy> _logger;
         private readonly IMemoryCache _memoryCache;
-        private readonly IOptionsMonitor<HostConfig> _hostConfigOptionsMonitor;
-        private HostConfig _hostConfigCache;
-        private readonly IDnsResolver DnsClient;
+        private readonly IOptionsMonitor<HostsConfig> _hostConfigOptionsMonitor;
+        private HostsConfig _hostConfigCache;
+
         internal static CancellationToken CacheCancellationToken { get; private set; }
 
         public HostsResolverStrategy(ILogger<DnsResolverStrategy> logger,
             IMemoryCache memoryCache,
-            IOptionsMonitor<HostConfig> hostConfigOptionsMonitor) : base(logger)
+            IOptionsMonitor<HostsConfig> hostConfigOptionsMonitor) : base(logger)
         {
             CacheCancellationToken = new CancellationToken();
             _logger = logger;
@@ -36,7 +34,7 @@ namespace DnsProxy.Dns.Strategies
             this.Order = 0;
         }
 
-        private void ParseHostConfig(HostConfig hostConfig, string listener = "")
+        private void ParseHostConfig(HostsConfig hostConfig, string listener = "")
         {
             _logger.LogInformation("listner={listner}", listener);
 
@@ -44,7 +42,7 @@ namespace DnsProxy.Dns.Strategies
             {
                 foreach (var host in _hostConfigCache.Hosts)
                 {
-                    foreach (var ipAddress in host.IPAddresses)
+                    foreach (var ipAddress in host.IpAddresses)
                     {
                         _memoryCache.Remove(ipAddress);
                     }
@@ -55,13 +53,13 @@ namespace DnsProxy.Dns.Strategies
                 }
             }
 
-            _hostConfigCache = (HostConfig)hostConfig.Clone();
+            _hostConfigCache = (HostsConfig)hostConfig.Clone();
 
             if (_hostConfigCache != null)
             {
                 foreach (var host in _hostConfigCache.Hosts)
                 {
-                    foreach (var ipAddress in host.IPAddresses)
+                    foreach (var ipAddress in host.IpAddresses)
                     {
                         var tempHost = host.ToPtrRecords(ipAddress);
                         var entry = _memoryCache.CreateEntry(tempHost.Item1);
@@ -81,7 +79,7 @@ namespace DnsProxy.Dns.Strategies
             }
         }
 
-        public async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default)
+        public Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default)
         {
             var message = dnsMessage.CreateResponseInstance();
 
@@ -101,7 +99,7 @@ namespace DnsProxy.Dns.Strategies
                 }
             }
 
-            return message;
+            return Task.FromResult(message);
         }
 
     }

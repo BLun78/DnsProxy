@@ -2,21 +2,17 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using ARSoft.Tools.Net.Dns;
-using DnsProxy.Dns;
-using DnsProxy.Dns.Strategies;
-using DnsProxy.Models;
 
 namespace DnsProxy
 {
     public sealed class Program
     {
-        private static readonly ILogger<Program> Logger;
-        internal static ApplicationInformation ApplicationInformation { get; }
-        internal static Configuration Configuration { get; }
-        internal static DependencyInjector DependencyInjector { get; set; }
+        private static ILogger<Program> Logger;
+        internal static ApplicationInformation ApplicationInformation { get; private set; }
+        internal static Configuration Configuration { get; private set; }
+        internal static DependencyInjector DependencyInjector { get; private set; }
         internal static IServiceProvider ServiceProvider => DependencyInjector.ServiceProvider;
 
         internal static string Title
@@ -38,6 +34,7 @@ namespace DnsProxy
         {
             try
             {
+                Setup(args);
                 Title = ApplicationInformation.DefaultTitle;
                 ApplicationInformation.LogAssemblyInformation();
                 Logger.LogInformation("starts up {DefaultTitle}", ApplicationInformation.DefaultTitle);
@@ -62,9 +59,9 @@ namespace DnsProxy
             }
         }
 
-        static Program()
+        private static void Setup(string[] args)
         {
-            Configuration = new Configuration();
+            Program.Configuration = new Configuration(args);
             DependencyInjector = new DependencyInjector(Configuration.ConfigurationRoot);
 
             Logger = DependencyInjector.ServiceProvider.GetService<ILogger<Program>>();

@@ -1,15 +1,15 @@
-﻿using System;
+﻿using ARSoft.Tools.Net.Dns;
+using Makaretu.Dns;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using ARSoft.Tools.Net.Dns;
-using Makaretu.Dns;
-using Tmds.Linux;
 
 namespace DnsProxy.Common
 {
+#pragma warning disable CS0612 // Type or member is obsolete
     internal static class MapperExtensions
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "<Pending>")]
         public static DnsRecordBase ToDnsRecord(this ResourceRecord resourceRecord)
         {
             switch (resourceRecord.Type)
@@ -20,7 +20,7 @@ namespace DnsProxy.Common
                         resourceRecord.TTL.Seconds,
                         a.Address);
                 case DnsType.NS:
-                    var ns = ((Makaretu.Dns.NSRecord) resourceRecord);
+                    var ns = ((Makaretu.Dns.NSRecord)resourceRecord);
                     return new ARSoft.Tools.Net.Dns.NsRecord(resourceRecord.Name.ToDomainName(),
                         resourceRecord.TTL.Seconds,
                         ns.Authority.ToDomainName());
@@ -148,7 +148,7 @@ namespace DnsProxy.Common
                         tkey.Mode.ToTKeyRecordTKeyMode(),
                         tkey.Error.ToReturnCode(),
                         tkey.Key,
-                        tkey.OtherData); 
+                        tkey.OtherData);
                 case DnsType.TSIG:
                     var tsig = ((Makaretu.Dns.TSIGRecord)resourceRecord);
                     return new ARSoft.Tools.Net.Dns.TSigRecord(resourceRecord.Name.ToDomainName(),
@@ -303,7 +303,7 @@ namespace DnsProxy.Common
         {
             foreach (var ednsOption in ednsOptions)
             {
-                var unknownOption = (Makaretu.Dns.UnknownEdnsOption) ednsOption;
+                var unknownOption = (Makaretu.Dns.UnknownEdnsOption)ednsOption;
                 yield return new ARSoft.Tools.Net.Dns.UnknownOption(unknownOption.Type.ToEDnsOptionType(), unknownOption.Data);
             }
         }
@@ -634,14 +634,12 @@ namespace DnsProxy.Common
                 case RecordType.GPos:
                 case RecordType.Loc:
                 case RecordType.Invalid:
-                case RecordType.Nxt:
                 case RecordType.Eid:
                 case RecordType.NimLoc:
                 case RecordType.AtmA:
                 case RecordType.Naptr:
                 case RecordType.Kx:
                 case RecordType.Cert:
-                case RecordType.A6:
                 case RecordType.Sink:
                 case RecordType.Apl:
                 case RecordType.SshFp:
@@ -655,6 +653,8 @@ namespace DnsProxy.Common
                 case RecordType.CDnsKey:
                 case RecordType.OpenPGPKey:
                 case RecordType.CSync:
+                case RecordType.Nxt:
+                case RecordType.A6:
                 case RecordType.Spf:
                 case RecordType.UInfo:
                 case RecordType.UId:
@@ -674,4 +674,6 @@ namespace DnsProxy.Common
             }
         }
     }
+
+#pragma warning restore CS0618 // Type or member is obsolete
 }

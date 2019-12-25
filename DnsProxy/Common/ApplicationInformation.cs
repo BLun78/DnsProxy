@@ -1,8 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Common
 {
@@ -21,7 +19,7 @@ namespace DnsProxy.Common
         public void LogAssemblyInformation()
         {
             var version = _assembly.GetName().Version;
-            var buildTime = new DateTime(1900,1,1);
+            var buildTime = new DateTime(1900, 1, 1);
             var title = DefaultTitle;
             _logger.LogInformation(@"Title: '{title}' Version: '{version}' Builddate: '{buildTime}'", title, version,
                 buildTime);

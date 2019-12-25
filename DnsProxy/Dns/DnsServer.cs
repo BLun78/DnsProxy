@@ -1,10 +1,10 @@
-﻿using System;
+﻿using ARSoft.Tools.Net.Dns;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using ARSoft.Tools.Net.Dns;
 
 namespace DnsProxy.Dns
 {
@@ -46,7 +46,7 @@ namespace DnsProxy.Dns
             foreach (var strategy in _dnsResolverStrategies)
             {
                 DnsMessage upstreamResponse = await strategy.Value.ResolveAsync(dnsMessage).ConfigureAwait(false);
-                if (upstreamResponse?.AnswerRecords != null 
+                if (upstreamResponse?.AnswerRecords != null
                     && upstreamResponse.AnswerRecords.Any())
                 {
                     return upstreamResponse;
@@ -58,9 +58,8 @@ namespace DnsProxy.Dns
 
         private async Task OnQueryReceived(object sender, QueryReceivedEventArgs e)
         {
-            DnsMessage message = e.Query as DnsMessage;
-
-            if (message != null && message.Questions.Count == 1)
+            if (e.Query is DnsMessage message 
+                && message.Questions.Count == 1)
             {
                 DnsMessage upstreamResponse = await DoQuery(message).ConfigureAwait(false);
                 if (upstreamResponse != null)
