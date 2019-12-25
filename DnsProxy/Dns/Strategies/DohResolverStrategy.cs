@@ -42,7 +42,7 @@ namespace DnsProxy.Dns.Strategies
             Order = 1000;
         }
 
-        public async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default)
+        public override async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default)
         {
             var resultMessage = dnsMessage.CreateResponseInstance();
             var requestMessage = new Message();
@@ -70,5 +70,9 @@ namespace DnsProxy.Dns.Strategies
             return resultMessage;
         }
 
+        public override Models.Strategies GetStrategy()
+        {
+            return Models.Strategies.DoH;
+        }
     }
 }

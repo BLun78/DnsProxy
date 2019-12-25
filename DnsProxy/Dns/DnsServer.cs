@@ -21,6 +21,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using DnsProxy.Models;
+using Microsoft.Extensions.Options;
 
 namespace DnsProxy.Dns
 {
@@ -28,20 +30,15 @@ namespace DnsProxy.Dns
     {
         private const int DefaultDnsPort = 53;
         private readonly ILogger<DnsServer> _logger;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly SortedList<int, IDnsResolverStrategy> _dnsResolverStrategies;
+        private readonly IOptionsMonitor<RulesConfig> _rulesConfigOptionsMonitor;
 
         private ARSoft.Tools.Net.Dns.DnsServer _server;
 
-        public DnsServer(ILogger<DnsServer> logger, IServiceProvider serviceProvider, IEnumerable<IDnsResolverStrategy> dnsResolverStrategies)
+        public DnsServer(ILogger<DnsServer> logger,
+            IOptionsMonitor<RulesConfig> rulesConfigOptionsMonitor)
         {
             _logger = logger;
-            _serviceProvider = serviceProvider;
-            _dnsResolverStrategies = new SortedList<int, IDnsResolverStrategy>();
-            foreach (var dnsResolverStrategy in dnsResolverStrategies)
-            {
-                _dnsResolverStrategies.Add(dnsResolverStrategy.Order, dnsResolverStrategy);
-            }
+            _rulesConfigOptionsMonitor = rulesConfigOptionsMonitor;
         }
 
         public void StartServer(int? listnerPort = null)

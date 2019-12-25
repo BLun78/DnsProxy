@@ -46,9 +46,14 @@ namespace DnsProxy.Dns.Strategies
             throw new NotImplementedException();
         }
 
-        public Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default)
+        public override Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
+        }
+
+        public override Models.Strategies GetStrategy()
+        {
+            return Models.Strategies.InternalNameServer;
         }
     }
 

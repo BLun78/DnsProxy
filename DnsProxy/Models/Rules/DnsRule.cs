@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2019 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,23 +13,24 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
-using System.Runtime.Serialization;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Text;
 
-namespace DnsProxy.Models
+namespace DnsProxy.Models.Rules
 {
-    internal enum Strategies : int
+    internal class DnsRule : RuleBase, IRule
     {
-        [EnumMember(Value = nameof(Strategies.Hosts))]
-        Hosts = 0,
-        [EnumMember(Value = nameof(Strategies.InternalNameServer))]
-        InternalNameServer = 1,
-        [EnumMember(Value = nameof(Strategies.Dns))]
-        Dns = 2,
-        [EnumMember(Value = nameof(Strategies.DoH))]
-        DoH = 3,
-        [EnumMember(Value = nameof(Strategies.Multicast))]
-        Multicast = 4
+        public DnsRule(Rule rule) : base(rule)
+        {
+            NameServerIpAddresses = GetNameServerIpAddresses(rule.NameServerIpAddresses);
+        }
+
+        public List<IPAddress> NameServerIpAddresses { get; set; }
+        public bool CompressionMutation { get; set; }
     }
 }

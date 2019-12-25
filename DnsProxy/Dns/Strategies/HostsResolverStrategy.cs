@@ -95,7 +95,7 @@ namespace DnsProxy.Dns.Strategies
             }
         }
 
-        public Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default)
+        public override Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default)
         {
             var message = dnsMessage.CreateResponseInstance();
 
@@ -118,5 +118,9 @@ namespace DnsProxy.Dns.Strategies
             return Task.FromResult(message);
         }
 
+        public override Models.Strategies GetStrategy()
+        {
+            return Models.Strategies.Hosts;
+        }
     }
 }

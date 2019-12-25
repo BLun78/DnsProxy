@@ -4,8 +4,11 @@
       {
         "DomainNamePattern": "",
         "DomainName": "fritz.box",
-        "NameServer": "",
+        "NameServerIpAddresses": [
+          ""
+        ],
         "IpAddress": "",
+        // Hosts, InternalNameServer, Dns, DoH, Multicast
         "Strategy": "",
         "IsEnabled": true,
         "CompressionMutation": false,

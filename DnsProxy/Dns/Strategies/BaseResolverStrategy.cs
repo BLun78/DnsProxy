@@ -16,10 +16,13 @@
 
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
+using ARSoft.Tools.Net.Dns;
 
 namespace DnsProxy.Dns.Strategies
 {
-    internal class BaseResolverStrategy : IDisposable, IOrder
+    internal abstract class BaseResolverStrategy : IDisposable, IOrder, IDnsResolverStrategy
     {
         protected readonly ILogger<BaseResolverStrategy> Logger;
 
@@ -27,6 +30,11 @@ namespace DnsProxy.Dns.Strategies
         {
             Logger = logger;
         }
+        public int Order { get; protected set; }
+
+        public abstract Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default);
+
+        public abstract Models.Strategies GetStrategy();
 
         #region IDisposable Support
 
@@ -64,7 +72,5 @@ namespace DnsProxy.Dns.Strategies
             // GC.SuppressFinalize(this);
         }
         #endregion
-
-        public int Order { get; protected set; }
     }
 }

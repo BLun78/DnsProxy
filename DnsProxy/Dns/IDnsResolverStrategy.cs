@@ -24,11 +24,6 @@ namespace DnsProxy.Dns
     internal interface IDnsResolverStrategy : IDisposable, IOrder
     {
         Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default);
-
-    }
-
-    internal interface IOrder
-    {
-        int Order { get; }
+        Models.Strategies GetStrategy();
     }
 }

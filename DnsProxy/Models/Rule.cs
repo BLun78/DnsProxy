@@ -14,19 +14,21 @@
 //    limitations under the License.
 #endregion
 
-using System.Text.RegularExpressions;
-using System.Text.Json.Serialization;
+using System;
+using System.Collections.Generic;
+using DnsProxy.Models.Rules;
 
 namespace DnsProxy.Models
 {
-    internal class Rule
+    internal class Rule : IRule
     {
-        public string DomainName { get; set; }
-        public string DomainNamePattern { get; set; }
-        public string NameServer { get; set; }
-        public string IpAddress { get; set; }
         public Strategies Strategy { get; set; }
         public bool IsEnabled { get; set; }
+
+        public string DomainName { get; set; }
+        public string DomainNamePattern { get; set; }
+        public List<string> NameServerIpAddresses { get; set; }
+        public string IpAddress { get; set; }
         public bool CompressionMutation { get; set; }
 
         /// <summary>
@@ -34,9 +36,24 @@ namespace DnsProxy.Models
         /// </summary>
         public int QueryTimeout { get; set; }
 
-        public Regex GetDomainNameRegex()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "<Pending>")]
+        public IRule GetInternalRule()
         {
-            return new Regex(DomainNamePattern);
+            switch (Strategy)
+            {
+                case Strategies.Hosts:
+                    return new HostsRule(this);
+                case Strategies.InternalNameServer:
+                    return new InternalNameServerRule(this);
+                case Strategies.Dns:
+                    return new DnsRule(this);
+                case Strategies.DoH:
+                    return new DohRule(this);
+                case Strategies.Multicast:
+                    return new MulticastRule(this);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(Strategy), Strategy, null);
+            }
         }
     }
 }
