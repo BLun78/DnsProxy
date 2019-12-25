@@ -25,12 +25,12 @@ namespace DnsProxy.Models
 {
     internal class Rule : IRule
     {
-        public List<string> NameServerIpAddresses { get; set; }
+        public List<string> NameServer { get; set; }
         public string IpAddress { get; set; }
         public bool CompressionMutation { get; set; }
 
         /// <summary>
-        ///     Query timeout in seconds
+        ///     Query timeout in milliseconds
         /// </summary>
         public int QueryTimeout { get; set; }
 

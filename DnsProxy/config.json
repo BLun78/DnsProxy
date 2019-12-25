@@ -1,5 +1,16 @@
 {
   "DnsHostConfig": {
     "ListenerPort": 53
+  },
+  "DnsDefaultServer": {
+    "Servers": {
+      "NameServer": [
+        "1.1.1.1",
+        "9.9.9.9"
+      ],
+      "Strategy": "Dns",
+      "CompressionMutation": true,
+      "QueryTimeout": 500
+    }
   }
 }

@@ -25,7 +25,8 @@ namespace DnsProxy.Models.Rules
     {
         public DnsRule(Rule rule) : base(rule)
         {
-            NameServerIpAddresses = GetNameServerIpAddresses(rule.NameServerIpAddresses);
+            CompressionMutation = rule.CompressionMutation;
+            NameServerIpAddresses = GetNameServerIpAddresses(rule.NameServer);
         }
 
         public List<IPAddress> NameServerIpAddresses { get; set; }

@@ -2,13 +2,39 @@
   "RulesConfig": {
     "Rules": [
       {
+        "DomainNamePattern": "^(.*)\\.box$",
+        "Strategy": "Multicast",
+        "IsEnabled": true,
+        "QueryTimeout": 3000
+      },
+      {
+        "DomainNamePattern": "^(.*)\\.amazonaws\\.com$",
+        "Strategy": "DoH",
+        "NameServer": [
+          "https://cloudflare-dns.com/dns-query"
+        ],
+        "IsEnabled": true,
+        "QueryTimeout": 1000
+      },
+      {
+        "DomainName": "www.google.de",
+        "NameServer": [
+          "8.8.8.8",
+          "8.8.4.4"
+        ],
+        "Strategy": "Dns",
+        "IsEnabled": true,
+        "CompressionMutation": true,
+        "QueryTimeout": 3000
+      },
+      {
         "DomainNamePattern": "",
-        "DomainName": "fritz.box",
-        "NameServerIpAddresses": [
+        "DomainName": "",
+        "NameServer": [
           ""
         ],
         "IpAddress": "",
-        // Hosts, InternalNameServer, Dns, DoH, Multicast
+        // Dns, DoH, Multicast
         "Strategy": "",
         "IsEnabled": true,
         "CompressionMutation": false,

@@ -1,5 +1,8 @@
 {
   "HostsConfig": {
+    "Rule": {
+      "IsEnabled": true
+    },
     "Hosts": [
       {
         "IpAddresses": [

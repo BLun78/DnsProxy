@@ -1,4 +1,8 @@
 {
   "NameServerConfig": {
+    "Rule": {
+      "IsEnabled": true,
+      "QueryTimeout": 3000
+    }
   }
 }

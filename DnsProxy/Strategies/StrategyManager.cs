@@ -29,13 +29,19 @@ namespace DnsProxy.Strategies
     internal class StrategyManager
     {
         private readonly ILogger<StrategyManager> _logger;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IOptionsMonitor<RulesConfig> _rulesConfigOptionsMonitor;
+        private readonly IOptionsMonitor<DnsDefaultServer> _dnsDefaultServerOptionsMonitor;
 
         public StrategyManager(ILogger<StrategyManager> logger,
-            IOptionsMonitor<RulesConfig> rulesConfigOptionsMonitor)
+            IServiceProvider serviceProvider,
+            IOptionsMonitor<RulesConfig> rulesConfigOptionsMonitor,
+            IOptionsMonitor<DnsDefaultServer> dnsDefaultServerOptionsMonitor)
         {
             _logger = logger;
+            _serviceProvider = serviceProvider;
             _rulesConfigOptionsMonitor = rulesConfigOptionsMonitor;
+            _dnsDefaultServerOptionsMonitor = dnsDefaultServerOptionsMonitor;
         }
 
         public Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default)

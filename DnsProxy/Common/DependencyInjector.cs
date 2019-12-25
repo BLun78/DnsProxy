@@ -70,6 +70,7 @@ namespace DnsProxy.Common
             services.Configure<HostsConfig>(_configuration.GetSection(nameof(HostsConfig)));
             services.Configure<DnsHostConfig>(_configuration.GetSection(nameof(DnsHostConfig)));
             services.Configure<RulesConfig>(_configuration.GetSection(nameof(RulesConfig)));
+            services.Configure<DnsDefaultServer>(_configuration.GetSection(nameof(DnsDefaultServer)));
 
             services.AddLogging(builder =>
             {

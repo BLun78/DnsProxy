@@ -16,6 +16,7 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Net;
 
@@ -25,9 +26,9 @@ namespace DnsProxy.Models.Rules
     {
         public DohRule(Rule rule) : base(rule)
         {
-            NameServerIpAddresses = GetNameServerIpAddresses(rule.NameServerIpAddresses);
+            NameServerUri = GetNameServerUri(rule.NameServer);
         }
 
-        public List<IPAddress> NameServerIpAddresses { get; set; }
+        public List<Uri> NameServerUri { get; set; }
     }
 }
