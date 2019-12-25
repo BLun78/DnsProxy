@@ -24,6 +24,7 @@ namespace DnsProxy.Models.Rules
         bool IsEnabled { get; }
         string DomainName { get; }
         string DomainNamePattern { get; }
+
         /// <summary>
         ///     Query timeout in milliseconds
         /// </summary>

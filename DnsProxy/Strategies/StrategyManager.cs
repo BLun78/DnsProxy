@@ -28,10 +28,10 @@ namespace DnsProxy.Strategies
 {
     internal class StrategyManager
     {
-        private readonly ILogger<StrategyManager> _logger;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IOptionsMonitor<RulesConfig> _rulesConfigOptionsMonitor;
         private readonly IOptionsMonitor<DnsDefaultServer> _dnsDefaultServerOptionsMonitor;
+        private readonly ILogger<StrategyManager> _logger;
+        private readonly IOptionsMonitor<RulesConfig> _rulesConfigOptionsMonitor;
+        private readonly IServiceProvider _serviceProvider;
 
         public StrategyManager(ILogger<StrategyManager> logger,
             IServiceProvider serviceProvider,

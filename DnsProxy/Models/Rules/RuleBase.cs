@@ -19,6 +19,7 @@ namespace DnsProxy.Models.Rules
         public bool IsEnabled => _rule.IsEnabled;
         public string DomainName => _rule.DomainName;
         public string DomainNamePattern => _rule.DomainNamePattern;
+
         /// <summary>
         ///     Query timeout in milliseconds
         /// </summary>

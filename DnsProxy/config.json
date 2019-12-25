@@ -1,6 +1,10 @@
 {
   "DnsHostConfig": {
-    "ListenerPort": 53
+    "ListenerPort": 53,
+    "NetworkWhitelist": [
+      "127.0.0.1/32",
+      "192.168.199.0/24"
+    ]
   },
   "DnsDefaultServer": {
     "Servers": {

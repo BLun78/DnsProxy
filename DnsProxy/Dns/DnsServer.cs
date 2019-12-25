@@ -17,9 +17,12 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using ARSoft.Tools.Net;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Models;
 using DnsProxy.Strategies;
@@ -35,16 +38,20 @@ namespace DnsProxy.Dns
         private readonly ILogger<DnsServer> _logger;
         private readonly StrategyManager _strategyManager;
 
+        private readonly IDictionary<IPAddress, int> NetworkWhitelist;
+
         private ARSoft.Tools.Net.Dns.DnsServer _server;
 
         public DnsServer(ILogger<DnsServer> logger,
             IOptionsMonitor<DnsHostConfig> dnsHostConfigOptionsMonitor,
             StrategyManager strategyManager)
         {
+            NetworkWhitelist = new Dictionary<IPAddress, int>();
             _logger = logger;
             _dnsHostConfigOptionsMonitor = dnsHostConfigOptionsMonitor;
             _strategyManager = strategyManager;
             _dnsHostConfigOptionsMonitor.OnChange(DnsHostConfigListener);
+            CreateNetworkWhitelist();
             StartServer(_dnsHostConfigOptionsMonitor.CurrentValue.ListenerPort);
         }
 
@@ -53,8 +60,27 @@ namespace DnsProxy.Dns
             ((IDisposable) _server)?.Dispose();
         }
 
+        [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "<Pending>")]
+        [SuppressMessage("Globalization", "CA1305:Specify IFormatProvider", Justification = "<Pending>")]
+        private void CreateNetworkWhitelist()
+        {
+            NetworkWhitelist.Clear();
+            foreach (var network in _dnsHostConfigOptionsMonitor.CurrentValue.NetworkWhitelist)
+            {
+                var items = network.Split('/');
+                if (items.Length != 2)
+                    throw new ArgumentOutOfRangeException(
+                        nameof(_dnsHostConfigOptionsMonitor.CurrentValue.NetworkWhitelist),
+                        _dnsHostConfigOptionsMonitor.CurrentValue.NetworkWhitelist, null);
+                var ip = IPAddress.Parse(items[0]);
+                var mask = int.Parse(items[1]);
+                NetworkWhitelist.Add(ip, mask);
+            }
+        }
+
         private void DnsHostConfigListener(DnsHostConfig dnsHostConfig, string arg)
         {
+            CreateNetworkWhitelist();
             StopServer();
             StartServer(dnsHostConfig.ListenerPort);
         }
@@ -103,8 +129,15 @@ namespace DnsProxy.Dns
 
         private async Task OnClientConnected(object sender, ClientConnectedEventArgs e)
         {
-            if (!IPAddress.IsLoopback(e.RemoteEndpoint.Address))
+            if (!_dnsHostConfigOptionsMonitor.CurrentValue.NetworkWhitelist.Any()
+                && !IPAddress.IsLoopback(e.RemoteEndpoint.Address))
                 e.RefuseConnect = true;
+
+            if (_dnsHostConfigOptionsMonitor.CurrentValue.NetworkWhitelist.Any())
+                if (NetworkWhitelist.All(pair =>
+                    !pair.Key.GetNetworkAddress(pair.Value)
+                        .Equals(e.RemoteEndpoint.Address.GetNetworkAddress(pair.Value))))
+                    e.RefuseConnect = true;
 
             await Task.CompletedTask.ConfigureAwait(false);
         }
