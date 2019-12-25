@@ -14,14 +14,21 @@
 //    limitations under the License.
 #endregion
 
+using System.Runtime.Serialization;
+
 namespace DnsProxy.Models
 {
     internal enum Strategies : int
     {
+        [EnumMember(Value = nameof(Strategies.Hosts))]
         Hosts = 0,
+        [EnumMember(Value = nameof(Strategies.NameServer))]
         NameServer = 1,
+        [EnumMember(Value = nameof(Strategies.Dns))]
         Dns = 2,
+        [EnumMember(Value = nameof(Strategies.DoH))]
         DoH = 3,
+        [EnumMember(Value = nameof(Strategies.Multicast))]
         Multicast = 4
     }
 }

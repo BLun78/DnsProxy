@@ -19,6 +19,7 @@ using System.Collections.Generic;
 
 namespace DnsProxy.Models
 {
+#pragma warning disable CA2227 // Collection properties should be read only
     internal class RulesConfig : ICloneable
     {
         public List<Rule> Rules { get; set; }
@@ -28,4 +29,5 @@ namespace DnsProxy.Models
             return this.MemberwiseClone();
         }
     }
+#pragma warning restore CA2227 // Collection properties should be read only
 }

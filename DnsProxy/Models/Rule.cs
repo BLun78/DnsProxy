@@ -15,6 +15,7 @@
 #endregion
 
 using System.Text.RegularExpressions;
+using System.Text.Json.Serialization;
 
 namespace DnsProxy.Models
 {
@@ -24,7 +25,6 @@ namespace DnsProxy.Models
         public string DomainNamePattern { get; set; }
         public string NameServer { get; set; }
         public string IpAddress { get; set; }
-
         public Strategies Strategy { get; set; }
         public bool IsEnabled { get; set; }
         public bool CompressionMutation { get; set; }
