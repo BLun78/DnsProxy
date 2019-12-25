@@ -14,9 +14,8 @@
 //    limitations under the License.
 #endregion
 
-using DnsProxy.Dns;
-using DnsProxy.Dns.Strategies;
 using DnsProxy.Models;
+using DnsProxy.Strategies;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -50,6 +49,7 @@ namespace DnsProxy.Common
             services.AddSingleton<DnsProxy.Dns.DnsServer>();
 
             // Stratgies
+            services.AddSingleton<StrategyManager>();
             services.AddTransient<IDnsResolverStrategy, DohResolverStrategy>();
             services.AddTransient<IDnsResolverStrategy, DnsResolverStrategy>();
             services.AddSingleton<IDnsResolverStrategy, InternalNameServerResolverStrategy>();
@@ -63,7 +63,9 @@ namespace DnsProxy.Common
 
             // .net core frameworks
             services.AddOptions();
-            services.Configure<HostsConfig>(_configuration.GetSection("HostsConfig"));
+            services.Configure<HostsConfig>(_configuration.GetSection(nameof(HostsConfig)));
+            services.Configure<DnsHostConfig>(_configuration.GetSection(nameof(DnsHostConfig)));
+            services.Configure<RulesConfig>(_configuration.GetSection(nameof(RulesConfig)));
 
             services.AddLogging(builder =>
             {

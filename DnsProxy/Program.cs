@@ -15,6 +15,7 @@
 #endregion
 
 using DnsProxy.Common;
+using DnsProxy.Dns;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -43,7 +44,7 @@ namespace DnsProxy
             }
         }
         private static string _title;
-
+        private static DnsServer _dnsServer;
 
         static async Task<int> Main(string[] args)
         {
@@ -53,9 +54,7 @@ namespace DnsProxy
                 Title = ApplicationInformation.DefaultTitle;
                 ApplicationInformation.LogAssemblyInformation();
                 Logger.LogInformation("starts up {DefaultTitle}", ApplicationInformation.DefaultTitle);
-                var dnsServer = ServiceProvider.GetService<DnsProxy.Dns.DnsServer>();
-
-                dnsServer.StartServer();
+                _dnsServer = ServiceProvider.GetService<DnsProxy.Dns.DnsServer>();
 
                 return await WaitForEndAsync().ConfigureAwait(true);
             }
@@ -99,6 +98,7 @@ namespace DnsProxy
                             break;
                     }
                 }
+                _dnsServer.StopServer();
                 return 0;
             });
         }

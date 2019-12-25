@@ -14,13 +14,14 @@
 //    limitations under the License.
 #endregion
 
+using ARSoft.Tools.Net.Dns;
+using DnsProxy.Common;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ARSoft.Tools.Net.Dns;
 
-namespace DnsProxy.Dns.Strategies
+namespace DnsProxy.Strategies
 {
     internal abstract class BaseResolverStrategy : IDisposable, IOrder, IDnsResolverStrategy
     {

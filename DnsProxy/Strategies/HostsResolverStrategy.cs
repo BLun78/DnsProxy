@@ -26,7 +26,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DnsProxy.Dns.Strategies
+namespace DnsProxy.Strategies
 {
     internal class HostsResolverStrategy : BaseResolverStrategy, IDnsResolverStrategy
     {

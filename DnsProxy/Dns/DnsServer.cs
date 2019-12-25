@@ -15,14 +15,14 @@
 #endregion
 
 using ARSoft.Tools.Net.Dns;
+using DnsProxy.Models;
+using DnsProxy.Strategies;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using DnsProxy.Models;
-using Microsoft.Extensions.Options;
 
 namespace DnsProxy.Dns
 {
@@ -30,15 +30,31 @@ namespace DnsProxy.Dns
     {
         private const int DefaultDnsPort = 53;
         private readonly ILogger<DnsServer> _logger;
-        private readonly IOptionsMonitor<RulesConfig> _rulesConfigOptionsMonitor;
+        private readonly IOptionsMonitor<DnsHostConfig> _dnsHostConfigOptionsMonitor;
+        private readonly StrategyManager _strategyManager;
 
         private ARSoft.Tools.Net.Dns.DnsServer _server;
 
         public DnsServer(ILogger<DnsServer> logger,
-            IOptionsMonitor<RulesConfig> rulesConfigOptionsMonitor)
+            IOptionsMonitor<DnsHostConfig> dnsHostConfigOptionsMonitor,
+            StrategyManager strategyManager)
         {
             _logger = logger;
-            _rulesConfigOptionsMonitor = rulesConfigOptionsMonitor;
+            _dnsHostConfigOptionsMonitor = dnsHostConfigOptionsMonitor;
+            _strategyManager = strategyManager;
+            _dnsHostConfigOptionsMonitor.OnChange(DnsHostConfigListener);
+            StartServer(_dnsHostConfigOptionsMonitor.CurrentValue.ListenerPort);
+        }
+
+        private void DnsHostConfigListener(DnsHostConfig dnsHostConfig, string arg)
+        {
+            StopServer();
+            StartServer(dnsHostConfig.ListenerPort);
+        }
+
+        public void Dispose()
+        {
+            ((IDisposable)_server)?.Dispose();
         }
 
         public void StartServer(int? listnerPort = null)
@@ -52,19 +68,17 @@ namespace DnsProxy.Dns
             _server.Start();
         }
 
+        public void StopServer()
+        {
+            _server.Stop();
+        }
+
         private async Task<DnsMessage> DoQuery(DnsMessage dnsMessage)
         {
-            using (var logger = _logger.BeginScope("OnQueryReceived")) ;
-
-            foreach (var strategy in _dnsResolverStrategies)
-            {
-                DnsMessage upstreamResponse = await strategy.Value.ResolveAsync(dnsMessage).ConfigureAwait(false);
-                if (upstreamResponse?.AnswerRecords != null
-                    && upstreamResponse.AnswerRecords.Any())
-                {
-                    return upstreamResponse;
-                }
-            }
+            DnsMessage upstreamResponse = await _strategyManager.ResolveAsync(dnsMessage).ConfigureAwait(false);
+            if (upstreamResponse?.AnswerRecords != null
+                && upstreamResponse.AnswerRecords.Any())
+                return upstreamResponse;
 
             return await Task.FromResult((DnsMessage)null).ConfigureAwait(false);
         }
@@ -74,13 +88,14 @@ namespace DnsProxy.Dns
             if (e.Query is DnsMessage message
                 && message.Questions.Count == 1)
             {
-                DnsMessage upstreamResponse = await DoQuery(message).ConfigureAwait(false);
+                var upstreamResponse = await DoQuery(message).ConfigureAwait(false);
                 if (upstreamResponse != null)
                 {
                     upstreamResponse.ReturnCode = ReturnCode.NoError;
                     e.Response = upstreamResponse;
                 }
             }
+
             await Task.CompletedTask.ConfigureAwait(false);
         }
 
@@ -90,11 +105,6 @@ namespace DnsProxy.Dns
                 e.RefuseConnect = true;
 
             await Task.CompletedTask.ConfigureAwait(false);
-        }
-
-        public void Dispose()
-        {
-            ((IDisposable)_server)?.Dispose();
         }
     }
 }

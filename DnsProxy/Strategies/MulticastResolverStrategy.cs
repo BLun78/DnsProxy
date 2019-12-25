@@ -15,42 +15,54 @@
 #endregion
 
 using ARSoft.Tools.Net.Dns;
+using DnsProxy.Common;
+using Makaretu.Dns;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DnsProxy.Dns.Strategies
+namespace DnsProxy.Strategies
 {
-    internal class DnsResolverStrategy : BaseResolverStrategy, IDnsResolverStrategy
+    internal class MulticastResolverStrategy : BaseResolverStrategy, IDnsResolverStrategy
     {
-        private readonly IDnsResolver DnsClient;
 
-        public DnsResolverStrategy(ILogger<DnsResolverStrategy> logger) : base(logger)
+        public MulticastResolverStrategy(ILogger<DnsResolverStrategy> logger) : base(logger)
         {
-            DnsClient = new RecursiveDnsResolver();
-            Order = 2000;
+            Order = 5000;
         }
 
         public override async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default)
         {
-            var result = new List<DnsRecordBase>();
             var message = dnsMessage.CreateResponseInstance();
 
             foreach (DnsQuestion dnsQuestion in dnsMessage.Questions)
             {
-                var response = await DnsClient.ResolveAsync<DnsRecordBase>(dnsQuestion.Name, dnsQuestion.RecordType, dnsQuestion.RecordClass, cancellationToken)
-                    .ConfigureAwait(false);
-                result.AddRange(response);
+                var query = new Message();
+                query.Questions.Add(new Question
+                {
+                    Name = dnsQuestion.Name.ToString(),
+                    Type = DnsType.ANY
+                });
+                var cancellation = new CancellationTokenSource(3000);
+
+                using (var mdns = new MulticastService())
+                {
+                    mdns.Start();
+                    var response = await mdns.ResolveAsync(query, cancellation.Token).ConfigureAwait(false);
+
+                    foreach (ResourceRecord answer in response.Answers)
+                    {
+                        message.AnswerRecords.Add(answer.ToDnsRecord());
+                    }
+                }
             }
 
-            message.AnswerRecords.AddRange(result);
             return message;
         }
 
         public override Models.Strategies GetStrategy()
         {
-            return Models.Strategies.Dns;
+            return Models.Strategies.Multicast;
         }
     }
 }

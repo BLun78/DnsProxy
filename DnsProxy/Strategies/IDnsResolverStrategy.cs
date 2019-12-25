@@ -1,5 +1,4 @@
 ﻿#region Apache License-2.0
-
 // Copyright 2019 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,13 +12,19 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
-
 #endregion
 
-namespace DnsProxy.Dns
+using ARSoft.Tools.Net.Dns;
+using DnsProxy.Common;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace DnsProxy.Strategies
 {
-    internal interface IOrder
+    internal interface IDnsResolverStrategy : IDisposable, IOrder
     {
-        int Order { get; }
+        Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default);
+        Models.Strategies GetStrategy();
     }
 }
