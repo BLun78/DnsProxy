@@ -42,7 +42,7 @@ namespace DnsProxy.Strategies
 
         #region IDisposable Support
 
-        private bool disposedValue; // To detect redundant calls
+        protected bool disposedValue; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {

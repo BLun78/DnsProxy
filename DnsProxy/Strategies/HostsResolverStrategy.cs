@@ -36,6 +36,7 @@ namespace DnsProxy.Strategies
         private readonly ILogger<DnsResolverStrategy> _logger;
         private readonly IMemoryCache _memoryCache;
         private HostsConfig _hostConfigCache;
+        private readonly IDisposable _parseHostConfig;
 
         public HostsResolverStrategy(ILogger<DnsResolverStrategy> logger,
             IMemoryCache memoryCache,
@@ -46,7 +47,7 @@ namespace DnsProxy.Strategies
             _memoryCache = memoryCache;
             _hostConfigOptionsMonitor = hostConfigOptionsMonitor;
             ParseHostConfig(_hostConfigOptionsMonitor.CurrentValue);
-            _hostConfigOptionsMonitor.OnChange(ParseHostConfig);
+            _parseHostConfig = _hostConfigOptionsMonitor.OnChange(ParseHostConfig);
             Order = 0;
         }
 
@@ -74,6 +75,14 @@ namespace DnsProxy.Strategies
         public override Models.Strategies GetStrategy()
         {
             return Models.Strategies.Hosts;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+                if (disposing)
+                    _parseHostConfig?.Dispose();
+            base.Dispose(disposing);
         }
 
         private void ParseHostConfig(HostsConfig hostConfig, string listener = "")

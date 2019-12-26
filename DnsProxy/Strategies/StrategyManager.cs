@@ -26,11 +26,13 @@ using Microsoft.Extensions.Options;
 
 namespace DnsProxy.Strategies
 {
-    internal class StrategyManager
+    internal class StrategyManager : IDisposable
     {
         private readonly IOptionsMonitor<DnsDefaultServer> _dnsDefaultServerOptionsMonitor;
+        private readonly IDisposable _dnsDefaultServerListener;
         private readonly ILogger<StrategyManager> _logger;
         private readonly IOptionsMonitor<RulesConfig> _rulesConfigOptionsMonitor;
+        private readonly IDisposable _rulesConfigListner;
         private readonly IServiceProvider _serviceProvider;
 
         public StrategyManager(ILogger<StrategyManager> logger,
@@ -41,12 +43,29 @@ namespace DnsProxy.Strategies
             _logger = logger;
             _serviceProvider = serviceProvider;
             _rulesConfigOptionsMonitor = rulesConfigOptionsMonitor;
+            _rulesConfigListner =_rulesConfigOptionsMonitor.OnChange(RulesConfigListener);
             _dnsDefaultServerOptionsMonitor = dnsDefaultServerOptionsMonitor;
+            _dnsDefaultServerListener = _dnsDefaultServerOptionsMonitor.OnChange(DnsDefaultServerListener);
+        }
+
+        private void RulesConfigListener(RulesConfig rulesConfig, string name)
+        {
+
+        }
+        private void DnsDefaultServerListener(DnsDefaultServer dnsDefaultServer, string name)
+        {
+
         }
 
         public Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            _rulesConfigListner?.Dispose();
+            _dnsDefaultServerListener?.Dispose();
         }
     }
 }

@@ -16,5 +16,12 @@
       "CompressionMutation": true,
       "QueryTimeout": 500
     }
+  },
+  "HttpProxyConfig": {
+    "Uri": "",
+    "AuthenticationType": "",
+    "User": "",
+    "Password": "",
+    "SecretManagerId": ""
   }
 }

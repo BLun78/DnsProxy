@@ -29,15 +29,16 @@ namespace DnsProxy.Strategies
     internal class InternalNameServerResolverStrategy : BaseResolverStrategy, IDnsResolverStrategy
     {
         private readonly IOptionsMonitor<NameServerOptions> _nameServerOptions;
+        private readonly IDisposable _nameServerOptionsListener;
         private NameServer _resolver;
 
         public InternalNameServerResolverStrategy(ILogger<DnsResolverStrategy> logger,
             IOptionsMonitor<NameServerOptions> nameServerOptions) : base(logger)
         {
             _nameServerOptions = nameServerOptions;
-            _nameServerOptions.OnChange(OptionsListener);
-            var catalog = new Catalog();
+            _nameServerOptionsListener = _nameServerOptions.OnChange(NameServerOptionsListener);
 
+            var catalog = new Catalog();
             catalog.IncludeRootHints();
             _resolver = new NameServer {Catalog = catalog};
             Order = 100;
@@ -54,7 +55,15 @@ namespace DnsProxy.Strategies
             return Models.Strategies.InternalNameServer;
         }
 
-        private void OptionsListener(NameServerOptions nameServerOptions, string arg2)
+        protected override void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+                if (disposing)
+                    _nameServerOptionsListener?.Dispose();
+            base.Dispose(disposing);
+        }
+
+        private void NameServerOptionsListener(NameServerOptions nameServerOptions, string arg2)
         {
             throw new NotImplementedException();
         }

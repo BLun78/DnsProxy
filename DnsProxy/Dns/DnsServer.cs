@@ -37,7 +37,7 @@ namespace DnsProxy.Dns
         private readonly IOptionsMonitor<DnsHostConfig> _dnsHostConfigOptionsMonitor;
         private readonly ILogger<DnsServer> _logger;
         private readonly StrategyManager _strategyManager;
-
+        private readonly IDisposable _dnsHostConfigListener;
         private readonly IDictionary<IPAddress, int> NetworkWhitelist;
 
         private ARSoft.Tools.Net.Dns.DnsServer _server;
@@ -50,13 +50,14 @@ namespace DnsProxy.Dns
             _logger = logger;
             _dnsHostConfigOptionsMonitor = dnsHostConfigOptionsMonitor;
             _strategyManager = strategyManager;
-            _dnsHostConfigOptionsMonitor.OnChange(DnsHostConfigListener);
+            _dnsHostConfigListener = _dnsHostConfigOptionsMonitor.OnChange(DnsHostConfigListener);
             CreateNetworkWhitelist();
             StartServer(_dnsHostConfigOptionsMonitor.CurrentValue.ListenerPort);
         }
 
         public void Dispose()
         {
+            _dnsHostConfigListener?.Dispose();
             ((IDisposable) _server)?.Dispose();
         }
 
