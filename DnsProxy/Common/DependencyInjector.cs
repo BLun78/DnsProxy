@@ -72,6 +72,7 @@ namespace DnsProxy.Common
             services.Configure<RulesConfig>(_configuration.GetSection(nameof(RulesConfig)));
             services.Configure<DnsDefaultServer>(_configuration.GetSection(nameof(DnsDefaultServer)));
             services.Configure<HttpProxyConfig>(_configuration.GetSection(nameof(HttpProxyConfig)));
+            services.Configure<InternalNameServerConfig>(_configuration.GetSection(nameof(InternalNameServerConfig)));
 
             services.AddLogging(builder =>
             {

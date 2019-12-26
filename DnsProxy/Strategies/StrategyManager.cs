@@ -29,7 +29,11 @@ namespace DnsProxy.Strategies
     internal class StrategyManager : IDisposable
     {
         private readonly IOptionsMonitor<DnsDefaultServer> _dnsDefaultServerOptionsMonitor;
+        private readonly IOptionsMonitor<HostsConfig> _hostsConfigOptionsMonitor;
+        private readonly IOptionsMonitor<InternalNameServerConfig> _internalNameServerConfigOptionsMonitor;
         private readonly IDisposable _dnsDefaultServerListener;
+        private readonly IDisposable _hostsConfigListener;
+        private readonly IDisposable _internalNameServerConfigListener;
         private readonly ILogger<StrategyManager> _logger;
         private readonly IOptionsMonitor<RulesConfig> _rulesConfigOptionsMonitor;
         private readonly IDisposable _rulesConfigListner;
@@ -38,14 +42,30 @@ namespace DnsProxy.Strategies
         public StrategyManager(ILogger<StrategyManager> logger,
             IServiceProvider serviceProvider,
             IOptionsMonitor<RulesConfig> rulesConfigOptionsMonitor,
-            IOptionsMonitor<DnsDefaultServer> dnsDefaultServerOptionsMonitor)
+            IOptionsMonitor<DnsDefaultServer> dnsDefaultServerOptionsMonitor,
+            IOptionsMonitor<HostsConfig> hostsConfigOptionsMonitor,
+            IOptionsMonitor<InternalNameServerConfig> internalNameServerConfigOptionsMonitor)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
+
             _rulesConfigOptionsMonitor = rulesConfigOptionsMonitor;
-            _rulesConfigListner =_rulesConfigOptionsMonitor.OnChange(RulesConfigListener);
             _dnsDefaultServerOptionsMonitor = dnsDefaultServerOptionsMonitor;
+            _hostsConfigOptionsMonitor = hostsConfigOptionsMonitor;
+            _internalNameServerConfigOptionsMonitor = internalNameServerConfigOptionsMonitor;
+            _rulesConfigListner = _rulesConfigOptionsMonitor.OnChange(RulesConfigListener);
             _dnsDefaultServerListener = _dnsDefaultServerOptionsMonitor.OnChange(DnsDefaultServerListener);
+            _hostsConfigListener = _hostsConfigOptionsMonitor.OnChange(HostsConfigListener);
+            _internalNameServerConfigListener = _internalNameServerConfigOptionsMonitor.OnChange(InternalNameServerConfigListener);
+        }
+
+        private void InternalNameServerConfigListener(InternalNameServerConfig internalNameServerConfig, string name)
+        {
+        }
+
+        private void HostsConfigListener(HostsConfig hostsConfig, string name)
+        {
+            
         }
 
         private void RulesConfigListener(RulesConfig rulesConfig, string name)
@@ -57,6 +77,7 @@ namespace DnsProxy.Strategies
 
         }
 
+
         public Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
@@ -66,6 +87,8 @@ namespace DnsProxy.Strategies
         {
             _rulesConfigListner?.Dispose();
             _dnsDefaultServerListener?.Dispose();
+            _hostsConfigListener?.Dispose();
+            _internalNameServerConfigListener?.Dispose();
         }
     }
 }
