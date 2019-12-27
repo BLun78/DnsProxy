@@ -20,19 +20,20 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
+using DnsProxy.Models.Rules;
 using Makaretu.Dns.Resolving;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace DnsProxy.Strategies
 {
-    internal class InternalNameServerResolverStrategy : BaseResolverStrategy, IDnsResolverStrategy
+    internal class InternalNameServerResolverStrategy : BaseResolverStrategy<InternalNameServerRule>, IDnsResolverStrategy<InternalNameServerRule>
     {
         private readonly IOptionsMonitor<NameServerOptions> _nameServerOptions;
         private readonly IDisposable _nameServerOptionsListener;
         private NameServer _resolver;
 
-        public InternalNameServerResolverStrategy(ILogger<DnsResolverStrategy> logger,
+        public InternalNameServerResolverStrategy(ILogger<InternalNameServerResolverStrategy> logger,
             IOptionsMonitor<NameServerOptions> nameServerOptions) : base(logger)
         {
             _nameServerOptions = nameServerOptions;
@@ -45,7 +46,7 @@ namespace DnsProxy.Strategies
         }
 
         public override Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -53,6 +54,11 @@ namespace DnsProxy.Strategies
         public override Models.Strategies GetStrategy()
         {
             return Models.Strategies.InternalNameServer;
+        }
+
+        public override void OnRuleChanged()
+        {
+            throw new NotImplementedException();
         }
 
         protected override void Dispose(bool disposing)

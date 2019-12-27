@@ -17,6 +17,7 @@
 #endregion
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using DnsProxy.Common;
 using DnsProxy.Dns;
@@ -31,6 +32,7 @@ namespace DnsProxy
         private static string _title;
         private static DnsServer _dnsServer;
         internal static ApplicationInformation ApplicationInformation { get; private set; }
+        internal static CancellationTokenSource CancellationTokenSource { get; private set; }
         internal static Configuration Configuration { get; private set; }
         internal static DependencyInjector DependencyInjector { get; private set; }
         internal static IServiceProvider ServiceProvider => DependencyInjector.ServiceProvider;
@@ -74,8 +76,9 @@ namespace DnsProxy
 
         private static void Setup(string[] args)
         {
+            CancellationTokenSource = new CancellationTokenSource();
             Configuration = new Configuration(args);
-            DependencyInjector = new DependencyInjector(Configuration.ConfigurationRoot);
+            DependencyInjector = new DependencyInjector(Configuration.ConfigurationRoot, CancellationTokenSource);
 
             Logger = DependencyInjector.ServiceProvider.GetService<ILogger<Program>>();
             ApplicationInformation = DependencyInjector.ServiceProvider.GetService<ApplicationInformation>();
@@ -99,6 +102,8 @@ namespace DnsProxy
                 }
 
                 _dnsServer.StopServer();
+                CancellationTokenSource.Cancel();
+                CancellationTokenSource.Dispose();
                 return 0;
             });
         }

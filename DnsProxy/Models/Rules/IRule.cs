@@ -18,7 +18,7 @@
 
 namespace DnsProxy.Models.Rules
 {
-    internal interface IRule
+    internal interface IRule : IRuleStrategy
     {
         Strategies Strategy { get; }
         bool IsEnabled { get; }

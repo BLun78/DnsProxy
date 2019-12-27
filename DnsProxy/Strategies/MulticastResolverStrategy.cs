@@ -20,20 +20,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common;
+using DnsProxy.Models.Rules;
 using Makaretu.Dns;
 using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Strategies
 {
-    internal class MulticastResolverStrategy : BaseResolverStrategy, IDnsResolverStrategy
+    internal class MulticastResolverStrategy : BaseResolverStrategy<MulticastRule>, IDnsResolverStrategy<MulticastRule>
     {
-        public MulticastResolverStrategy(ILogger<DnsResolverStrategy> logger) : base(logger)
+        public MulticastResolverStrategy(ILogger<MulticastResolverStrategy> logger) : base(logger)
         {
             Order = 5000;
         }
 
         public override async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken)
         {
             var message = dnsMessage.CreateResponseInstance();
 
@@ -62,6 +63,11 @@ namespace DnsProxy.Strategies
         public override Models.Strategies GetStrategy()
         {
             return Models.Strategies.Multicast;
+        }
+
+        public override void OnRuleChanged()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

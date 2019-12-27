@@ -16,12 +16,20 @@
 
 #endregion
 
+using System;
+using DnsProxy.Strategies;
+
 namespace DnsProxy.Models.Rules
 {
-    internal class InternalNameServerRule : RuleBase, IRule
+    internal class InternalNameServerRule : RuleBase, IRule, IRuleStrategy
     {
         public InternalNameServerRule(Rule rule) : base(rule)
         {
+        }
+
+        public override Type GetStraegy()
+        {
+            return typeof(InternalNameServerResolverStrategy);
         }
     }
 }

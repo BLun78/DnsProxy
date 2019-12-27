@@ -18,10 +18,11 @@
 
 using System;
 using System.Collections.Generic;
+using DnsProxy.Strategies;
 
 namespace DnsProxy.Models.Rules
 {
-    internal class DohRule : RuleBase, IRule
+    internal class DohRule : RuleBase, IRule, IRuleStrategy
     {
         public DohRule(Rule rule) : base(rule)
         {
@@ -29,5 +30,9 @@ namespace DnsProxy.Models.Rules
         }
 
         public List<Uri> NameServerUri { get; set; }
+        public override Type GetStraegy()
+        {
+            return typeof(DohResolverStrategy);
+        }
     }
 }

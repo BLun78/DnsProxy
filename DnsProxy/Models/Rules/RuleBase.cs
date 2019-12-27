@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace DnsProxy.Models.Rules
 {
-    internal abstract class RuleBase : IRule
+    internal abstract class RuleBase : IRule, IRuleStrategy
     {
         private readonly IRule _rule;
 
@@ -24,6 +24,8 @@ namespace DnsProxy.Models.Rules
         ///     Query timeout in milliseconds
         /// </summary>
         public int QueryTimeout => _rule.QueryTimeout;
+
+        public abstract Type GetStraegy();
 
         public Regex GetDomainNameRegex()
         {

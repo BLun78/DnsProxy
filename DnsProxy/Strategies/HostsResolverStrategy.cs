@@ -24,26 +24,25 @@ using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common;
 using DnsProxy.Models;
+using DnsProxy.Models.Rules;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace DnsProxy.Strategies
 {
-    internal class HostsResolverStrategy : BaseResolverStrategy, IDnsResolverStrategy
+    internal class HostsResolverStrategy : BaseResolverStrategy<HostsRule>, IDnsResolverStrategy<HostsRule>
     {
         private readonly IOptionsMonitor<HostsConfig> _hostConfigOptionsMonitor;
-        private readonly ILogger<DnsResolverStrategy> _logger;
         private readonly IMemoryCache _memoryCache;
         private HostsConfig _hostConfigCache;
         private readonly IDisposable _parseHostConfig;
 
-        public HostsResolverStrategy(ILogger<DnsResolverStrategy> logger,
+        public HostsResolverStrategy(ILogger<HostsResolverStrategy> logger,
             IMemoryCache memoryCache,
             IOptionsMonitor<HostsConfig> hostConfigOptionsMonitor) : base(logger)
         {
             CacheCancellationToken = new CancellationToken();
-            _logger = logger;
             _memoryCache = memoryCache;
             _hostConfigOptionsMonitor = hostConfigOptionsMonitor;
             ParseHostConfig(_hostConfigOptionsMonitor.CurrentValue);
@@ -54,7 +53,7 @@ namespace DnsProxy.Strategies
         internal static CancellationToken CacheCancellationToken { get; private set; }
 
         public override Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken)
         {
             var message = dnsMessage.CreateResponseInstance();
 
@@ -77,6 +76,11 @@ namespace DnsProxy.Strategies
             return Models.Strategies.Hosts;
         }
 
+        public override void OnRuleChanged()
+        {
+            throw new NotImplementedException();
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -87,7 +91,7 @@ namespace DnsProxy.Strategies
 
         private void ParseHostConfig(HostsConfig hostConfig, string listener = "")
         {
-            _logger.LogInformation("listner={listner}", listener);
+            Logger.LogInformation("listner={listner}", listener);
 
             if (_hostConfigCache != null)
                 foreach (var host in _hostConfigCache.Hosts)
@@ -96,7 +100,7 @@ namespace DnsProxy.Strategies
                     foreach (var domainName in host.DomainNames) _memoryCache.Remove(domainName);
                 }
 
-            _hostConfigCache = (HostsConfig) hostConfig.Clone();
+            _hostConfigCache = (HostsConfig)hostConfig.Clone();
 
             if (_hostConfigCache != null)
                 foreach (var host in _hostConfigCache.Hosts)

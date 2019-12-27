@@ -59,5 +59,10 @@ namespace DnsProxy.Models
                     throw new ArgumentOutOfRangeException(nameof(Strategy), Strategy, null);
             }
         }
+
+        public Type GetStraegy()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

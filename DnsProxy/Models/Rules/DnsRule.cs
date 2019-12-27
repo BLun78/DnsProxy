@@ -16,12 +16,14 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Net;
+using DnsProxy.Strategies;
 
 namespace DnsProxy.Models.Rules
 {
-    internal class DnsRule : RuleBase, IRule
+    internal class DnsRule : RuleBase, IRule, IRuleStrategy
     {
         public DnsRule(Rule rule) : base(rule)
         {
@@ -31,5 +33,9 @@ namespace DnsProxy.Models.Rules
 
         public List<IPAddress> NameServerIpAddresses { get; set; }
         public bool CompressionMutation { get; set; }
+        public override Type GetStraegy()
+        {
+            return typeof(DnsResolverStrategy);
+        }
     }
 }

@@ -57,6 +57,7 @@ namespace DnsProxy.Strategies
             _dnsDefaultServerListener = _dnsDefaultServerOptionsMonitor.OnChange(DnsDefaultServerListener);
             _hostsConfigListener = _hostsConfigOptionsMonitor.OnChange(HostsConfigListener);
             _internalNameServerConfigListener = _internalNameServerConfigOptionsMonitor.OnChange(InternalNameServerConfigListener);
+            CreateOrReplaceDefaultDnsResolver(_dnsDefaultServerOptionsMonitor.CurrentValue);
         }
 
         private void InternalNameServerConfigListener(InternalNameServerConfig internalNameServerConfig, string name)
@@ -74,11 +75,17 @@ namespace DnsProxy.Strategies
         }
         private void DnsDefaultServerListener(DnsDefaultServer dnsDefaultServer, string name)
         {
-
+            CreateOrReplaceDefaultDnsResolver(dnsDefaultServer);
         }
 
+        private void CreateOrReplaceDefaultDnsResolver(DnsDefaultServer dnsDefaultServer)
+        {
+            var rule = dnsDefaultServer.Servers.GetInternalRule();
+            IDnsResolverStrategy strategy = (IDnsResolverStrategy)_serviceProvider.GetService(rule.GetStraegy());
+            strategy.SetRule(rule);
+        }   
 
-        public Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default)
+        public Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

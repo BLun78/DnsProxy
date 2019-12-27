@@ -21,19 +21,20 @@ using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common;
+using DnsProxy.Models.Rules;
 using Makaretu.Dns;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Strategies
 {
-    internal class DohResolverStrategy : BaseResolverStrategy, IDnsResolverStrategy
+    internal class DohResolverStrategy : BaseResolverStrategy<DohRule>, IDnsResolverStrategy<DohRule>
     {
         private readonly DohClient _dohClient;
         private readonly IMemoryCache _memoryCache;
 
         public DohResolverStrategy(
-            ILogger<DnsResolverStrategy> logger,
+            ILogger<DohResolverStrategy> logger,
             IMemoryCache memoryCache,
             IHttpClientFactory httpClientFactory) : base(logger)
         {
@@ -44,8 +45,7 @@ namespace DnsProxy.Strategies
             Order = 1000;
         }
 
-        public override async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage,
-            CancellationToken cancellationToken = default)
+        public override async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken)
         {
             var resultMessage = dnsMessage.CreateResponseInstance();
             var requestMessage = new Message();
@@ -76,6 +76,11 @@ namespace DnsProxy.Strategies
         public override Models.Strategies GetStrategy()
         {
             return Models.Strategies.DoH;
+        }
+
+        public override void OnRuleChanged()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

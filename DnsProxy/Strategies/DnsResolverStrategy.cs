@@ -20,11 +20,12 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
+using DnsProxy.Models.Rules;
 using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Strategies
 {
-    internal class DnsResolverStrategy : BaseResolverStrategy, IDnsResolverStrategy
+    internal class DnsResolverStrategy : BaseResolverStrategy<DnsRule>, IDnsResolverStrategy<DnsRule>
     {
         private readonly IDnsResolver DnsClient;
 
@@ -34,27 +35,33 @@ namespace DnsProxy.Strategies
             Order = 2000;
         }
 
-        public override async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage,
-            CancellationToken cancellationToken = default)
+        public override async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken)
         {
             var result = new List<DnsRecordBase>();
             var message = dnsMessage.CreateResponseInstance();
-
+            
             foreach (var dnsQuestion in dnsMessage.Questions)
             {
                 var response = await DnsClient.ResolveAsync<DnsRecordBase>(dnsQuestion.Name, dnsQuestion.RecordType,
-                        dnsQuestion.RecordClass, cancellationToken)
+                        dnsQuestion.RecordClass, CreateCancellationToken(cancellationToken))
                     .ConfigureAwait(false);
                 result.AddRange(response);
             }
 
             message.AnswerRecords.AddRange(result);
+            
+            DisposeCancellationToken();
             return message;
         }
 
         public override Models.Strategies GetStrategy()
         {
             return Models.Strategies.Dns;
+        }
+
+        public override void OnRuleChanged()
+        {
+            
         }
     }
 }

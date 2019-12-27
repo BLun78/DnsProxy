@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net;
 using ARSoft.Tools.Net.Dns;
@@ -37,6 +38,7 @@ namespace DnsProxy.Dns
         private readonly IOptionsMonitor<DnsHostConfig> _dnsHostConfigOptionsMonitor;
         private readonly ILogger<DnsServer> _logger;
         private readonly StrategyManager _strategyManager;
+        private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly IDisposable _dnsHostConfigListener;
         private readonly IDictionary<IPAddress, int> NetworkWhitelist;
 
@@ -44,12 +46,14 @@ namespace DnsProxy.Dns
 
         public DnsServer(ILogger<DnsServer> logger,
             IOptionsMonitor<DnsHostConfig> dnsHostConfigOptionsMonitor,
-            StrategyManager strategyManager)
+            StrategyManager strategyManager,
+            CancellationTokenSource cancellationTokenSource)
         {
             NetworkWhitelist = new Dictionary<IPAddress, int>();
             _logger = logger;
             _dnsHostConfigOptionsMonitor = dnsHostConfigOptionsMonitor;
             _strategyManager = strategyManager;
+            _cancellationTokenSource = cancellationTokenSource;
             _dnsHostConfigListener = _dnsHostConfigOptionsMonitor.OnChange(DnsHostConfigListener);
             CreateNetworkWhitelist();
             StartServer(_dnsHostConfigOptionsMonitor.CurrentValue.ListenerPort);
@@ -58,7 +62,7 @@ namespace DnsProxy.Dns
         public void Dispose()
         {
             _dnsHostConfigListener?.Dispose();
-            ((IDisposable) _server)?.Dispose();
+            ((IDisposable)_server)?.Dispose();
         }
 
         [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "<Pending>")]
@@ -104,12 +108,12 @@ namespace DnsProxy.Dns
 
         private async Task<DnsMessage> DoQuery(DnsMessage dnsMessage)
         {
-            var upstreamResponse = await _strategyManager.ResolveAsync(dnsMessage).ConfigureAwait(false);
+            var upstreamResponse = await _strategyManager.ResolveAsync(dnsMessage, _cancellationTokenSource.Token).ConfigureAwait(false);
             if (upstreamResponse?.AnswerRecords != null
                 && upstreamResponse.AnswerRecords.Any())
                 return upstreamResponse;
 
-            return await Task.FromResult((DnsMessage) null).ConfigureAwait(false);
+            return await Task.FromResult((DnsMessage)null).ConfigureAwait(false);
         }
 
         private async Task OnQueryReceived(object sender, QueryReceivedEventArgs e)

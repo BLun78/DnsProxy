@@ -21,12 +21,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common;
+using DnsProxy.Models.Rules;
 
 namespace DnsProxy.Strategies
 {
     internal interface IDnsResolverStrategy : IDisposable, IOrder
     {
-        Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken = default);
+        Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken);
         Models.Strategies GetStrategy();
+        void OnRuleChanged();
+        void SetRule(IRule rule);
+    }
+
+    internal interface IDnsResolverStrategy<TRule> : IDnsResolverStrategy
+        where TRule : IRule
+    {
+        void SetRule(TRule rule);
     }
 }

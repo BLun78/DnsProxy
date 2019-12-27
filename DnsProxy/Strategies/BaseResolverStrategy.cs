@@ -21,15 +21,20 @@ using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common;
+using DnsProxy.Models.Rules;
 using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Strategies
 {
-    internal abstract class BaseResolverStrategy : IDisposable, IOrder, IDnsResolverStrategy
+    internal abstract class BaseResolverStrategy<TRule> : IDisposable, IOrder, IDnsResolverStrategy<TRule>, IDnsResolverStrategy
+        where TRule : IRule
     {
-        protected readonly ILogger<BaseResolverStrategy> Logger;
+        protected readonly ILogger<BaseResolverStrategy<TRule>> Logger;
+        private CancellationTokenSource _cts;
+        private CancellationTokenSource _timeoutCts;
+        protected TRule Rule;
 
-        protected BaseResolverStrategy(ILogger<BaseResolverStrategy> logger)
+        protected BaseResolverStrategy(ILogger<BaseResolverStrategy<TRule>> logger)
         {
             Logger = logger;
         }
@@ -38,7 +43,26 @@ namespace DnsProxy.Strategies
             CancellationToken cancellationToken = default);
 
         public abstract Models.Strategies GetStrategy();
+        public abstract void OnRuleChanged();
+        public void SetRule(IRule rule)
+        {
+            Rule = (TRule)rule;
+        }
+
         public int Order { get; protected set; }
+
+        protected CancellationToken CreateCancellationToken(CancellationToken cancellationToken)
+        {
+            _timeoutCts = new CancellationTokenSource(Rule.QueryTimeout);
+            _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _timeoutCts.Token);
+            return _cts.Token;
+        }
+
+        protected void DisposeCancellationToken()
+        {
+            _timeoutCts?.Dispose();
+            _cts?.Dispose();
+        }
 
         #region IDisposable Support
 
@@ -74,6 +98,36 @@ namespace DnsProxy.Strategies
             Dispose(true);
             // TODO: uncomment the following line if the finalizer is overridden above.
             // GC.SuppressFinalize(this);
+        }
+
+        void IDnsResolverStrategy<TRule>.SetRule(TRule rule)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<DnsMessage> IDnsResolverStrategy.ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        Models.Strategies IDnsResolverStrategy.GetStrategy()
+        {
+            throw new NotImplementedException();
+        }
+
+        void IDnsResolverStrategy.OnRuleChanged()
+        {
+            throw new NotImplementedException();
+        }
+
+        void IDnsResolverStrategy.SetRule(IRule rule)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IDisposable.Dispose()
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
