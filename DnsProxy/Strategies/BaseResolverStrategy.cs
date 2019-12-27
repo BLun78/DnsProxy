@@ -80,14 +80,15 @@ namespace DnsProxy.Strategies
             }
 
             var match = Regex.Match(dnsQuestion.Name.ToString(), pattern);
+            Logger.LogTrace("--> Pattern: {pattern} --> Question {Question}  ->> IsMatch=={match}", pattern, dnsQuestion.Name.ToString(), match.Success);
             return match.Success;
         }
 
         protected void LogDnsQuestion(DnsQuestion dnsQuestion)
         {
             var dnsContext = DnsContextAccessor.DnsContext;
-            Logger.LogDebug("ClientIpAddress: {0} requested {1} (#{2}, {3}).", dnsContext.IpEndPoint.Address, dnsQuestion.Name,
-                dnsContext.Request.TransactionID, dnsQuestion.RecordType);
+            Logger.LogInformation("ClientIpAddress: {0} requested {1} (#{2}, {3}).", dnsContext?.IpEndPoint?.Address, dnsQuestion.Name,
+                dnsContext?.Request?.TransactionID, dnsQuestion.RecordType);
         }
 
         #region IDisposable Support

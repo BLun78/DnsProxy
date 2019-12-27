@@ -2,13 +2,13 @@
   "RulesConfig": {
     "Rules": [
       {
-        "DomainNamePattern": "^(.*)\\.box$",
+        "DomainNamePattern": "(.*)\\.box",
         "Strategy": "Multicast",
         "IsEnabled": false,
         "QueryTimeout": 30000
       },
       {
-        "DomainNamePattern": "^(.*)\\.amazonaws\\.com$",
+        "DomainNamePattern": "(.*)\\.amazonaws.com.",
         "Strategy": "DoH",
         "NameServer": [
           "https://cloudflare-dns.com/dns-query"
@@ -17,7 +17,16 @@
         "QueryTimeout": 10000
       },
       {
-        "DomainNamePattern": "^(.*)\\.blun\\.de",
+        "DomainNamePattern": "(.*)\\.blun.de.",
+        "Strategy": "DoH",
+        "NameServer": [
+          "https://cloudflare-dns.com/dns-query"
+        ],
+        "IsEnabled": true,
+        "QueryTimeout": 10000
+      },
+      {
+        "DomainNamePattern": "blun.de.",
         "Strategy": "DoH",
         "NameServer": [
           "https://cloudflare-dns.com/dns-query"
@@ -32,7 +41,7 @@
           "8.8.4.4"
         ],
         "Strategy": "Dns",
-        "IsEnabled": false,
+        "IsEnabled": true,
         "CompressionMutation": true,
         "QueryTimeout": 30000
       },

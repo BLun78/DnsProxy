@@ -88,13 +88,13 @@ namespace DnsProxy.Common
             services.AddLogging(builder =>
             {
                 builder
-                    .AddFilter("Microsoft", LogLevel.Warning)
-                    .AddFilter("Default", LogLevel.Trace)
-                    .AddFilter("System", LogLevel.Warning)
-                    .AddFilter("DnsProxy.Program", LogLevel.Trace)
-                    .AddFilter("DnsProxy.Dns", LogLevel.Trace)
-                    .AddFilter("DnsProxy.Dns.DnsServer", LogLevel.Trace)
-                    .AddFilter("DnsProxy", LogLevel.Trace)
+                    //.AddFilter("Microsoft", LogLevel.Warning)
+                    //.AddFilter("Default", LogLevel.Trace)
+                    //.AddFilter("System", LogLevel.Warning)
+                    //.AddFilter("DnsProxy.Program", LogLevel.Trace)
+                    //.AddFilter("DnsProxy.Dns", LogLevel.Trace)
+                    //.AddFilter("DnsProxy.Dns.DnsServer", LogLevel.Trace)
+                    //.AddFilter("DnsProxy", LogLevel.Trace)
                     .AddConsole(options => { options.IncludeScopes = true; });
             });
             services.AddMemoryCache();
