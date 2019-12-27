@@ -18,12 +18,14 @@
 
 using System;
 using System.Collections.Generic;
+using DnsProxy.Models.Rules;
 
 namespace DnsProxy.Models
 {
 #pragma warning disable CA2227 // Collection properties should be read only
-    public class HostsConfig : ICloneable
+    internal class HostsConfig : ICloneable
     {
+        public HostsRule Rule { get; set; }
         public List<Host> Hosts { get; set; }
 
         public object Clone()

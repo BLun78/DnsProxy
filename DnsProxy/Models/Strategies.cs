@@ -22,14 +22,15 @@ namespace DnsProxy.Models
 {
     internal enum Strategies
     {
-        [EnumMember(Value = nameof(Hosts))] Hosts = 0,
+        [EnumMember(Value = nameof(None))] None = 0,
+        [EnumMember(Value = nameof(Hosts))] Hosts = 1,
 
         [EnumMember(Value = nameof(InternalNameServer))]
-        InternalNameServer = 1,
-        [EnumMember(Value = nameof(Dns))] Dns = 2,
-        [EnumMember(Value = nameof(DoH))] DoH = 3,
+        InternalNameServer = 2,
+        [EnumMember(Value = nameof(Dns))] Dns = 3,
+        [EnumMember(Value = nameof(DoH))] DoH = 4,
 
         [EnumMember(Value = nameof(Multicast))]
-        Multicast = 4
+        Multicast = 5
     }
 }

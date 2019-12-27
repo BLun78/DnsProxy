@@ -16,31 +16,10 @@
 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Net;
-using DnsProxy.Strategies;
-
-namespace DnsProxy.Models.Rules
+namespace DnsProxy.Models.Context
 {
-    internal class DnsRule : RuleBase, IRule, IRuleStrategy
+    internal interface IDnsContextAccessor
     {
-        public DnsRule() : base()
-        {
-        }
-
-        public DnsRule(Rule rule) : base(rule)
-        {
-            CompressionMutation = rule.CompressionMutation;
-            NameServerIpAddresses = GetNameServerIpAddresses(rule.NameServer);
-        }
-
-        public List<IPAddress> NameServerIpAddresses { get; set; }
-        public bool CompressionMutation { get; set; }
-
-        public override Type GetStraegy()
-        {
-            return typeof(DnsResolverStrategy);
-        }
+        IDnsContext DnsContext { get; }
     }
 }

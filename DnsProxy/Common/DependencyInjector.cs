@@ -21,6 +21,7 @@ using System.Reflection;
 using System.Threading;
 using DnsProxy.Dns;
 using DnsProxy.Models;
+using DnsProxy.Models.Context;
 using DnsProxy.Strategies;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -56,7 +57,12 @@ namespace DnsProxy.Common
             services.AddSingleton<DnsServer>();
             services.AddSingleton(_cancellationTokenSource);
 
-
+            // Dns Context
+            var dnsContextAccessor = new DnsContextAccessor();
+            services.AddSingleton<IDnsContextAccessor>(dnsContextAccessor);
+            services.AddSingleton<IWriteDnsContextAccessor>(dnsContextAccessor);
+            services.AddTransient<IWriteDnsContext, DnsContext>();
+            
             // Stratgies
             services.AddSingleton<StrategyManager>();
             services.AddTransient<IDnsResolverStrategy, DohResolverStrategy>();
