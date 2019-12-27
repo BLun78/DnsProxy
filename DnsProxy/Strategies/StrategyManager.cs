@@ -17,6 +17,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,6 +46,7 @@ namespace DnsProxy.Strategies
         private CancellationTokenSource _cts;
         private CancellationTokenSource _timeoutCts;
         private IDnsResolverStrategy defaultstrategy;
+        private List<IRule> Rules;
 
         public StrategyManager(ILogger<StrategyManager> logger,
             IServiceProvider serviceProvider,
@@ -68,7 +70,7 @@ namespace DnsProxy.Strategies
             _internalNameServerConfigListener =
                 _internalNameServerConfigOptionsMonitor.OnChange(InternalNameServerConfigListener);
             _dnsHostConfigListener = _dnsDefaultServerOptionsMonitor.OnChange(DnsHostConfigListener);
-            CreateOrReplaceDefaultDnsResolver(_dnsDefaultServerOptionsMonitor.CurrentValue);
+            DnsDefaultServerListener(_dnsDefaultServerOptionsMonitor.CurrentValue, null);
         }
 
         public void Dispose()
@@ -99,21 +101,17 @@ namespace DnsProxy.Strategies
 
         private void RulesConfigListener(RulesConfig rulesConfig, string name)
         {
+            Rules = rulesConfig.Rules)
         }
 
         private void DnsDefaultServerListener(DnsDefaultServer dnsDefaultServer, string name)
-        {
-            CreateOrReplaceDefaultDnsResolver(dnsDefaultServer);
-        }
-
-        private void CreateOrReplaceDefaultDnsResolver(DnsDefaultServer dnsDefaultServer)
         {
             defaultstrategy = CreateStrategy(dnsDefaultServer.Servers.GetInternalRule());
         }
 
         private IDnsResolverStrategy CreateStrategy(IRule rule)
         {
-            var strategy = (IDnsResolverStrategy) _serviceProvider.GetService(rule.GetStraegy());
+            var strategy = (IDnsResolverStrategy)_serviceProvider.GetService(rule.GetStraegy());
             strategy.SetRule(rule);
             return strategy;
         }
@@ -125,6 +123,8 @@ namespace DnsProxy.Strategies
 
             // TODO: Pattern Matching 
             // Todo: Hosts and NameServer, etc
+                
+
 
             if (!resultDnsMessage.AnswerRecords.Any())
                 resultDnsMessage = await defaultstrategy.ResolveAsync(resultDnsMessage, cancellationToken)
