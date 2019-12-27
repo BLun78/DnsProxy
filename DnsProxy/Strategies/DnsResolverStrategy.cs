@@ -17,7 +17,6 @@
 #endregion
 
 using System.Collections.Generic;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
@@ -38,15 +37,12 @@ namespace DnsProxy.Strategies
 
         public override async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken)
         {
-            var options = new DnsQueryOptions()
-            {
-
-            };
+            var options = new DnsQueryOptions();
             options = null;
 
             foreach (var dnsQuestion in dnsMessage.Questions)
             {
-                foreach (DnsClient dnsClient in DnsClient)
+                foreach (var dnsClient in DnsClient)
                 {
                     var response = await dnsClient.ResolveAsync(dnsQuestion.Name, dnsQuestion.RecordType,
                             dnsQuestion.RecordClass, options, CreateCancellationToken(cancellationToken))
@@ -67,7 +63,7 @@ namespace DnsProxy.Strategies
         public override void OnRuleChanged()
         {
             DnsClient.Clear();
-            foreach (IPAddress ipAddress in Rule.NameServerIpAddresses)
+            foreach (var ipAddress in Rule.NameServerIpAddresses)
             {
                 var dns = new DnsClient(ipAddress, Rule.QueryTimeout);
                 DnsClient.Add(dns);

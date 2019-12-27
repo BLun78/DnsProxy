@@ -35,12 +35,12 @@ namespace DnsProxy.Dns
     internal class DnsServer : IDisposable
     {
         private const int DefaultDnsPort = 53;
-        private readonly IOptionsMonitor<DnsHostConfig> _dnsHostConfigOptionsMonitor;
-        private readonly ILogger<DnsServer> _logger;
-        private readonly StrategyManager _strategyManager;
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly IDisposable _dnsHostConfigListener;
+        private readonly IOptionsMonitor<DnsHostConfig> _dnsHostConfigOptionsMonitor;
+        private readonly ILogger<DnsServer> _logger;
         private readonly IDictionary<IPAddress, int> _networkWhitelist;
+        private readonly StrategyManager _strategyManager;
 
         private ARSoft.Tools.Net.Dns.DnsServer _server;
 
@@ -62,7 +62,7 @@ namespace DnsProxy.Dns
         public void Dispose()
         {
             _dnsHostConfigListener?.Dispose();
-            ((IDisposable)_server)?.Dispose();
+            ((IDisposable) _server)?.Dispose();
         }
 
         [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "<Pending>")]
@@ -108,12 +108,13 @@ namespace DnsProxy.Dns
 
         private async Task<DnsMessage> DoQuery(DnsMessage dnsMessage)
         {
-            var upstreamResponse = await _strategyManager.ResolveAsync(dnsMessage, _cancellationTokenSource.Token).ConfigureAwait(false);
+            var upstreamResponse = await _strategyManager.ResolveAsync(dnsMessage, _cancellationTokenSource.Token)
+                .ConfigureAwait(false);
             if (upstreamResponse?.AnswerRecords != null
                 && upstreamResponse.AnswerRecords.Any())
                 return upstreamResponse;
 
-            return await Task.FromResult((DnsMessage)null).ConfigureAwait(false);
+            return await Task.FromResult((DnsMessage) null).ConfigureAwait(false);
         }
 
         private async Task OnQueryReceived(object sender, QueryReceivedEventArgs e)

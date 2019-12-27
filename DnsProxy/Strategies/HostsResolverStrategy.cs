@@ -35,8 +35,8 @@ namespace DnsProxy.Strategies
     {
         private readonly IOptionsMonitor<HostsConfig> _hostConfigOptionsMonitor;
         private readonly IMemoryCache _memoryCache;
-        private HostsConfig _hostConfigCache;
         private readonly IDisposable _parseHostConfig;
+        private HostsConfig _hostConfigCache;
 
         public HostsResolverStrategy(ILogger<HostsResolverStrategy> logger,
             IMemoryCache memoryCache,
@@ -70,6 +70,7 @@ namespace DnsProxy.Strategies
                 dnsMessage.IsQuery = false;
                 dnsMessage.ReturnCode = ReturnCode.NoError;
             }
+
             return Task.FromResult(dnsMessage);
         }
 
@@ -102,7 +103,7 @@ namespace DnsProxy.Strategies
                     foreach (var domainName in host.DomainNames) _memoryCache.Remove(domainName);
                 }
 
-            _hostConfigCache = (HostsConfig)hostConfig.Clone();
+            _hostConfigCache = (HostsConfig) hostConfig.Clone();
 
             if (_hostConfigCache != null)
                 foreach (var host in _hostConfigCache.Hosts)

@@ -16,6 +16,7 @@
 
 #endregion
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
@@ -64,7 +65,7 @@ namespace DnsProxy.Strategies
 
         public override void OnRuleChanged()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

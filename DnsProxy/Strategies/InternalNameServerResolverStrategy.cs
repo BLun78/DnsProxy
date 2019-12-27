@@ -27,7 +27,8 @@ using Microsoft.Extensions.Options;
 
 namespace DnsProxy.Strategies
 {
-    internal class InternalNameServerResolverStrategy : BaseResolverStrategy<InternalNameServerRule>, IDnsResolverStrategy<InternalNameServerRule>
+    internal class InternalNameServerResolverStrategy : BaseResolverStrategy<InternalNameServerRule>,
+        IDnsResolverStrategy<InternalNameServerRule>
     {
         private readonly IOptionsMonitor<NameServerOptions> _nameServerOptions;
         private readonly IDisposable _nameServerOptionsListener;

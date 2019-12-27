@@ -16,6 +16,7 @@
 
 #endregion
 
+using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -63,7 +64,7 @@ namespace DnsProxy.Strategies
 
             var responseMessage = await _dohClient.QueryAsync(requestMessage, cancellationToken).ConfigureAwait(false);
             dnsMessage.ReturnCode = responseMessage.Status.ToReturnCode();
-            
+
             foreach (var answer in responseMessage.Answers)
             {
                 var resultAnswer = answer.ToDnsRecord();
@@ -81,7 +82,7 @@ namespace DnsProxy.Strategies
 
         public override void OnRuleChanged()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

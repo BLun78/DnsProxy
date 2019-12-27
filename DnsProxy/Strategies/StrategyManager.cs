@@ -32,19 +32,19 @@ namespace DnsProxy.Strategies
     {
         private readonly IDisposable _dnsDefaultServerListener;
         private readonly IOptionsMonitor<DnsDefaultServer> _dnsDefaultServerOptionsMonitor;
+        private readonly IDisposable _dnsHostConfigListener;
+        private readonly IOptionsMonitor<DnsHostConfig> _dnsHostConfigOptionsMonitor;
         private readonly IDisposable _hostsConfigListener;
         private readonly IOptionsMonitor<HostsConfig> _hostsConfigOptionsMonitor;
         private readonly IDisposable _internalNameServerConfigListener;
-        private readonly IDisposable _dnsHostConfigListener;
         private readonly IOptionsMonitor<InternalNameServerConfig> _internalNameServerConfigOptionsMonitor;
-        private readonly IOptionsMonitor<DnsHostConfig> _dnsHostConfigOptionsMonitor;
         private readonly ILogger<StrategyManager> _logger;
         private readonly IDisposable _rulesConfigListner;
         private readonly IOptionsMonitor<RulesConfig> _rulesConfigOptionsMonitor;
         private readonly IServiceProvider _serviceProvider;
-        private IDnsResolverStrategy defaultstrategy;
-        private CancellationTokenSource _timeoutCts;
         private CancellationTokenSource _cts;
+        private CancellationTokenSource _timeoutCts;
+        private IDnsResolverStrategy defaultstrategy;
 
         public StrategyManager(ILogger<StrategyManager> logger,
             IServiceProvider serviceProvider,
@@ -65,14 +65,10 @@ namespace DnsProxy.Strategies
             _rulesConfigListner = _rulesConfigOptionsMonitor.OnChange(RulesConfigListener);
             _dnsDefaultServerListener = _dnsDefaultServerOptionsMonitor.OnChange(DnsDefaultServerListener);
             _hostsConfigListener = _hostsConfigOptionsMonitor.OnChange(HostsConfigListener);
-            _internalNameServerConfigListener = _internalNameServerConfigOptionsMonitor.OnChange(InternalNameServerConfigListener);
+            _internalNameServerConfigListener =
+                _internalNameServerConfigOptionsMonitor.OnChange(InternalNameServerConfigListener);
             _dnsHostConfigListener = _dnsDefaultServerOptionsMonitor.OnChange(DnsHostConfigListener);
             CreateOrReplaceDefaultDnsResolver(_dnsDefaultServerOptionsMonitor.CurrentValue);
-        }
-
-        private void DnsHostConfigListener(DnsDefaultServer dnsHostConfig, string name)
-        {
-
         }
 
         public void Dispose()
@@ -87,6 +83,10 @@ namespace DnsProxy.Strategies
             (_hostsConfigOptionsMonitor as IDisposable)?.Dispose();
             (_internalNameServerConfigOptionsMonitor as IDisposable)?.Dispose();
             (_dnsHostConfigOptionsMonitor as IDisposable)?.Dispose();
+        }
+
+        private void DnsHostConfigListener(DnsDefaultServer dnsHostConfig, string name)
+        {
         }
 
         private void InternalNameServerConfigListener(InternalNameServerConfig internalNameServerConfig, string name)
@@ -113,7 +113,7 @@ namespace DnsProxy.Strategies
 
         private IDnsResolverStrategy CreateStrategy(IRule rule)
         {
-            var strategy = (IDnsResolverStrategy)_serviceProvider.GetService(rule.GetStraegy());
+            var strategy = (IDnsResolverStrategy) _serviceProvider.GetService(rule.GetStraegy());
             strategy.SetRule(rule);
             return strategy;
         }
@@ -122,21 +122,18 @@ namespace DnsProxy.Strategies
         {
             DnsMessage result = null;
             var resultDnsMessage = dnsMessage.CreateResponseInstance();
-            if (!resultDnsMessage.AnswerRecords.Any())
-            {
-                result = await defaultstrategy.ResolveAsync(resultDnsMessage, cancellationToken).ConfigureAwait(false);
-            }
+
+            // TODO: Pattern Matching 
+            // Todo: Hosts and NameServer, etc
 
             if (!resultDnsMessage.AnswerRecords.Any())
-            {
-                result = resultDnsMessage;
-                result.ReturnCode = ReturnCode.ServerFailure;
-            }
+                resultDnsMessage = await defaultstrategy.ResolveAsync(resultDnsMessage, cancellationToken)
+                    .ConfigureAwait(false);
 
-            if (result != null)
-            {
-                result.IsQuery = false;
-            }
+            result = resultDnsMessage;
+            result.IsQuery = false;
+
+            if (!result.AnswerRecords.Any()) result.ReturnCode = ReturnCode.ServerFailure;
 
             return result;
         }
@@ -153,6 +150,5 @@ namespace DnsProxy.Strategies
             _timeoutCts?.Dispose();
             _cts?.Dispose();
         }
-
     }
 }

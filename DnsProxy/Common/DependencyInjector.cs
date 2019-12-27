@@ -21,7 +21,6 @@ using System.Reflection;
 using System.Threading;
 using DnsProxy.Dns;
 using DnsProxy.Models;
-using DnsProxy.Models.Rules;
 using DnsProxy.Strategies;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,8 +30,8 @@ namespace DnsProxy.Common
 {
     internal class DependencyInjector
     {
-        private readonly IConfigurationRoot _configuration;
         private readonly CancellationTokenSource _cancellationTokenSource;
+        private readonly IConfigurationRoot _configuration;
 
         public DependencyInjector(IConfigurationRoot configuration, CancellationTokenSource cancellationTokenSource)
         {
@@ -55,7 +54,7 @@ namespace DnsProxy.Common
             services.AddSingleton(Assembly.GetExecutingAssembly());
             services.AddSingleton<ApplicationInformation>();
             services.AddSingleton<DnsServer>();
-            services.AddSingleton<CancellationTokenSource>(_cancellationTokenSource);
+            services.AddSingleton(_cancellationTokenSource);
 
 
             // Stratgies

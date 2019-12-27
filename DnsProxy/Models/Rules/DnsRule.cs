@@ -33,6 +33,7 @@ namespace DnsProxy.Models.Rules
 
         public List<IPAddress> NameServerIpAddresses { get; set; }
         public bool CompressionMutation { get; set; }
+
         public override Type GetStraegy()
         {
             return typeof(DnsResolverStrategy);

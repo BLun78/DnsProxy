@@ -30,6 +30,7 @@ namespace DnsProxy.Models.Rules
         }
 
         public List<Uri> NameServerUri { get; set; }
+
         public override Type GetStraegy()
         {
             return typeof(DohResolverStrategy);

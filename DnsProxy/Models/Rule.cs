@@ -40,6 +40,11 @@ namespace DnsProxy.Models
         public string DomainName { get; set; }
         public string DomainNamePattern { get; set; }
 
+        public Type GetStraegy()
+        {
+            throw new NotImplementedException();
+        }
+
         [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "<Pending>")]
         public IRule GetInternalRule()
         {
@@ -58,11 +63,6 @@ namespace DnsProxy.Models
                 default:
                     throw new ArgumentOutOfRangeException(nameof(Strategy), Strategy, null);
             }
-        }
-
-        public Type GetStraegy()
-        {
-            throw new NotImplementedException();
         }
     }
 }
