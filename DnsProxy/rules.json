@@ -4,8 +4,8 @@
       {
         "DomainNamePattern": "^(.*)\\.box$",
         "Strategy": "Multicast",
-        "IsEnabled": true,
-        "QueryTimeout": 3000
+        "IsEnabled": false,
+        "QueryTimeout": 30000
       },
       {
         "DomainNamePattern": "^(.*)\\.amazonaws\\.com$",
@@ -14,7 +14,16 @@
           "https://cloudflare-dns.com/dns-query"
         ],
         "IsEnabled": true,
-        "QueryTimeout": 1000
+        "QueryTimeout": 10000
+      },
+      {
+        "DomainNamePattern": "^(.*)\\.blun\\.de",
+        "Strategy": "DoH",
+        "NameServer": [
+          "https://cloudflare-dns.com/dns-query"
+        ],
+        "IsEnabled": true,
+        "QueryTimeout": 10000
       },
       {
         "DomainName": "www.google.de",
@@ -23,9 +32,9 @@
           "8.8.4.4"
         ],
         "Strategy": "Dns",
-        "IsEnabled": true,
+        "IsEnabled": false,
         "CompressionMutation": true,
-        "QueryTimeout": 3000
+        "QueryTimeout": 30000
       },
       {
         "DomainNamePattern": "",
@@ -36,9 +45,9 @@
         "IpAddress": "",
         // Dns, DoH, Multicast
         "Strategy": "",
-        "IsEnabled": true,
+        "IsEnabled": false,
         "CompressionMutation": false,
-        "QueryTimeout": 3000
+        "QueryTimeout": 30000
       }
     ]
   }

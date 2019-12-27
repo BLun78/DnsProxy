@@ -23,13 +23,17 @@ namespace DnsProxy.Models.Rules
 {
     internal class MulticastRule : RuleBase, IRule, IRuleStrategy
     {
+        public MulticastRule() : base()
+        {
+        }
+
         public MulticastRule(Rule rule) : base(rule)
         {
         }
 
         public override Type GetStraegy()
         {
-            return typeof(InternalNameServerResolverStrategy);
+            return typeof(MulticastResolverStrategy);
         }
     }
 }

@@ -22,6 +22,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common;
+using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Makaretu.Dns;
 using Microsoft.Extensions.Logging;
@@ -30,7 +31,9 @@ namespace DnsProxy.Strategies
 {
     internal class MulticastResolverStrategy : BaseResolverStrategy<MulticastRule>, IDnsResolverStrategy<MulticastRule>
     {
-        public MulticastResolverStrategy(ILogger<MulticastResolverStrategy> logger) : base(logger)
+        public MulticastResolverStrategy(
+            ILogger<MulticastResolverStrategy> logger,
+            IDnsContextAccessor dnsContextAccessor) : base(logger, dnsContextAccessor)
         {
             Order = 5000;
         }

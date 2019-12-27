@@ -23,6 +23,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common;
+using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Makaretu.Dns;
 using Microsoft.Extensions.Caching.Memory;
@@ -38,7 +39,8 @@ namespace DnsProxy.Strategies
         public DohResolverStrategy(
             ILogger<DohResolverStrategy> logger,
             IMemoryCache memoryCache,
-            IHttpClientFactory httpClientFactory) : base(logger)
+            IHttpClientFactory httpClientFactory,
+            IDnsContextAccessor dnsContextAccessor) : base(logger, dnsContextAccessor)
         {
             _memoryCache = memoryCache;
             _dohClient = new DohClient();
@@ -49,6 +51,7 @@ namespace DnsProxy.Strategies
 
         public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken)
         {
+            LogDnsQuestion(dnsQuestion);
             var result = new List<DnsRecordBase>();
             var requestMessage = new Message();
             

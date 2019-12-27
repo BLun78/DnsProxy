@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common;
 using DnsProxy.Models;
+using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -38,9 +39,11 @@ namespace DnsProxy.Strategies
         private readonly IDisposable _parseHostConfig;
         private HostsConfig _hostConfigCache;
 
-        public HostsResolverStrategy(ILogger<HostsResolverStrategy> logger,
+        public HostsResolverStrategy(
+            ILogger<HostsResolverStrategy> logger,
             IMemoryCache memoryCache,
-            IOptionsMonitor<HostsConfig> hostConfigOptionsMonitor) : base(logger)
+            IOptionsMonitor<HostsConfig> hostConfigOptionsMonitor,
+            IDnsContextAccessor dnsContextAccessor) : base(logger, dnsContextAccessor)
         {
             CacheCancellationToken = new CancellationToken();
             _memoryCache = memoryCache;

@@ -10,26 +10,6 @@ namespace DnsProxy.Models.Rules
     {
         private readonly IRule _rule;
 
-        private class MinimumRule : IRule
-        {
-            public MinimumRule()
-            {
-                Strategy = Strategies.None;
-                IsEnabled = false;
-            }
-
-            public Type GetStraegy()
-            {
-                throw new NotSupportedException();
-            }
-
-            public Strategies Strategy { get; }
-            public bool IsEnabled { get; }
-            public string DomainName { get; }
-            public string DomainNamePattern { get; }
-            public int QueryTimeout { get; }
-        }
-
         protected RuleBase() : this(new MinimumRule())
         {
         }
@@ -64,6 +44,26 @@ namespace DnsProxy.Models.Rules
         public static List<Uri> GetNameServerUri(List<string> nameServerUri)
         {
             return new List<Uri>(nameServerUri.Select(x => new Uri(x)));
+        }
+
+        private class MinimumRule : IRule
+        {
+            public MinimumRule()
+            {
+                Strategy = Strategies.None;
+                IsEnabled = false;
+            }
+
+            public Type GetStraegy()
+            {
+                throw new NotSupportedException();
+            }
+
+            public Strategies Strategy { get; }
+            public bool IsEnabled { get; }
+            public string DomainName { get; }
+            public string DomainNamePattern { get; }
+            public int QueryTimeout { get; }
         }
     }
 }

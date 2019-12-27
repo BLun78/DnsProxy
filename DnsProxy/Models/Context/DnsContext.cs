@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Models.Rules;
@@ -11,7 +12,6 @@ namespace DnsProxy.Models.Context
     {
         public void Dispose()
         {
-
         }
 
         public List<IRule> Rules { get; set; }
@@ -22,6 +22,7 @@ namespace DnsProxy.Models.Context
         public IDnsResolverStrategy InternalNameServerResolverStrategy { get; set; }
         public List<IDnsResolverStrategy> DnsResolverStrategies { get; set; }
         public CancellationToken RootCancellationToken { get; set; }
+        public IPEndPoint IpEndPoint { get; set; }
     }
 
     internal interface IDnsContext : IDisposable
@@ -35,6 +36,7 @@ namespace DnsProxy.Models.Context
         IDnsResolverStrategy InternalNameServerResolverStrategy { get; }
         List<IDnsResolverStrategy> DnsResolverStrategies { get; }
         CancellationToken RootCancellationToken { get; }
+        IPEndPoint IpEndPoint { get; }
     }
 
     internal interface IWriteDnsContext : IDnsContext, IDisposable
@@ -46,7 +48,8 @@ namespace DnsProxy.Models.Context
         new IDnsResolverStrategy HostsResolverStrategy { get; set; }
         new IDnsResolverStrategy InternalNameServerResolverStrategy { get; set; }
         new List<IDnsResolverStrategy> DnsResolverStrategies { get; set; }
-        CancellationToken RootCancellationToken { get; set; }
+        new CancellationToken RootCancellationToken { get; set; }
+        new IPEndPoint IpEndPoint { get; set; }
     }
 }
 

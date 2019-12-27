@@ -5,17 +5,18 @@
       "127.0.0.1/32",
       "10.10.34.0/24"
     ],
-    "DefaultQueryTimeout": 5000
+    "DefaultQueryTimeout": 50000
   },
   "DnsDefaultServer": {
     "Servers": {
       "NameServer": [
+        "10.211.55.1",
         "1.1.1.1",
         "9.9.9.9"
       ],
       "Strategy": "Dns",
       "CompressionMutation": true,
-      "QueryTimeout": 500
+      "QueryTimeout": 5000
     }
   },
   "HttpProxyConfig": {

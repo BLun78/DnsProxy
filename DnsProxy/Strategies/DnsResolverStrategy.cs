@@ -17,9 +17,11 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
+using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Microsoft.Extensions.Logging;
 
@@ -29,7 +31,9 @@ namespace DnsProxy.Strategies
     {
         private readonly List<DnsClient> DnsClient;
 
-        public DnsResolverStrategy(ILogger<DnsResolverStrategy> logger) : base(logger)
+        public DnsResolverStrategy(
+            ILogger<DnsResolverStrategy> logger, 
+            IDnsContextAccessor dnsContextAccessor) : base(logger, dnsContextAccessor)
         {
             Order = 2000;
             DnsClient = new List<DnsClient>();
@@ -37,21 +41,25 @@ namespace DnsProxy.Strategies
 
         public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken)
         {
+            LogDnsQuestion(dnsQuestion);
             var result = new List<DnsRecordBase>();
             var options = new DnsQueryOptions();
             options = null;
 
+            foreach (IPAddress nameServerIpAddress in Rule.NameServerIpAddresses)
+            {
+                DnsClient.Add(new DnsClient(nameServerIpAddress, Rule.QueryTimeout));
+            }
 
             foreach (var dnsClient in DnsClient)
             {
                 var response = await dnsClient.ResolveAsync(dnsQuestion.Name, dnsQuestion.RecordType,
-                        dnsQuestion.RecordClass, options, CreateCancellationToken(cancellationToken))
+                        dnsQuestion.RecordClass, options, cancellationToken)
                     .ConfigureAwait(false);
                 result.AddRange(response.AnswerRecords);
             }
 
-
-            DisposeCancellationToken();
+           //LogDnsQuestionAndResult(dnsQuestion, result);
             return result;
         }
 

@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
+using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Makaretu.Dns.Resolving;
 using Microsoft.Extensions.Logging;
@@ -35,8 +36,10 @@ namespace DnsProxy.Strategies
         private readonly IDisposable _nameServerOptionsListener;
         private NameServer _resolver;
 
-        public InternalNameServerResolverStrategy(ILogger<InternalNameServerResolverStrategy> logger,
-            IOptionsMonitor<NameServerOptions> nameServerOptions) : base(logger)
+        public InternalNameServerResolverStrategy(
+            ILogger<InternalNameServerResolverStrategy> logger,
+            IOptionsMonitor<NameServerOptions> nameServerOptions,
+            IDnsContextAccessor dnsContextAccessor) : base(logger, dnsContextAccessor)
         {
             _nameServerOptions = nameServerOptions;
             _nameServerOptionsListener = _nameServerOptions.OnChange(NameServerOptionsListener);

@@ -23,6 +23,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common;
+using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Microsoft.Extensions.Logging;
 
@@ -33,14 +34,14 @@ namespace DnsProxy.Strategies
         where TRule : IRule
     {
         protected readonly ILogger<BaseResolverStrategy<TRule>> Logger;
-        private CancellationTokenSource _cts;
-        private CancellationTokenSource _timeoutCts;
+        protected readonly IDnsContextAccessor DnsContextAccessor;
         public TRule Rule { get; protected set; }
         IRule IDnsResolverStrategy.Rule => Rule;
 
-        protected BaseResolverStrategy(ILogger<BaseResolverStrategy<TRule>> logger)
+        protected BaseResolverStrategy(ILogger<BaseResolverStrategy<TRule>> logger, IDnsContextAccessor dnsContextAccessor)
         {
             Logger = logger;
+            DnsContextAccessor = dnsContextAccessor;
         }
 
         public int Order { get; protected set; }
@@ -82,17 +83,11 @@ namespace DnsProxy.Strategies
             return match.Success;
         }
 
-        protected CancellationToken CreateCancellationToken(CancellationToken cancellationToken)
+        protected void LogDnsQuestion(DnsQuestion dnsQuestion)
         {
-            _timeoutCts = new CancellationTokenSource(Rule.QueryTimeout);
-            _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _timeoutCts.Token);
-            return _cts.Token;
-        }
-
-        protected void DisposeCancellationToken()
-        {
-            _timeoutCts?.Dispose();
-            _cts?.Dispose();
+            var dnsContext = DnsContextAccessor.DnsContext;
+            Logger.LogDebug("ClientIpAddress: {0} requested {1} (#{2}, {3}).", dnsContext.IpEndPoint.Address, dnsQuestion.Name,
+                dnsContext.Request.TransactionID, dnsQuestion.RecordType);
         }
 
         #region IDisposable Support

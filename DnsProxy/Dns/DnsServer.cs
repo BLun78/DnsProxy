@@ -106,9 +106,9 @@ namespace DnsProxy.Dns
             _server.Stop();
         }
 
-        private async Task<DnsMessage> DoQuery(DnsMessage dnsMessage)
+        private async Task<DnsMessage> DoQuery(DnsMessage dnsMessage, IPEndPoint ipEndPoint)
         {
-            var upstreamResponse = await _strategyManager.ResolveAsync(dnsMessage, _cancellationTokenSource.Token)
+            var upstreamResponse = await _strategyManager.ResolveAsync(dnsMessage, ipEndPoint, _cancellationTokenSource.Token)
                 .ConfigureAwait(false);
             if (upstreamResponse?.AnswerRecords != null
                 && upstreamResponse.AnswerRecords.Any())
@@ -122,7 +122,7 @@ namespace DnsProxy.Dns
             if (e.Query is DnsMessage message
                 && message.Questions.Count == 1)
             {
-                var upstreamResponse = await DoQuery(message).ConfigureAwait(false);
+                var upstreamResponse = await DoQuery(message, e.RemoteEndpoint).ConfigureAwait(false);
                 if (upstreamResponse != null)
                 {
                     upstreamResponse.ReturnCode = ReturnCode.NoError;

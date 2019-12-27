@@ -24,6 +24,10 @@ namespace DnsProxy.Models.Rules
 {
     internal class DohRule : RuleBase, IRule, IRuleStrategy
     {
+        public DohRule() : base()
+        {
+        }
+
         public DohRule(Rule rule) : base(rule)
         {
             NameServerUri = GetNameServerUri(rule.NameServer);
