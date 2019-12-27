@@ -35,24 +35,24 @@ namespace DnsProxy.Strategies
             DnsClient = new List<DnsClient>();
         }
 
-        public override async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken)
+        public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken)
         {
+            var result = new List<DnsRecordBase>();
             var options = new DnsQueryOptions();
             options = null;
 
-            foreach (var dnsQuestion in dnsMessage.Questions)
+
+            foreach (var dnsClient in DnsClient)
             {
-                foreach (var dnsClient in DnsClient)
-                {
-                    var response = await dnsClient.ResolveAsync(dnsQuestion.Name, dnsQuestion.RecordType,
-                            dnsQuestion.RecordClass, options, CreateCancellationToken(cancellationToken))
-                        .ConfigureAwait(false);
-                    dnsMessage.AnswerRecords.AddRange(response.AnswerRecords);
-                }
+                var response = await dnsClient.ResolveAsync(dnsQuestion.Name, dnsQuestion.RecordType,
+                        dnsQuestion.RecordClass, options, CreateCancellationToken(cancellationToken))
+                    .ConfigureAwait(false);
+                result.AddRange(response.AnswerRecords);
             }
 
+
             DisposeCancellationToken();
-            return dnsMessage;
+            return result;
         }
 
         public override Models.Strategies GetStrategy()

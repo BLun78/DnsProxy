@@ -17,6 +17,8 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
@@ -42,20 +44,39 @@ namespace DnsProxy.Strategies
 
         public int Order { get; protected set; }
 
-        public abstract Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage,
-            CancellationToken cancellationToken = default);
+        public abstract Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken);
 
         public abstract Models.Strategies GetStrategy();
         public abstract void OnRuleChanged();
 
         public void SetRule(IRule rule)
         {
-            Rule = (TRule) rule;
+            Rule = (TRule)rule;
+        }
+        public void SetRule(TRule rule)
+        {
+            Rule = rule;
         }
 
-        public bool MatchPattern(DnsMessage dnsMessage)
+        public bool MatchPattern(DnsQuestion dnsQuestion)
         {
-            return false;
+            string pattern;
+            if (!string.IsNullOrWhiteSpace(Rule.DomainNamePattern))
+            {
+                pattern = Rule.DomainNamePattern;
+
+            }
+            else if (!string.IsNullOrWhiteSpace(Rule.DomainName))
+            {
+                pattern = $"^{Rule.DomainName.Replace(".", @"\.", StringComparison.InvariantCulture)}$";
+            }
+            else
+            {
+                throw new NotSupportedException($"On Attribute {nameof(Rule.DomainName)} or {nameof(Rule.DomainNamePattern)} must be set!");
+            }
+
+            var match = Regex.Match(dnsQuestion.Name.ToString(), pattern);
+            return match.Success;
         }
 
         protected CancellationToken CreateCancellationToken(CancellationToken cancellationToken)
@@ -99,6 +120,8 @@ namespace DnsProxy.Strategies
         // }
 
         // This code added to correctly implement the disposable pattern.
+        
+
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
@@ -106,37 +129,6 @@ namespace DnsProxy.Strategies
             // TODO: uncomment the following line if the finalizer is overridden above.
             // GC.SuppressFinalize(this);
         }
-
-        void IDnsResolverStrategy<TRule>.SetRule(TRule rule)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<DnsMessage> IDnsResolverStrategy.ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        Models.Strategies IDnsResolverStrategy.GetStrategy()
-        {
-            throw new NotImplementedException();
-        }
-
-        void IDnsResolverStrategy.OnRuleChanged()
-        {
-            throw new NotImplementedException();
-        }
-
-        void IDnsResolverStrategy.SetRule(IRule rule)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IDisposable.Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
         #endregion
     }
 }

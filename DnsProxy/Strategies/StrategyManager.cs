@@ -130,17 +130,26 @@ namespace DnsProxy.Strategies
                 var dnsWriteContext = GetWriteDnsContext(scope, dnsMessage);
 
                 DnsMessage result = null;
-                var resultDnsMessage = dnsWriteContext.Response;
 
-                // TODO: Pattern Matching 
-                // Todo: Hosts and NameServer, etc
+                foreach (DnsQuestion dnsQuestion in dnsWriteContext.Response.Questions)
+                {
+                    foreach (IDnsResolverStrategy dnsResolverStrategy in dnsWriteContext.DnsResolverStrategies)
+                    {
+                        if (dnsResolverStrategy.MatchPattern(dnsQuestion))
+                        {
+                            dnsResolverStrategy.ResolveAsync()
+                            break;
+                        }
+                    }
+                    
+                }
 
 
-                if (!resultDnsMessage.AnswerRecords.Any())
-                    resultDnsMessage = await dnsWriteContext.DefaultDnsStrategy.ResolveAsync(resultDnsMessage, cancellationToken)
+                if (!dnsWriteContext.Response.AnswerRecords.Any())
+                    dnsWriteContext.Response = await dnsWriteContext.DefaultDnsStrategy.ResolveAsync(dnsWriteContext.Response, cancellationToken)
                         .ConfigureAwait(false);
 
-                result = resultDnsMessage;
+                result = dnsWriteContext.Response;
                 result.IsQuery = false;
 
                 if (!result.AnswerRecords.Any()) result.ReturnCode = ReturnCode.ServerFailure;

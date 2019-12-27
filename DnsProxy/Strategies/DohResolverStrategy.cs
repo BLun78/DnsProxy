@@ -17,6 +17,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -46,33 +47,29 @@ namespace DnsProxy.Strategies
             Order = 1000;
         }
 
-        public override async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken)
+        public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken)
         {
+            var result = new List<DnsRecordBase>();
             var requestMessage = new Message();
-
-            foreach (var dnsQuestion in dnsMessage.Questions)
+            
+            var question = new Question
             {
-                var question = new Question
-                {
-                    Name = dnsQuestion.Name.ToDomainName(),
-                    Type = dnsQuestion.RecordType.ToDnsType(),
-                    Class = dnsQuestion.RecordClass.ToDnsClass()
-                };
+                Name = dnsQuestion.Name.ToDomainName(),
+                Type = dnsQuestion.RecordType.ToDnsType(),
+                Class = dnsQuestion.RecordClass.ToDnsClass()
+            };
 
-                requestMessage.Questions.Add(question);
-            }
-
+            requestMessage.Questions.Add(question);
+            
             var responseMessage = await _dohClient.QueryAsync(requestMessage, cancellationToken).ConfigureAwait(false);
-            dnsMessage.ReturnCode = responseMessage.Status.ToReturnCode();
-
+            
             foreach (var answer in responseMessage.Answers)
             {
                 var resultAnswer = answer.ToDnsRecord();
-                dnsMessage.AnswerRecords.Add(resultAnswer);
-                dnsMessage.IsQuery = false;
+               result.Add(resultAnswer);
             }
 
-            return dnsMessage;
+            return result;
         }
 
         public override Models.Strategies GetStrategy()

@@ -17,6 +17,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
@@ -27,10 +28,11 @@ namespace DnsProxy.Strategies
 {
     internal interface IDnsResolverStrategy : IDisposable, IOrder
     {
-        Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken);
+        Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken);
         Models.Strategies GetStrategy();
         void OnRuleChanged();
         void SetRule(IRule rule);
+        bool MatchPattern(DnsQuestion dnsQuestion);
     }
 
     internal interface IDnsResolverStrategy<TRule> : IDnsResolverStrategy
