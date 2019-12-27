@@ -3,7 +3,7 @@
     "ListenerPort": 53,
     "NetworkWhitelist": [
       "127.0.0.1/32",
-      "192.168.199.0/24"
+      "10.10.34.0/24"
     ],
     "DefaultQueryTimeout": 5000
   },
@@ -22,7 +22,6 @@
     "Uri": "",
     "AuthenticationType": "",
     "User": "",
-    "Password": "",
-    "SecretManagerId": ""
+    "Password": ""
   }
 }

@@ -35,7 +35,8 @@ namespace DnsProxy.Strategies
         protected readonly ILogger<BaseResolverStrategy<TRule>> Logger;
         private CancellationTokenSource _cts;
         private CancellationTokenSource _timeoutCts;
-        protected TRule Rule;
+        public TRule Rule { get; protected set; }
+        IRule IDnsResolverStrategy.Rule => Rule;
 
         protected BaseResolverStrategy(ILogger<BaseResolverStrategy<TRule>> logger)
         {
@@ -49,10 +50,12 @@ namespace DnsProxy.Strategies
         public abstract Models.Strategies GetStrategy();
         public abstract void OnRuleChanged();
 
-        public void SetRule(IRule rule)
+        void IDnsResolverStrategy.SetRule(IRule rule)
         {
             Rule = (TRule)rule;
         }
+
+
         public void SetRule(TRule rule)
         {
             Rule = rule;
@@ -120,7 +123,7 @@ namespace DnsProxy.Strategies
         // }
 
         // This code added to correctly implement the disposable pattern.
-        
+
 
         public void Dispose()
         {

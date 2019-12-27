@@ -32,6 +32,7 @@ namespace DnsProxy.Strategies
         Models.Strategies GetStrategy();
         void OnRuleChanged();
         void SetRule(IRule rule);
+        IRule Rule { get; }
         bool MatchPattern(DnsQuestion dnsQuestion);
     }
 
@@ -39,5 +40,6 @@ namespace DnsProxy.Strategies
         where TRule : IRule
     {
         void SetRule(TRule rule);
+        TRule Rule { get; }
     }
 }

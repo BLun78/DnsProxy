@@ -17,6 +17,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
@@ -34,28 +35,27 @@ namespace DnsProxy.Strategies
             Order = 5000;
         }
 
-        public override async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken)
+        public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken)
         {
-            foreach (var dnsQuestion in dnsMessage.Questions)
+            var result = new List<DnsRecordBase>();
+
+            var query = new Message();
+            query.Questions.Add(new Question
             {
-                var query = new Message();
-                query.Questions.Add(new Question
-                {
-                    Name = dnsQuestion.Name.ToString(),
-                    Type = DnsType.ANY
-                });
-                var cancellation = new CancellationTokenSource(3000);
+                Name = dnsQuestion.Name.ToString(),
+                Type = DnsType.ANY
+            });
 
-                using (var mdns = new MulticastService())
-                {
-                    mdns.Start();
-                    var response = await mdns.ResolveAsync(query, cancellation.Token).ConfigureAwait(false);
+            using (var mdns = new MulticastService())
+            {
+                mdns.Start();
+                var response = await mdns.ResolveAsync(query, cancellationToken).ConfigureAwait(false);
 
-                    foreach (var answer in response.Answers) dnsMessage.AnswerRecords.Add(answer.ToDnsRecord());
-                }
+                foreach (var answer in response.Answers) result.Add(answer.ToDnsRecord());
             }
 
-            return dnsMessage;
+
+            return result;
         }
 
         public override Models.Strategies GetStrategy()

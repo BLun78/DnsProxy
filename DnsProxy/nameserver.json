@@ -1,7 +1,7 @@
 {
   "InternalNameServerConfig": {
     "Rule": {
-      "IsEnabled": true,
+      "IsEnabled": false,
       "QueryTimeout": 3000
     }
   }

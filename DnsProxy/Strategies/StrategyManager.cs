@@ -127,64 +127,100 @@ namespace DnsProxy.Strategies
         {
             using (var scope = _serviceProvider.CreateScope())
             {
-                var dnsWriteContext = GetWriteDnsContext(scope, dnsMessage);
+                var dnsWriteContext = GetWriteDnsContext(scope, dnsMessage, cancellationToken);
 
-                DnsMessage result = null;
-
-                foreach (DnsQuestion dnsQuestion in dnsWriteContext.Response.Questions)
+                using (var globalQueryTimeoutCts = new CancellationTokenSource(_dnsDefaultServerOptionsMonitor.CurrentValue.Servers.QueryTimeout))
+                using (var joinedGlobalCts = CancellationTokenSource.CreateLinkedTokenSource(globalQueryTimeoutCts.Token, cancellationToken))
                 {
-                    foreach (IDnsResolverStrategy dnsResolverStrategy in dnsWriteContext.DnsResolverStrategies)
+                    foreach (DnsQuestion dnsQuestion in dnsWriteContext.Response.Questions)
                     {
-                        if (dnsResolverStrategy.MatchPattern(dnsQuestion))
+                        foreach (IDnsResolverStrategy dnsResolverStrategy in dnsWriteContext.DnsResolverStrategies)
                         {
-                            dnsResolverStrategy.ResolveAsync()
-                            break;
+                            if (dnsResolverStrategy.MatchPattern(dnsQuestion))
+                            {
+                                using (var strategyQueryTimeoutCts = new CancellationTokenSource(dnsResolverStrategy.Rule.QueryTimeout))
+                                using (var joinedStrategyCts = CancellationTokenSource.CreateLinkedTokenSource(strategyQueryTimeoutCts.Token, joinedGlobalCts.Token))
+                                {
+                                    var answer = await dnsResolverStrategy
+                                        .ResolveAsync(dnsQuestion, joinedStrategyCts.Token)
+                                        .ConfigureAwait(false);
+                                    dnsWriteContext.Response.AnswerRecords.AddRange(answer);
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (!dnsWriteContext.Response.AnswerRecords.Any() && dnsWriteContext.HostsResolverStrategy != null)
+                        {
+                            using (var strategyQueryTimeoutCts = new CancellationTokenSource(dnsWriteContext.HostsResolverStrategy.Rule.QueryTimeout))
+                            using (var joinedStrategyCts = CancellationTokenSource.CreateLinkedTokenSource(strategyQueryTimeoutCts.Token, joinedGlobalCts.Token))
+                            {
+                                var answer = await dnsWriteContext.HostsResolverStrategy
+                                    .ResolveAsync(dnsQuestion, joinedStrategyCts.Token)
+                                    .ConfigureAwait(false);
+                                dnsWriteContext.Response.AnswerRecords.AddRange(answer);
+                            }
+                        }
+
+                        if (!dnsWriteContext.Response.AnswerRecords.Any() && dnsWriteContext.InternalNameServerResolverStrategy != null)
+                        {
+                            using (var strategyQueryTimeoutCts = new CancellationTokenSource(dnsWriteContext.InternalNameServerResolverStrategy.Rule.QueryTimeout))
+                            using (var joinedStrategyCts = CancellationTokenSource.CreateLinkedTokenSource(strategyQueryTimeoutCts.Token, joinedGlobalCts.Token))
+                            {
+                                var answer = await dnsWriteContext.InternalNameServerResolverStrategy
+                                    .ResolveAsync(dnsQuestion, joinedStrategyCts.Token)
+                                    .ConfigureAwait(false);
+                                dnsWriteContext.Response.AnswerRecords.AddRange(answer);
+                            }
+                        }
+
+                        if (!dnsWriteContext.Response.AnswerRecords.Any())
+                        {
+                            using (var strategyQueryTimeoutCts = new CancellationTokenSource(dnsWriteContext.DefaultDnsStrategy.Rule.QueryTimeout))
+                            using (var joinedStrategyCts = CancellationTokenSource.CreateLinkedTokenSource(strategyQueryTimeoutCts.Token, joinedGlobalCts.Token))
+                            {
+                                var answer = await dnsWriteContext.DefaultDnsStrategy
+                                    .ResolveAsync(dnsQuestion, joinedStrategyCts.Token)
+                                    .ConfigureAwait(false);
+                                dnsWriteContext.Response.AnswerRecords.AddRange(answer);
+                            }
                         }
                     }
-                    
+
+                    dnsWriteContext.Response.ReturnCode = ReturnCode.NoError;
+                    dnsWriteContext.Response.IsQuery = false;
+                   
+
+                    if (!dnsWriteContext.Response.AnswerRecords.Any()) dnsWriteContext.Response.ReturnCode = ReturnCode.ServerFailure;
+
+                    return dnsWriteContext.Response;
                 }
-
-
-                if (!dnsWriteContext.Response.AnswerRecords.Any())
-                    dnsWriteContext.Response = await dnsWriteContext.DefaultDnsStrategy.ResolveAsync(dnsWriteContext.Response, cancellationToken)
-                        .ConfigureAwait(false);
-
-                result = dnsWriteContext.Response;
-                result.IsQuery = false;
-
-                if (!result.AnswerRecords.Any()) result.ReturnCode = ReturnCode.ServerFailure;
-
-                return result;
             }
         }
 
-        private IWriteDnsContext GetWriteDnsContext(IServiceScope scope, DnsMessage dnsMessage)
+        private IWriteDnsContext GetWriteDnsContext(IServiceScope scope, DnsMessage dnsMessage, CancellationToken cancellationToken)
         {
             var dnsContextAccessor = scope.ServiceProvider.GetService<IWriteDnsContextAccessor>();
             var dnsWriteContext = scope.ServiceProvider.GetService<IWriteDnsContext>();
             dnsContextAccessor.WriteDnsContext = dnsWriteContext;
+
+            dnsWriteContext.RootCancellationToken = cancellationToken;
             dnsWriteContext.Request = dnsMessage;
             dnsWriteContext.Response = dnsMessage.CreateResponseInstance();
             dnsWriteContext.DefaultDnsStrategy = CreateStrategy(_dnsDefaultServerOptionsMonitor.CurrentValue.Servers, scope);
-            dnsWriteContext.HostsResolverStrategy = CreateStrategy(_hostsConfigOptionsMonitor.CurrentValue.Rule, scope);
-            dnsWriteContext.InternalNameServerResolverStrategy = CreateStrategy(_internalNameServerConfigOptionsMonitor.CurrentValue.Rule, scope);
+
+            dnsWriteContext.HostsResolverStrategy = _hostsConfigOptionsMonitor.CurrentValue.Rule.IsEnabled
+                ? CreateStrategy(_hostsConfigOptionsMonitor.CurrentValue.Rule, scope)
+                : null;
+
+            dnsWriteContext.InternalNameServerResolverStrategy = _internalNameServerConfigOptionsMonitor.CurrentValue.Rule.IsEnabled
+                ? CreateStrategy(_internalNameServerConfigOptionsMonitor.CurrentValue.Rule, scope)
+                : null;
+
             var strategies = new List<Models.Strategies>() { Models.Strategies.Hosts, Models.Strategies.InternalNameServer };
             dnsWriteContext.DnsResolverStrategies = Rules.Where(y => !strategies.Contains(y.Strategy)).Select(x => CreateStrategy(x, scope)).ToList();
 
             return dnsWriteContext;
-        }
-
-        protected CancellationToken CreateCancellationToken(CancellationToken cancellationToken)
-        {
-            _timeoutCts = new CancellationTokenSource(_dnsHostConfigOptionsMonitor.CurrentValue.DefaultQueryTimeout);
-            _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _timeoutCts.Token);
-            return _cts.Token;
-        }
-
-        protected void DisposeCancellationToken()
-        {
-            _timeoutCts?.Dispose();
-            _cts?.Dispose();
         }
     }
 }

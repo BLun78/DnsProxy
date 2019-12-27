@@ -17,6 +17,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
@@ -46,7 +47,7 @@ namespace DnsProxy.Strategies
             Order = 100;
         }
 
-        public override Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken)
+        public override Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

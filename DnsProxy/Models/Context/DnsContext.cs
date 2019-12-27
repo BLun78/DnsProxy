@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Models.Rules;
 using DnsProxy.Strategies;
@@ -20,30 +21,32 @@ namespace DnsProxy.Models.Context
         public IDnsResolverStrategy HostsResolverStrategy { get; set; }
         public IDnsResolverStrategy InternalNameServerResolverStrategy { get; set; }
         public List<IDnsResolverStrategy> DnsResolverStrategies { get; set; }
+        public CancellationToken RootCancellationToken { get; set; }
     }
 
     internal interface IDnsContext : IDisposable
     {
-        public List<IRule> Rules { get; }
-        public DnsMessage Request { get; }
-        public DnsMessage Response { get; }
+        List<IRule> Rules { get; }
+        DnsMessage Request { get; }
+        DnsMessage Response { get; }
 
-        public IDnsResolverStrategy DefaultDnsStrategy { get; }
-        public IDnsResolverStrategy HostsResolverStrategy { get; }
-        public IDnsResolverStrategy InternalNameServerResolverStrategy { get; }
-        public List<IDnsResolverStrategy> DnsResolverStrategies { get; }
-
+        IDnsResolverStrategy DefaultDnsStrategy { get; }
+        IDnsResolverStrategy HostsResolverStrategy { get; }
+        IDnsResolverStrategy InternalNameServerResolverStrategy { get; }
+        List<IDnsResolverStrategy> DnsResolverStrategies { get; }
+        CancellationToken RootCancellationToken { get; }
     }
 
     internal interface IWriteDnsContext : IDnsContext, IDisposable
     {
-        public new List<IRule> Rules { get; set; }
-        public new DnsMessage Request { get; set; }
-        public new DnsMessage Response { get; set; }
-        public new IDnsResolverStrategy DefaultDnsStrategy { get; set; }
-        public new IDnsResolverStrategy HostsResolverStrategy { get; set; }
-        public new IDnsResolverStrategy InternalNameServerResolverStrategy { get; set; }
-        public new List<IDnsResolverStrategy> DnsResolverStrategies { get; set; }
+        new List<IRule> Rules { get; set; }
+        new DnsMessage Request { get; set; }
+        new DnsMessage Response { get; set; }
+        new IDnsResolverStrategy DefaultDnsStrategy { get; set; }
+        new IDnsResolverStrategy HostsResolverStrategy { get; set; }
+        new IDnsResolverStrategy InternalNameServerResolverStrategy { get; set; }
+        new List<IDnsResolverStrategy> DnsResolverStrategies { get; set; }
+        CancellationToken RootCancellationToken { get; set; }
     }
 }
 
