@@ -52,11 +52,8 @@ namespace DnsProxy.Strategies
 
         internal static CancellationToken CacheCancellationToken { get; private set; }
 
-        public override Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage,
-            CancellationToken cancellationToken)
+        public override Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken)
         {
-            var message = dnsMessage.CreateResponseInstance();
-
             foreach (var dnsQuestion in dnsMessage.Questions)
                 switch (dnsQuestion.RecordType)
                 {
@@ -64,11 +61,16 @@ namespace DnsProxy.Strategies
                     case RecordType.A:
                     case RecordType.Aaaa:
                         var records = _memoryCache.Get<List<DnsRecordBase>>(dnsQuestion.RecordType);
-                        if (records != null && records.Any()) message.AnswerRecords.AddRange(records);
+                        if (records != null && records.Any()) dnsMessage.AnswerRecords.AddRange(records);
                         break;
                 }
 
-            return Task.FromResult(message);
+            if (dnsMessage.AnswerRecords.Any())
+            {
+                dnsMessage.IsQuery = false;
+                dnsMessage.ReturnCode = ReturnCode.NoError;
+            }
+            return Task.FromResult(dnsMessage);
         }
 
         public override Models.Strategies GetStrategy()

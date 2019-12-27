@@ -6,5 +6,10 @@ namespace DnsProxy.Models
     {
         public int ListenerPort { get; set; }
         public List<string> NetworkWhitelist { get; set; }
+
+        /// <summary>
+        ///     Query timeout in milliseconds
+        /// </summary>
+        public int DefaultQueryTimeout { get; set; }
     }
 }

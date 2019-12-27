@@ -33,11 +33,8 @@ namespace DnsProxy.Strategies
             Order = 5000;
         }
 
-        public override async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage,
-            CancellationToken cancellationToken)
+        public override async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken)
         {
-            var message = dnsMessage.CreateResponseInstance();
-
             foreach (var dnsQuestion in dnsMessage.Questions)
             {
                 var query = new Message();
@@ -53,11 +50,11 @@ namespace DnsProxy.Strategies
                     mdns.Start();
                     var response = await mdns.ResolveAsync(query, cancellation.Token).ConfigureAwait(false);
 
-                    foreach (var answer in response.Answers) message.AnswerRecords.Add(answer.ToDnsRecord());
+                    foreach (var answer in response.Answers) dnsMessage.AnswerRecords.Add(answer.ToDnsRecord());
                 }
             }
 
-            return message;
+            return dnsMessage;
         }
 
         public override Models.Strategies GetStrategy()

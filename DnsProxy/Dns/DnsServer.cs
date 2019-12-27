@@ -40,7 +40,7 @@ namespace DnsProxy.Dns
         private readonly StrategyManager _strategyManager;
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly IDisposable _dnsHostConfigListener;
-        private readonly IDictionary<IPAddress, int> NetworkWhitelist;
+        private readonly IDictionary<IPAddress, int> _networkWhitelist;
 
         private ARSoft.Tools.Net.Dns.DnsServer _server;
 
@@ -49,7 +49,7 @@ namespace DnsProxy.Dns
             StrategyManager strategyManager,
             CancellationTokenSource cancellationTokenSource)
         {
-            NetworkWhitelist = new Dictionary<IPAddress, int>();
+            _networkWhitelist = new Dictionary<IPAddress, int>();
             _logger = logger;
             _dnsHostConfigOptionsMonitor = dnsHostConfigOptionsMonitor;
             _strategyManager = strategyManager;
@@ -69,7 +69,7 @@ namespace DnsProxy.Dns
         [SuppressMessage("Globalization", "CA1305:Specify IFormatProvider", Justification = "<Pending>")]
         private void CreateNetworkWhitelist()
         {
-            NetworkWhitelist.Clear();
+            _networkWhitelist.Clear();
             foreach (var network in _dnsHostConfigOptionsMonitor.CurrentValue.NetworkWhitelist)
             {
                 var items = network.Split('/');
@@ -79,7 +79,7 @@ namespace DnsProxy.Dns
                         _dnsHostConfigOptionsMonitor.CurrentValue.NetworkWhitelist, null);
                 var ip = IPAddress.Parse(items[0]);
                 var mask = int.Parse(items[1]);
-                NetworkWhitelist.Add(ip, mask);
+                _networkWhitelist.Add(ip, mask);
             }
         }
 
@@ -139,7 +139,7 @@ namespace DnsProxy.Dns
                 e.RefuseConnect = true;
 
             if (_dnsHostConfigOptionsMonitor.CurrentValue.NetworkWhitelist.Any())
-                if (NetworkWhitelist.All(pair =>
+                if (_networkWhitelist.All(pair =>
                     !pair.Key.GetNetworkAddress(pair.Value)
                         .Equals(e.RemoteEndpoint.Address.GetNetworkAddress(pair.Value))))
                     e.RefuseConnect = true;

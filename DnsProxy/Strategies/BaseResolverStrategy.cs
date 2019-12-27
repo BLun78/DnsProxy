@@ -26,7 +26,8 @@ using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Strategies
 {
-    internal abstract class BaseResolverStrategy<TRule> : IDisposable, IOrder, IDnsResolverStrategy<TRule>, IDnsResolverStrategy
+    internal abstract class BaseResolverStrategy<TRule> : IDisposable, IOrder, IDnsResolverStrategy<TRule>,
+        IDnsResolverStrategy
         where TRule : IRule
     {
         protected readonly ILogger<BaseResolverStrategy<TRule>> Logger;
@@ -39,17 +40,23 @@ namespace DnsProxy.Strategies
             Logger = logger;
         }
 
+        public int Order { get; protected set; }
+
         public abstract Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage,
             CancellationToken cancellationToken = default);
 
         public abstract Models.Strategies GetStrategy();
         public abstract void OnRuleChanged();
+
         public void SetRule(IRule rule)
         {
-            Rule = (TRule)rule;
+            Rule = (TRule) rule;
         }
 
-        public int Order { get; protected set; }
+        public bool MatchPattern(DnsMessage dnsMessage)
+        {
+            return false;
+        }
 
         protected CancellationToken CreateCancellationToken(CancellationToken cancellationToken)
         {

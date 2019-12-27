@@ -47,7 +47,6 @@ namespace DnsProxy.Strategies
 
         public override async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken)
         {
-            var resultMessage = dnsMessage.CreateResponseInstance();
             var requestMessage = new Message();
 
             foreach (var dnsQuestion in dnsMessage.Questions)
@@ -63,14 +62,16 @@ namespace DnsProxy.Strategies
             }
 
             var responseMessage = await _dohClient.QueryAsync(requestMessage, cancellationToken).ConfigureAwait(false);
-
+            dnsMessage.ReturnCode = responseMessage.Status.ToReturnCode();
+            
             foreach (var answer in responseMessage.Answers)
             {
                 var resultAnswer = answer.ToDnsRecord();
-                resultMessage.AnswerRecords.Add(resultAnswer);
+                dnsMessage.AnswerRecords.Add(resultAnswer);
+                dnsMessage.IsQuery = false;
             }
 
-            return resultMessage;
+            return dnsMessage;
         }
 
         public override Models.Strategies GetStrategy()

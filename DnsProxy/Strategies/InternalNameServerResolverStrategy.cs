@@ -45,8 +45,7 @@ namespace DnsProxy.Strategies
             Order = 100;
         }
 
-        public override Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage,
-            CancellationToken cancellationToken)
+        public override Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

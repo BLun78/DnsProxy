@@ -17,6 +17,7 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
@@ -27,31 +28,35 @@ namespace DnsProxy.Strategies
 {
     internal class DnsResolverStrategy : BaseResolverStrategy<DnsRule>, IDnsResolverStrategy<DnsRule>
     {
-        private readonly IDnsResolver DnsClient;
+        private readonly List<DnsClient> DnsClient;
 
         public DnsResolverStrategy(ILogger<DnsResolverStrategy> logger) : base(logger)
         {
-            DnsClient = new RecursiveDnsResolver();
             Order = 2000;
+            DnsClient = new List<DnsClient>();
         }
 
         public override async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, CancellationToken cancellationToken)
         {
-            var result = new List<DnsRecordBase>();
-            var message = dnsMessage.CreateResponseInstance();
-            
+            var options = new DnsQueryOptions()
+            {
+
+            };
+            options = null;
+
             foreach (var dnsQuestion in dnsMessage.Questions)
             {
-                var response = await DnsClient.ResolveAsync<DnsRecordBase>(dnsQuestion.Name, dnsQuestion.RecordType,
-                        dnsQuestion.RecordClass, CreateCancellationToken(cancellationToken))
-                    .ConfigureAwait(false);
-                result.AddRange(response);
+                foreach (DnsClient dnsClient in DnsClient)
+                {
+                    var response = await dnsClient.ResolveAsync(dnsQuestion.Name, dnsQuestion.RecordType,
+                            dnsQuestion.RecordClass, options, CreateCancellationToken(cancellationToken))
+                        .ConfigureAwait(false);
+                    dnsMessage.AnswerRecords.AddRange(response.AnswerRecords);
+                }
             }
 
-            message.AnswerRecords.AddRange(result);
-            
             DisposeCancellationToken();
-            return message;
+            return dnsMessage;
         }
 
         public override Models.Strategies GetStrategy()
@@ -61,7 +66,12 @@ namespace DnsProxy.Strategies
 
         public override void OnRuleChanged()
         {
-            
+            DnsClient.Clear();
+            foreach (IPAddress ipAddress in Rule.NameServerIpAddresses)
+            {
+                var dns = new DnsClient(ipAddress, Rule.QueryTimeout);
+                DnsClient.Add(dns);
+            }
         }
     }
 }
