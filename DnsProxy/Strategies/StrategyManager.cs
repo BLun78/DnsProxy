@@ -46,9 +46,6 @@ namespace DnsProxy.Strategies
         private readonly IDisposable _rulesConfigListner;
         private readonly IOptionsMonitor<RulesConfig> _rulesConfigOptionsMonitor;
         private readonly IServiceProvider _serviceProvider;
-        private CancellationTokenSource _cts;
-        private CancellationTokenSource _timeoutCts;
-
         private List<IRule> Rules;
 
         public StrategyManager(ILogger<StrategyManager> logger,
