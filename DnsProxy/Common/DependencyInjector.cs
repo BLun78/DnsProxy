@@ -33,11 +33,13 @@ namespace DnsProxy.Common
     {
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly IConfigurationRoot _configuration;
+        private static DnsContextAccessor _dnsContextAccessor;
 
         public DependencyInjector(IConfigurationRoot configuration, CancellationTokenSource cancellationTokenSource)
         {
             _configuration = configuration;
             _cancellationTokenSource = cancellationTokenSource;
+            _dnsContextAccessor = new DnsContextAccessor();
             ServiceProvider = ConfigureDependencyInjector().BuildServiceProvider(new ServiceProviderOptions
             {
                 ValidateOnBuild = true,
@@ -58,9 +60,8 @@ namespace DnsProxy.Common
             services.AddSingleton(_cancellationTokenSource);
 
             // Dns Context
-            var dnsContextAccessor = new DnsContextAccessor();
-            services.AddSingleton<IDnsContextAccessor>(dnsContextAccessor);
-            services.AddSingleton<IWriteDnsContextAccessor>(dnsContextAccessor);
+            services.AddSingleton<IDnsContextAccessor>(_dnsContextAccessor);
+            services.AddSingleton<IWriteDnsContextAccessor>(_dnsContextAccessor);
             services.AddTransient<IWriteDnsContext, DnsContext>();
             
             // Stratgies

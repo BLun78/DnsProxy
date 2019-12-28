@@ -200,10 +200,11 @@ namespace DnsProxy.Strategies
 
         private IWriteDnsContext GetWriteDnsContext(IServiceScope scope, DnsMessage dnsMessage, IPEndPoint ipEndPoint, CancellationToken cancellationToken)
         {
-            var dnsContextAccessor = scope.ServiceProvider.GetService<IWriteDnsContextAccessor>();
-            var dnsWriteContext = scope.ServiceProvider.GetService<IWriteDnsContext>();
+            var dnsContextAccessor = _serviceProvider.GetService<IWriteDnsContextAccessor>();
+            var dnsWriteContext = _serviceProvider.GetService<IWriteDnsContext>();
             dnsContextAccessor.WriteDnsContext = dnsWriteContext;
 
+            dnsWriteContext.IpEndPoint = ipEndPoint;
             dnsWriteContext.RootCancellationToken = cancellationToken;
             dnsWriteContext.Request = dnsMessage;
             dnsWriteContext.Response = dnsMessage.CreateResponseInstance();
