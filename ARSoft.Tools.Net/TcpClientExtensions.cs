@@ -52,7 +52,7 @@ namespace ARSoft.Tools.Net
             var connectTask = tcpClient.ConnectAsync(address, port);
             var timeoutTask = Task.Delay(timeout, token);
 
-            await Task.WhenAny(connectTask, timeoutTask).ConfigureAwait(false);
+            await Task.WhenAny(connectTask, timeoutTask).ConfigureAwait(true);
 
             if (connectTask.IsCompleted)
                 return true;

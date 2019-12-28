@@ -22,7 +22,7 @@ namespace DnsProxy.Models.Context
         public IDnsResolverStrategy InternalNameServerResolverStrategy { get; set; }
         public List<IDnsResolverStrategy> DnsResolverStrategies { get; set; }
         public CancellationToken RootCancellationToken { get; set; }
-        public IPEndPoint IpEndPoint { get; set; }
+        public string IpEndPoint { get; set; }
     }
 
     internal interface IDnsContext : IDisposable
@@ -36,7 +36,7 @@ namespace DnsProxy.Models.Context
         IDnsResolverStrategy InternalNameServerResolverStrategy { get; }
         List<IDnsResolverStrategy> DnsResolverStrategies { get; }
         CancellationToken RootCancellationToken { get; }
-        IPEndPoint IpEndPoint { get; }
+        string IpEndPoint { get; }
     }
 
     internal interface IWriteDnsContext : IDnsContext, IDisposable
@@ -49,7 +49,7 @@ namespace DnsProxy.Models.Context
         new IDnsResolverStrategy InternalNameServerResolverStrategy { get; set; }
         new List<IDnsResolverStrategy> DnsResolverStrategies { get; set; }
         new CancellationToken RootCancellationToken { get; set; }
-        new IPEndPoint IpEndPoint { get; set; }
+        new string IpEndPoint { get; set; }
     }
 }
 

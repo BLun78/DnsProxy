@@ -176,7 +176,7 @@ namespace ARSoft.Tools.Net.Dns
             }
 
             QueryReceivedEventArgs eventArgs = new QueryReceivedEventArgs(query, protocolType, remoteEndpoint);
-            await QueryReceived.RaiseAsync(this, eventArgs).ConfigureAwait(false);
+            await QueryReceived.RaiseAsync(this, eventArgs).ConfigureAwait(true);
             return eventArgs.Response;
         }
 
@@ -203,7 +203,7 @@ namespace ARSoft.Tools.Net.Dns
                 UdpReceiveResult receiveResult;
                 try
                 {
-                    receiveResult = await _udpListener.ReceiveAsync().ConfigureAwait(false);
+                    receiveResult = await _udpListener.ReceiveAsync().ConfigureAwait(true);
                 }
                 catch (ObjectDisposedException)
                 {
@@ -218,7 +218,7 @@ namespace ARSoft.Tools.Net.Dns
                 }
 
                 ClientConnectedEventArgs clientConnectedEventArgs = new ClientConnectedEventArgs(ProtocolType.Udp, receiveResult.RemoteEndPoint);
-                await ClientConnected.RaiseAsync(this, clientConnectedEventArgs).ConfigureAwait(false);
+                await ClientConnected.RaiseAsync(this, clientConnectedEventArgs).ConfigureAwait(true);
 
                 if (clientConnectedEventArgs.RefuseConnect)
                     return;
@@ -242,7 +242,7 @@ namespace ARSoft.Tools.Net.Dns
                 DnsMessageBase response;
                 try
                 {
-                    response = await ProcessMessageAsync(query, ProtocolType.Udp, receiveResult.RemoteEndPoint).ConfigureAwait(false);
+                    response = await ProcessMessageAsync(query, ProtocolType.Udp, receiveResult.RemoteEndPoint).ConfigureAwait(true);
                 }
                 catch (Exception ex)
                 {
@@ -347,7 +347,7 @@ namespace ARSoft.Tools.Net.Dns
                 }
                 #endregion
 
-                await _udpListener.SendAsync(buffer, length, receiveResult.RemoteEndPoint).ConfigureAwait(false);
+                await _udpListener.SendAsync(buffer, length, receiveResult.RemoteEndPoint).ConfigureAwait(true);
             }
             catch (Exception ex)
             {
@@ -387,10 +387,10 @@ namespace ARSoft.Tools.Net.Dns
             {
                 try
                 {
-                    client = await _tcpListener.AcceptTcpClientAsync().ConfigureAwait(false);
+                    client = await _tcpListener.AcceptTcpClientAsync().ConfigureAwait(true);
 
                     ClientConnectedEventArgs clientConnectedEventArgs = new ClientConnectedEventArgs(ProtocolType.Tcp, (IPEndPoint)client.Client.RemoteEndPoint);
-                    await ClientConnected.RaiseAsync(this, clientConnectedEventArgs).ConfigureAwait(false);
+                    await ClientConnected.RaiseAsync(this, clientConnectedEventArgs).ConfigureAwait(true);
 
                     if (clientConnectedEventArgs.RefuseConnect)
                         return;
@@ -409,14 +409,14 @@ namespace ARSoft.Tools.Net.Dns
                 {
                     while (true)
                     {
-                        byte[] buffer = await ReadIntoBufferAsync(client, stream, 2).ConfigureAwait(false);
+                        byte[] buffer = await ReadIntoBufferAsync(client, stream, 2).ConfigureAwait(true);
                         if (buffer == null) // client disconneted while reading or timeout
                             break;
 
                         int offset = 0;
                         int length = DnsMessageBase.ParseUShort(buffer, ref offset);
 
-                        buffer = await ReadIntoBufferAsync(client, stream, length).ConfigureAwait(false);
+                        buffer = await ReadIntoBufferAsync(client, stream, length).ConfigureAwait(true);
                         if (buffer == null) // client disconneted while reading or timeout
                         {
                             throw new Exception("Client disconnted or timed out while sending data");
@@ -437,7 +437,7 @@ namespace ARSoft.Tools.Net.Dns
                         DnsMessageBase response;
                         try
                         {
-                            response = await ProcessMessageAsync(query, ProtocolType.Tcp, (IPEndPoint)client.Client.RemoteEndPoint).ConfigureAwait(false);
+                            response = await ProcessMessageAsync(query, ProtocolType.Tcp, (IPEndPoint)client.Client.RemoteEndPoint).ConfigureAwait(true);
                         }
                         catch (Exception ex)
                         {
@@ -456,7 +456,7 @@ namespace ARSoft.Tools.Net.Dns
 
                         if (length <= 65535)
                         {
-                            await stream.WriteAsync(buffer, 0, length).ConfigureAwait(false);
+                            await stream.WriteAsync(buffer, 0, length).ConfigureAwait(true);
                         }
                         else
                         {
@@ -471,7 +471,7 @@ namespace ARSoft.Tools.Net.Dns
                                 response.ReturnCode = ReturnCode.ServerFailure;
 
                                 length = response.Encode(true, tsigMac, false, out buffer, out newTsigMac);
-                                await stream.WriteAsync(buffer, 0, length).ConfigureAwait(false);
+                                await stream.WriteAsync(buffer, 0, length).ConfigureAwait(true);
                             }
                             else
                             {
@@ -492,7 +492,7 @@ namespace ARSoft.Tools.Net.Dns
                                         length = response.Encode(true, tsigMac, isSubSequentResponse, out buffer, out newTsigMac);
                                     }
 
-                                    await stream.WriteAsync(buffer, 0, length).ConfigureAwait(false);
+                                    await stream.WriteAsync(buffer, 0, length).ConfigureAwait(true);
 
                                     if (nextPacketRecords.Count == 0)
                                         break;
@@ -541,7 +541,7 @@ namespace ARSoft.Tools.Net.Dns
 
             byte[] buffer = new byte[count];
 
-            if (await TryReadAsync(client, stream, buffer, count, token).ConfigureAwait(false))
+            if (await TryReadAsync(client, stream, buffer, count, token).ConfigureAwait(true))
                 return buffer;
 
             return null;
@@ -556,7 +556,7 @@ namespace ARSoft.Tools.Net.Dns
                 if (token.IsCancellationRequested || !client.IsConnected())
                     return false;
 
-                readBytes += await stream.ReadAsync(buffer, readBytes, length - readBytes, token).ConfigureAwait(false);
+                readBytes += await stream.ReadAsync(buffer, readBytes, length - readBytes, token).ConfigureAwait(true);
             }
 
             return true;

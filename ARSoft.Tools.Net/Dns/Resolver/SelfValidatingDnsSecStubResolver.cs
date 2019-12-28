@@ -98,7 +98,7 @@ namespace ARSoft.Tools.Net.Dns
             if (name == null)
                 throw new ArgumentNullException(nameof(name), "Name must be provided");
 
-            var res = await ResolveSecureAsync<T>(name, recordType, recordClass, token).ConfigureAwait(false);
+            var res = await ResolveSecureAsync<T>(name, recordType, recordClass, token).ConfigureAwait(true);
 
             return res.Records;
         }
@@ -146,7 +146,7 @@ namespace ARSoft.Tools.Net.Dns
                 IsDnsSecOk = true,
                 IsCheckingDisabled = true,
                 IsRecursionDesired = true
-            }, token).ConfigureAwait(false);
+            }, token).ConfigureAwait(true);
 
             if ((msg == null) || ((msg.ReturnCode != ReturnCode.NoError) && (msg.ReturnCode != ReturnCode.NxDomain)))
             {
@@ -159,14 +159,14 @@ namespace ARSoft.Tools.Net.Dns
 
             if (cName != null)
             {
-                DnsSecValidationResult cNameValidationResult = await _validator.ValidateAsync(name, RecordType.CName, recordClass, msg, new List<CNameRecord>() { cName }, null, token).ConfigureAwait(false);
+                DnsSecValidationResult cNameValidationResult = await _validator.ValidateAsync(name, RecordType.CName, recordClass, msg, new List<CNameRecord>() { cName }, null, token).ConfigureAwait(true);
                 if ((cNameValidationResult == DnsSecValidationResult.Bogus) || (cNameValidationResult == DnsSecValidationResult.Indeterminate))
                     throw new DnsSecValidationException("CNAME record could not be validated");
 
                 var records = msg.AnswerRecords.Where(x => (x.RecordType == recordType) && (x.RecordClass == recordClass) && x.Name.Equals(cName.CanonicalName)).OfType<T>().ToList();
                 if (records.Count > 0)
                 {
-                    DnsSecValidationResult recordsValidationResult = await _validator.ValidateAsync(cName.CanonicalName, recordType, recordClass, msg, records, null, token).ConfigureAwait(false);
+                    DnsSecValidationResult recordsValidationResult = await _validator.ValidateAsync(cName.CanonicalName, recordType, recordClass, msg, records, null, token).ConfigureAwait(true);
                     if ((recordsValidationResult == DnsSecValidationResult.Bogus) || (recordsValidationResult == DnsSecValidationResult.Indeterminate))
                         throw new DnsSecValidationException("CNAME matching records could not be validated");
 
@@ -176,7 +176,7 @@ namespace ARSoft.Tools.Net.Dns
                     return new DnsSecResult<T>(records, validationResult);
                 }
 
-                var cNameResults = await ResolveSecureAsync<T>(cName.CanonicalName, recordType, recordClass, token).ConfigureAwait(false);
+                var cNameResults = await ResolveSecureAsync<T>(cName.CanonicalName, recordType, recordClass, token).ConfigureAwait(true);
                 validationResult = cNameValidationResult == cNameResults.ValidationResult ? cNameValidationResult : DnsSecValidationResult.Unsigned;
 
                 if (cNameResults.Records.Count > 0)
@@ -187,7 +187,7 @@ namespace ARSoft.Tools.Net.Dns
 
             List<T> res = msg.AnswerRecords.Where(x => (x.RecordType == recordType) && (x.RecordClass == recordClass) && x.Name.Equals(name)).OfType<T>().ToList();
 
-            validationResult = await _validator.ValidateAsync(name, recordType, recordClass, msg, res, null, token).ConfigureAwait(false);
+            validationResult = await _validator.ValidateAsync(name, recordType, recordClass, msg, res, null, token).ConfigureAwait(true);
 
             if ((validationResult == DnsSecValidationResult.Bogus) || (validationResult == DnsSecValidationResult.Indeterminate))
                 throw new DnsSecValidationException("Response records could not be validated");

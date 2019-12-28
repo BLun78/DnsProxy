@@ -425,7 +425,9 @@ namespace ARSoft.Tools.Net.Dns
 
                 try
                 {
-                    resultData = await ((sendByTcp ? QueryByTcpAsync(endpointInfo.ServerAddress, messageData, messageLength, null, null, token) : QuerySingleResponseByUdpAsync(endpointInfo, messageData, messageLength, token)).ConfigureAwait(false));
+                    resultData = await ((sendByTcp 
+                        ? QueryByTcpAsync(endpointInfo.ServerAddress, messageData, messageLength, null, null, token) 
+                        : QuerySingleResponseByUdpAsync(endpointInfo, messageData, messageLength, token)).ConfigureAwait(true));
 
                     if (resultData == null)
                         return null;
@@ -450,7 +452,7 @@ namespace ARSoft.Tools.Net.Dns
 
                     if (result.IsTcpResendingRequested)
                     {
-                        resultData = await QueryByTcpAsync(resultData.ResponderAddress, messageData, messageLength, resultData.TcpClient, resultData.TcpStream, token).ConfigureAwait(false);
+                        resultData = await QueryByTcpAsync(resultData.ResponderAddress, messageData, messageLength, resultData.TcpClient, resultData.TcpStream, token).ConfigureAwait(true);
                         if (resultData != null)
                         {
                             TMessage tcpResult;
@@ -482,7 +484,7 @@ namespace ARSoft.Tools.Net.Dns
                     while (isTcpNextMessageWaiting)
                     {
                         // ReSharper disable once PossibleNullReferenceException
-                        resultData = await QueryByTcpAsync(resultData.ResponderAddress, null, 0, resultData.TcpClient, resultData.TcpStream, token).ConfigureAwait(false);
+                        resultData = await QueryByTcpAsync(resultData.ResponderAddress, null, 0, resultData.TcpClient, resultData.TcpStream, token).ConfigureAwait(true);
                         if (resultData != null)
                         {
                             TMessage tcpResult;
@@ -548,12 +550,12 @@ namespace ARSoft.Tools.Net.Dns
                     using (UdpClient udpClient = new UdpClient(new IPEndPoint(endpointInfo.LocalAddress, 0)))
                     {
                         IPEndPoint serverEndpoint = new IPEndPoint(endpointInfo.ServerAddress, _port);
-                        await udpClient.SendAsync(messageData, messageLength, serverEndpoint).ConfigureAwait(false);
+                        await udpClient.SendAsync(messageData, messageLength, serverEndpoint).ConfigureAwait(true);
 
                         udpClient.Client.SendTimeout = QueryTimeout;
                         udpClient.Client.ReceiveTimeout = QueryTimeout;
 
-                        UdpReceiveResult response = await udpClient.ReceiveAsync(QueryTimeout, token).ConfigureAwait(false);
+                        UdpReceiveResult response = await udpClient.ReceiveAsync(QueryTimeout, token).ConfigureAwait(true);
                         return new QueryResponse(response.Buffer, response.RemoteEndPoint.Address);
                     }
                 }
@@ -566,9 +568,9 @@ namespace ARSoft.Tools.Net.Dns
                         udpClient.Client.SendTimeout = QueryTimeout;
                         udpClient.Client.ReceiveTimeout = QueryTimeout;
 
-                        await udpClient.SendAsync(messageData, messageLength).ConfigureAwait(false);
+                        await udpClient.SendAsync(messageData, messageLength).ConfigureAwait(true);
 
-                        UdpReceiveResult response = await udpClient.ReceiveAsync(QueryTimeout, token).ConfigureAwait(false);
+                        UdpReceiveResult response = await udpClient.ReceiveAsync(QueryTimeout, token).ConfigureAwait(true);
                         return new QueryResponse(response.Buffer, response.RemoteEndPoint.Address);
                     }
                 }
@@ -618,7 +620,7 @@ namespace ARSoft.Tools.Net.Dns
                         SendTimeout = QueryTimeout
                     };
 
-                    if (!await tcpClient.TryConnectAsync(nameServer, _port, QueryTimeout, token).ConfigureAwait(false))
+                    if (!await tcpClient.TryConnectAsync(nameServer, _port, QueryTimeout, token).ConfigureAwait(true))
                     {
                         return null;
                     }
@@ -633,11 +635,11 @@ namespace ARSoft.Tools.Net.Dns
                 {
                     DnsMessageBase.EncodeUShort(lengthBuffer, ref tmp, (ushort)messageLength);
 
-                    await tcpStream.WriteAsync(lengthBuffer, 0, 2, token).ConfigureAwait(false);
-                    await tcpStream.WriteAsync(messageData, 0, messageLength, token).ConfigureAwait(false);
+                    await tcpStream.WriteAsync(lengthBuffer, 0, 2, token).ConfigureAwait(true);
+                    await tcpStream.WriteAsync(messageData, 0, messageLength, token).ConfigureAwait(true);
                 }
 
-                if (!await TryReadAsync(tcpClient, tcpStream, lengthBuffer, 2, token).ConfigureAwait(false))
+                if (!await TryReadAsync(tcpClient, tcpStream, lengthBuffer, 2, token).ConfigureAwait(true))
                     return null;
 
                 tmp = 0;
@@ -645,7 +647,7 @@ namespace ARSoft.Tools.Net.Dns
 
                 byte[] resultData = new byte[length];
 
-                return await TryReadAsync(tcpClient, tcpStream, resultData, length, token).ConfigureAwait(false) ? new QueryResponse(resultData, nameServer, tcpClient, tcpStream) : null;
+                return await TryReadAsync(tcpClient, tcpStream, resultData, length, token).ConfigureAwait(true) ? new QueryResponse(resultData, nameServer, tcpClient, tcpStream) : null;
             }
             catch (Exception e)
             {
@@ -663,7 +665,7 @@ namespace ARSoft.Tools.Net.Dns
                 if (token.IsCancellationRequested || !client.IsConnected())
                     return false;
 
-                readBytes += await stream.ReadAsync(buffer, readBytes, length - readBytes, token).ConfigureAwait(false);
+                readBytes += await stream.ReadAsync(buffer, readBytes, length - readBytes, token).ConfigureAwait(true);
             }
 
             return true;
@@ -691,7 +693,7 @@ namespace ARSoft.Tools.Net.Dns
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
             GetEndpointInfos().Select(x => SendMessageParallelAsync(x, message, messageData, messageLength, tsigKeySelector, tsigOriginalMac, results, CancellationTokenSource.CreateLinkedTokenSource(token, cancellationTokenSource.Token).Token)).ToArray();
 
-            await Task.Delay(QueryTimeout, token).ConfigureAwait(false);
+            await Task.Delay(QueryTimeout, token).ConfigureAwait(true);
 
             cancellationTokenSource.Cancel();
 
@@ -704,7 +706,7 @@ namespace ARSoft.Tools.Net.Dns
             using (UdpClient udpClient = new UdpClient(new IPEndPoint(endpointInfo.LocalAddress, 0)))
             {
                 IPEndPoint serverEndpoint = new IPEndPoint(endpointInfo.ServerAddress, _port);
-                await udpClient.SendAsync(messageData, messageLength, serverEndpoint).ConfigureAwait(false);
+                await udpClient.SendAsync(messageData, messageLength, serverEndpoint).ConfigureAwait(true);
 
                 udpClient.Client.SendTimeout = QueryTimeout;
                 udpClient.Client.ReceiveTimeout = QueryTimeout;
@@ -712,7 +714,7 @@ namespace ARSoft.Tools.Net.Dns
                 while (true)
                 {
                     TMessage result;
-                    UdpReceiveResult response = await udpClient.ReceiveAsync(int.MaxValue, token).ConfigureAwait(false);
+                    UdpReceiveResult response = await udpClient.ReceiveAsync(int.MaxValue, token).ConfigureAwait(true);
 
                     try
                     {

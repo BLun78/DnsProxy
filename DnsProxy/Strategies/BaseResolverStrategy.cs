@@ -88,13 +88,13 @@ namespace DnsProxy.Strategies
         protected void LogDnsQuestion(DnsQuestion dnsQuestion)
         {
             var dnsContext = DnsContextAccessor.DnsContext;
-            Logger.LogInformation("ClientIpAddress: {0} requested {1} (#{2}, {3}).", dnsContext?.IpEndPoint?.Address, dnsQuestion.Name,
+            Logger.LogTrace("ClientIpAddress: {0} requested {1} (#{2}, {3}).", dnsContext?.IpEndPoint, dnsQuestion.Name,
                 dnsContext?.Request?.TransactionID, dnsQuestion.RecordType);
         }
         protected void LogDnsQuestionAndResult(DnsQuestion dnsQuestion, List<DnsRecordBase> answers)
         {
             var dnsContext = DnsContextAccessor.DnsContext;
-            Logger.LogInformation("ClientIpAddress: {0} resolve {1} (#{2}, {3}).", dnsContext?.IpEndPoint?.Address, answers?.FirstOrDefault()?.ToString(),
+            Logger.LogTrace("ClientIpAddress: {0} resolve {1} (#{2}, {3}).", dnsContext?.IpEndPoint, answers?.FirstOrDefault()?.ToString(),
                 dnsContext?.Request?.TransactionID, dnsQuestion.RecordType);
         }
 

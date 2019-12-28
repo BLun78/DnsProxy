@@ -142,7 +142,7 @@ namespace ARSoft.Tools.Net.Dns
                 return records;
             }
 
-            DnsMessage msg = await _dnsClient.ResolveAsync(name, recordType, recordClass, null, token).ConfigureAwait(false);
+            DnsMessage msg = await _dnsClient.ResolveAsync(name, recordType, recordClass, null, token).ConfigureAwait(true);
 
             if ((msg == null) || ((msg.ReturnCode != ReturnCode.NoError) && (msg.ReturnCode != ReturnCode.NxDomain)))
             {
@@ -160,7 +160,7 @@ namespace ARSoft.Tools.Net.Dns
                     return records;
                 }
 
-                records = await ResolveAsync<T>(cName.CanonicalName, recordType, recordClass, token).ConfigureAwait(false);
+                records = await ResolveAsync<T>(cName.CanonicalName, recordType, recordClass, token).ConfigureAwait(true);
 
                 if (records.Count > 0)
                     _cache.Add(name, recordType, recordClass, records, DnsSecValidationResult.Indeterminate, Math.Min(cName.TimeToLive, records.Min(x => x.TimeToLive)));

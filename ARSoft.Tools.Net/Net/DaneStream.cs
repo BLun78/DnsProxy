@@ -155,8 +155,8 @@ namespace ARSoft.Tools.Net.Net
         /// </param>
         public async Task AuthenticateAsClientAsync(string targetHost, int port, ProtocolType protocol = ProtocolType.Tcp, X509CertificateCollection clientCertificates = null, SslProtocols enabledSslProtocols = SslProtocols.Tls12, bool checkCertificateRevocation = false)
         {
-            _tlsaRecords = await _resolver.ResolveSecureAsync<TlsaRecord>(DomainName.Parse("_" + port + "._" + EnumHelper<ProtocolType>.ToString(protocol).ToLower() + "." + targetHost), RecordType.Tlsa).ConfigureAwait(false);
-            await _sslStream.AuthenticateAsClientAsync(targetHost, clientCertificates ?? new X509CertificateCollection(), enabledSslProtocols, checkCertificateRevocation).ConfigureAwait(false);
+            _tlsaRecords = await _resolver.ResolveSecureAsync<TlsaRecord>(DomainName.Parse("_" + port + "._" + EnumHelper<ProtocolType>.ToString(protocol).ToLower() + "." + targetHost), RecordType.Tlsa).ConfigureAwait(true);
+            await _sslStream.AuthenticateAsClientAsync(targetHost, clientCertificates ?? new X509CertificateCollection(), enabledSslProtocols, checkCertificateRevocation).ConfigureAwait(true);
         }
 
         /// <summary>

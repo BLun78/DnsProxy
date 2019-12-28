@@ -93,7 +93,7 @@ namespace DnsProxy.Dns
         public void StartServer(int? listnerPort = null)
         {
             var ipEndPoint = new IPEndPoint(IPAddress.Any, listnerPort ?? DefaultDnsPort);
-            _server = new ARSoft.Tools.Net.Dns.DnsServer(ipEndPoint, 10, 10);
+            _server = new ARSoft.Tools.Net.Dns.DnsServer(ipEndPoint, 10000, 10000);
 
             _server.ClientConnected += OnClientConnected;
             _server.QueryReceived += OnQueryReceived;
@@ -106,7 +106,7 @@ namespace DnsProxy.Dns
             _server.Stop();
         }
 
-        private async Task<DnsMessage> DoQuery(DnsMessage dnsMessage, IPEndPoint ipEndPoint)
+        private async Task<DnsMessage> DoQuery(DnsMessage dnsMessage, string ipEndPoint)
         {
             var upstreamResponse = await _strategyManager.ResolveAsync(dnsMessage, ipEndPoint, _cancellationTokenSource.Token)
                 .ConfigureAwait(false);
@@ -122,7 +122,7 @@ namespace DnsProxy.Dns
             if (e.Query is DnsMessage message
                 && message.Questions.Count == 1)
             {
-                var upstreamResponse = await DoQuery(message, e.RemoteEndpoint).ConfigureAwait(false);
+                var upstreamResponse = await DoQuery(message, e.RemoteEndpoint.Address.ToString()).ConfigureAwait(false);
                 if (upstreamResponse != null)
                 {
                     upstreamResponse.ReturnCode = ReturnCode.NoError;

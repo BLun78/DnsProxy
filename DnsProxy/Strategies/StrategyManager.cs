@@ -123,13 +123,13 @@ namespace DnsProxy.Strategies
             return strategy;
         }
 
-        public async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, IPEndPoint ipEndPoint, CancellationToken cancellationToken)
+        public async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, string ipEndPoint, CancellationToken cancellationToken)
         {
             using (var scope = _serviceProvider.CreateScope())
             {
                 var dnsWriteContext = GetWriteDnsContext(scope, dnsMessage, ipEndPoint, cancellationToken);
 
-                using (var globalQueryTimeoutCts = new CancellationTokenSource(_dnsDefaultServerOptionsMonitor.CurrentValue.Servers.QueryTimeout))
+                using (var globalQueryTimeoutCts = new CancellationTokenSource(_dnsDefaultServerOptionsMonitor.CurrentValue.Servers.QueryTimeout * 2))
                 using (var joinedGlobalCts = CancellationTokenSource.CreateLinkedTokenSource(globalQueryTimeoutCts.Token, cancellationToken))
                 {
                     foreach (DnsQuestion dnsQuestion in dnsWriteContext.Response.Questions)
@@ -167,7 +167,7 @@ namespace DnsProxy.Strategies
             {
                 try
                 {
-                    using (var strategyQueryTimeoutCts = new CancellationTokenSource(dnsResolverStrategy.Rule.QueryTimeout))
+                    using (var strategyQueryTimeoutCts = new CancellationTokenSource(dnsResolverStrategy.Rule.QueryTimeout * 2))
                     using (var joinedStrategyCts = CancellationTokenSource.CreateLinkedTokenSource(strategyQueryTimeoutCts.Token, joinedGlobalCtx))
                     {
                         var answer = await dnsResolverStrategy
@@ -182,12 +182,12 @@ namespace DnsProxy.Strategies
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e,"A strategy error for the dns question {0} with the error message >> [{1}]", dnsQuestion?.Name?.ToString(), e.Message);
+                    _logger.LogError(e, "A strategy error for the dns question {0} with the error message >> [{1}]", dnsQuestion?.Name?.ToString(), e.Message);
                 }
             }
         }
 
-        private IWriteDnsContext GetWriteDnsContext(IServiceScope scope, DnsMessage dnsMessage, IPEndPoint ipEndPoint, CancellationToken cancellationToken)
+        private IWriteDnsContext GetWriteDnsContext(IServiceScope scope, DnsMessage dnsMessage, string ipEndPoint, CancellationToken cancellationToken)
         {
             var dnsContextAccessor = _serviceProvider.GetService<IWriteDnsContextAccessor>();
             var dnsWriteContext = _serviceProvider.GetService<IWriteDnsContext>();

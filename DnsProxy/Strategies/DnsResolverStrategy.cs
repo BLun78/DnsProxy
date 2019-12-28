@@ -43,18 +43,14 @@ namespace DnsProxy.Strategies
         {
             LogDnsQuestion(dnsQuestion);
             var result = new List<DnsRecordBase>();
-            var options = new DnsQueryOptions();
-            options = null;
 
-            foreach (IPAddress nameServerIpAddress in Rule.NameServerIpAddresses)
-            {
-                DnsClient.Add(new DnsClient(nameServerIpAddress, Rule.QueryTimeout));
-            }
+            DnsClient.Clear();
+            DnsClient.Add(new DnsClient(Rule.NameServerIpAddresses, Rule.QueryTimeout));
 
             foreach (var dnsClient in DnsClient)
             {
                 var response = await dnsClient.ResolveAsync(dnsQuestion.Name, dnsQuestion.RecordType,
-                        dnsQuestion.RecordClass, options, cancellationToken)
+                        dnsQuestion.RecordClass, null, cancellationToken)
                     .ConfigureAwait(false);
                 result.AddRange(response.AnswerRecords);
             }
