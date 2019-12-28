@@ -71,7 +71,7 @@ namespace DnsProxy.Strategies
                 var resultAnswer = answer.ToDnsRecord();
                result.Add(resultAnswer);
             }
-
+            LogDnsQuestionAndResult(dnsQuestion, result);
             return result;
         }
 

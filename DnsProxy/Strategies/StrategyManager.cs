@@ -138,53 +138,16 @@ namespace DnsProxy.Strategies
                         {
                             if (dnsResolverStrategy.MatchPattern(dnsQuestion))
                             {
-                                using (var strategyQueryTimeoutCts = new CancellationTokenSource(dnsResolverStrategy.Rule.QueryTimeout))
-                                using (var joinedStrategyCts = CancellationTokenSource.CreateLinkedTokenSource(strategyQueryTimeoutCts.Token, joinedGlobalCts.Token))
+                                await DoStrategy(dnsResolverStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
+                                if (dnsWriteContext.Response.AnswerRecords.Any())
                                 {
-                                    var answer = await dnsResolverStrategy
-                                        .ResolveAsync(dnsQuestion, joinedStrategyCts.Token)
-                                        .ConfigureAwait(false);
-                                    dnsWriteContext.Response.AnswerRecords.AddRange(answer);
                                     break;
                                 }
                             }
                         }
-
-                        if (!dnsWriteContext.Response.AnswerRecords.Any() && dnsWriteContext.HostsResolverStrategy != null)
-                        {
-                            using (var strategyQueryTimeoutCts = new CancellationTokenSource(dnsWriteContext.HostsResolverStrategy.Rule.QueryTimeout))
-                            using (var joinedStrategyCts = CancellationTokenSource.CreateLinkedTokenSource(strategyQueryTimeoutCts.Token, joinedGlobalCts.Token))
-                            {
-                                var answer = await dnsWriteContext.HostsResolverStrategy
-                                    .ResolveAsync(dnsQuestion, joinedStrategyCts.Token)
-                                    .ConfigureAwait(false);
-                                dnsWriteContext.Response.AnswerRecords.AddRange(answer);
-                            }
-                        }
-
-                        if (!dnsWriteContext.Response.AnswerRecords.Any() && dnsWriteContext.InternalNameServerResolverStrategy != null)
-                        {
-                            using (var strategyQueryTimeoutCts = new CancellationTokenSource(dnsWriteContext.InternalNameServerResolverStrategy.Rule.QueryTimeout))
-                            using (var joinedStrategyCts = CancellationTokenSource.CreateLinkedTokenSource(strategyQueryTimeoutCts.Token, joinedGlobalCts.Token))
-                            {
-                                var answer = await dnsWriteContext.InternalNameServerResolverStrategy
-                                    .ResolveAsync(dnsQuestion, joinedStrategyCts.Token)
-                                    .ConfigureAwait(false);
-                                dnsWriteContext.Response.AnswerRecords.AddRange(answer);
-                            }
-                        }
-
-                        if (!dnsWriteContext.Response.AnswerRecords.Any())
-                        {
-                            using (var strategyQueryTimeoutCts = new CancellationTokenSource(dnsWriteContext.DefaultDnsStrategy.Rule.QueryTimeout))
-                            using (var joinedStrategyCts = CancellationTokenSource.CreateLinkedTokenSource(strategyQueryTimeoutCts.Token, joinedGlobalCts.Token))
-                            {
-                                var answer = await dnsWriteContext.DefaultDnsStrategy
-                                    .ResolveAsync(dnsQuestion, joinedStrategyCts.Token)
-                                    .ConfigureAwait(false);
-                                dnsWriteContext.Response.AnswerRecords.AddRange(answer);
-                            }
-                        }
+                        await DoStrategy(dnsWriteContext.HostsResolverStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
+                        await DoStrategy(dnsWriteContext.InternalNameServerResolverStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
+                        await DoStrategy(dnsWriteContext.DefaultDnsStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
                     }
 
                     dnsWriteContext.Response.ReturnCode = ReturnCode.NoError;
@@ -194,6 +157,32 @@ namespace DnsProxy.Strategies
                     if (!dnsWriteContext.Response.AnswerRecords.Any()) dnsWriteContext.Response.ReturnCode = ReturnCode.ServerFailure;
 
                     return dnsWriteContext.Response;
+                }
+            }
+        }
+
+        private async Task DoStrategy(IDnsResolverStrategy dnsResolverStrategy, DnsQuestion dnsQuestion, IWriteDnsContext dnsWriteContext, CancellationToken joinedGlobalCtx)
+        {
+            if (!dnsWriteContext.Response.AnswerRecords.Any() && dnsResolverStrategy != null)
+            {
+                try
+                {
+                    using (var strategyQueryTimeoutCts = new CancellationTokenSource(dnsResolverStrategy.Rule.QueryTimeout))
+                    using (var joinedStrategyCts = CancellationTokenSource.CreateLinkedTokenSource(strategyQueryTimeoutCts.Token, joinedGlobalCtx))
+                    {
+                        var answer = await dnsResolverStrategy
+                            .ResolveAsync(dnsQuestion, joinedStrategyCts.Token)
+                            .ConfigureAwait(false);
+                        dnsWriteContext.Response.AnswerRecords.AddRange(answer);
+                    }
+                }
+                catch (ArgumentOutOfRangeException aoore)
+                {
+                    _logger.LogWarning(aoore, "A mapping is not supportet [{0}] for that dns question! >> [{1}]", aoore.ActualValue, aoore.Message);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e,"A strategy error for the dns question {0} with the error message >> [{1}]", dnsQuestion?.Name?.ToString(), e.Message);
                 }
             }
         }

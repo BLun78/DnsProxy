@@ -64,7 +64,7 @@ namespace ARSoft.Tools.Net.Dns
             if (!stringRepresentation[0].StartsWith("0x", StringComparison.InvariantCultureIgnoreCase))
                 throw new FormatException();
 
-            RecordData = stringRepresentation[0].Substring(2).Replace(".", String.Empty).FromBase16String();
+            RecordData = stringRepresentation[0].Substring(2).Replace(".", string.Empty).FromBase16String();
         }
 
         internal override string RecordDataToString()

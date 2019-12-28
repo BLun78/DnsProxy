@@ -32,7 +32,7 @@ namespace DnsProxy.Strategies
         private readonly List<DnsClient> DnsClient;
 
         public DnsResolverStrategy(
-            ILogger<DnsResolverStrategy> logger, 
+            ILogger<DnsResolverStrategy> logger,
             IDnsContextAccessor dnsContextAccessor) : base(logger, dnsContextAccessor)
         {
             Order = 2000;
@@ -59,7 +59,7 @@ namespace DnsProxy.Strategies
                 result.AddRange(response.AnswerRecords);
             }
 
-           //LogDnsQuestionAndResult(dnsQuestion, result);
+            LogDnsQuestionAndResult(dnsQuestion, result);
             return result;
         }
 

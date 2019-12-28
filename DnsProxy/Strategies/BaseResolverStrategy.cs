@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -88,6 +89,12 @@ namespace DnsProxy.Strategies
         {
             var dnsContext = DnsContextAccessor.DnsContext;
             Logger.LogInformation("ClientIpAddress: {0} requested {1} (#{2}, {3}).", dnsContext?.IpEndPoint?.Address, dnsQuestion.Name,
+                dnsContext?.Request?.TransactionID, dnsQuestion.RecordType);
+        }
+        protected void LogDnsQuestionAndResult(DnsQuestion dnsQuestion, List<DnsRecordBase> answers)
+        {
+            var dnsContext = DnsContextAccessor.DnsContext;
+            Logger.LogInformation("ClientIpAddress: {0} resolve {1} (#{2}, {3}).", dnsContext?.IpEndPoint?.Address, answers?.FirstOrDefault()?.ToString(),
                 dnsContext?.Request?.TransactionID, dnsQuestion.RecordType);
         }
 
