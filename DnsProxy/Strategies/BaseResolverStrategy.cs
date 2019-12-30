@@ -65,7 +65,7 @@ namespace DnsProxy.Strategies
 
         public virtual bool MatchPattern(DnsQuestion dnsQuestion)
         {
-            string pattern;
+            string pattern = null;
             if (!string.IsNullOrWhiteSpace(Rule.DomainNamePattern))
             {
                 pattern = Rule.DomainNamePattern;
@@ -75,11 +75,7 @@ namespace DnsProxy.Strategies
             {
                 pattern = $"^{Rule.DomainName.Replace(".", @"\.", StringComparison.InvariantCulture)}$";
             }
-            else
-            {
-                throw new NotSupportedException($"On Attribute {nameof(Rule.DomainName)} or {nameof(Rule.DomainNamePattern)} must be set!");
-            }
-            
+
             var match = Rule.GetDomainNameRegex().Match(dnsQuestion.Name.ToString());
             Logger.LogTrace("--> Pattern: {pattern} --> Question {Question}  ->> IsMatch=={match}", pattern, dnsQuestion.Name.ToString(), match.Success);
             return match.Success;

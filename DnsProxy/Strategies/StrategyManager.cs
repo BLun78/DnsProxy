@@ -134,17 +134,47 @@ namespace DnsProxy.Strategies
                 {
                     foreach (DnsQuestion dnsQuestion in dnsWriteContext.Response.Questions)
                     {
-                        await DoStrategy(dnsWriteContext.HostsResolverStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
-                        foreach (IDnsResolverStrategy dnsResolverStrategy in dnsWriteContext.DnsResolverStrategies)
+                        try
                         {
-                            if (dnsResolverStrategy.MatchPattern(dnsQuestion))
+                            var patternList = dnsWriteContext.DnsResolverStrategies
+                                .Where(dnsResolverStrategy => dnsResolverStrategy.MatchPattern(dnsQuestion)).ToList();
+
+                            foreach (var dnsResolverStrategy in patternList)
                             {
-                                await DoStrategy(dnsResolverStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
-                                // TODO: braek
+                                await DoStrategyAsync(dnsResolverStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
+                                if (dnsWriteContext.Response.AnswerRecords.Any())
+                                {
+                                    break;
+                                }
+                            }
+                            if (dnsWriteContext.Response.AnswerRecords.Any())
+                            {
+                                continue;
+                            }
+
+                            await DoStrategyAsync(dnsWriteContext.HostsResolverStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
+                            if (dnsWriteContext.Response.AnswerRecords.Any())
+                            {
+                                continue;
+                            }
+
+                            await DoStrategyAsync(dnsWriteContext.InternalNameServerResolverStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
+                            if (dnsWriteContext.Response.AnswerRecords.Any())
+                            {
+                                continue;
+                            }
+
+                            await DoStrategyAsync(dnsWriteContext.DefaultDnsStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
+                            if (dnsWriteContext.Response.AnswerRecords.Any())
+                            {
+                                continue;
                             }
                         }
-                        await DoStrategy(dnsWriteContext.InternalNameServerResolverStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
-                        await DoStrategy(dnsWriteContext.DefaultDnsStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                            throw;
+                        }
                     }
 
                     dnsWriteContext.Response.ReturnCode = ReturnCode.NoError;
@@ -158,7 +188,7 @@ namespace DnsProxy.Strategies
             }
         }
 
-        private async Task DoStrategy(IDnsResolverStrategy dnsResolverStrategy, DnsQuestion dnsQuestion, IWriteDnsContext dnsWriteContext, CancellationToken joinedGlobalCtx)
+        private async Task DoStrategyAsync(IDnsResolverStrategy dnsResolverStrategy, DnsQuestion dnsQuestion, IWriteDnsContext dnsWriteContext, CancellationToken joinedGlobalCtx)
         {
             if (!dnsWriteContext.Response.AnswerRecords.Any() && dnsResolverStrategy != null)
             {

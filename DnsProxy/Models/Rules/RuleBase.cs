@@ -42,7 +42,21 @@ namespace DnsProxy.Models.Rules
                 {
                     if (_regex == null)
                     {
-                        _regex = new Regex(DomainNamePattern);
+                        string pattern;
+                        if (!string.IsNullOrWhiteSpace(DomainNamePattern))
+                        {
+                            pattern = DomainNamePattern;
+
+                        }
+                        else if (!string.IsNullOrWhiteSpace(DomainName))
+                        {
+                            pattern = $"^{DomainName.Replace(".", @"\.", StringComparison.InvariantCulture)}$";
+                        }
+                        else
+                        {
+                            throw new NotSupportedException($"On Attribute {nameof(DomainName)} or {nameof(DomainNamePattern)} must be set!");
+                        }
+                        _regex = new Regex(pattern);
                     }
                 }
             }

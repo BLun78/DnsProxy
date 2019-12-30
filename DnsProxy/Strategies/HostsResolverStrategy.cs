@@ -57,21 +57,21 @@ namespace DnsProxy.Strategies
 
         public override Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken)
         {
+            LogDnsQuestion(dnsQuestion);
             var result = new List<DnsRecordBase>();
-            
-                switch (dnsQuestion.RecordType)
-                {
-                    case RecordType.Ptr:
-                        var recordsPtr = _memoryCache.Get<List<DnsRecordBase>>(dnsQuestion.Name.ToString());
-                        if (recordsPtr != null && recordsPtr.Any()) result.AddRange(recordsPtr);
-                        break;
-                    case RecordType.A:
-                    case RecordType.Aaaa:
-                        var records = _memoryCache.Get<List<AddressRecordBase>>(dnsQuestion.Name.ToString());
-                        if (records != null && records.Any()) result.AddRange(records);
-                        break;
-                }
-                return Task.FromResult(result);
+
+            switch (dnsQuestion.RecordType)
+            {
+                case RecordType.Ptr:
+                case RecordType.A:
+                case RecordType.Aaaa:
+                    var caxchItem = _memoryCache.Get<CacheItem>(dnsQuestion.Name.ToString());
+                    if (caxchItem != null && caxchItem.DnsRecordBases.Any()) result.AddRange((caxchItem.DnsRecordBases));
+                    break;
+            }
+
+            LogDnsQuestionAndResult(dnsQuestion, result);
+            return Task.FromResult(result);
         }
 
         public override Models.Strategies GetStrategy()
@@ -108,7 +108,7 @@ namespace DnsProxy.Strategies
                     foreach (var domainName in host.DomainNames) _memoryCache.Remove(domainName);
                 }
 
-            _hostConfigCache = (HostsConfig) hostConfig.Clone();
+            _hostConfigCache = (HostsConfig)hostConfig.Clone();
 
             if (_hostConfigCache != null)
                 foreach (var host in _hostConfigCache.Hosts)
@@ -116,17 +116,19 @@ namespace DnsProxy.Strategies
                     foreach (var ipAddress in host.IpAddresses)
                     {
                         var tempHost = host.ToPtrRecords(ipAddress);
+                        var cacheItem = new CacheItem(tempHost.Item2.Cast<DnsRecordBase>().ToList());
                         var cacheoptions = new MemoryCacheEntryOptions();
                         cacheoptions.SetPriority(CacheItemPriority.NeverRemove);
-                        _memoryCache.Set(ipAddress, tempHost, cacheoptions);
+                        _memoryCache.Set($"{tempHost.Item1}.", cacheItem, cacheoptions);
                     }
 
                     foreach (var domainName in host.DomainNames)
                     {
                         var tempHost = host.ToAddressRecord(domainName);
+                        var cacheItem = new CacheItem(tempHost.Cast<DnsRecordBase>().ToList());
                         var cacheoptions = new MemoryCacheEntryOptions();
                         cacheoptions.SetPriority(CacheItemPriority.NeverRemove);
-                        _memoryCache.Set(domainName, tempHost, cacheoptions);
+                        _memoryCache.Set($"{domainName}.", cacheItem, cacheoptions);
                     }
                 }
         }

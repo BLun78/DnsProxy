@@ -89,6 +89,7 @@ namespace DnsProxy.Common
             services.AddLogging(builder =>
             {
                 builder
+                    .SetMinimumLevel(LogLevel.Trace)
                     //.AddFilter("Microsoft", LogLevel.Warning)
                     //.AddFilter("Default", LogLevel.Trace)
                     //.AddFilter("System", LogLevel.Warning)

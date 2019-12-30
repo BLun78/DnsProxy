@@ -39,10 +39,10 @@ namespace DnsProxy.Common
                 switch (ip.AddressFamily)
                 {
                     case AddressFamily.InterNetwork:
-                        result.Add(new ARecord(DomainName.Parse(domainName), 30, IPAddress.Parse(ipAddress)));
+                        result.Add(new ARecord(DomainName.Parse(domainName), 300, IPAddress.Parse(ipAddress)));
                         break;
                     case AddressFamily.InterNetworkV6:
-                        result.Add(new AaaaRecord(DomainName.Parse(domainName), 30, IPAddress.Parse(ipAddress)));
+                        result.Add(new AaaaRecord(DomainName.Parse(domainName), 300, IPAddress.Parse(ipAddress)));
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(ip.AddressFamily), ip.AddressFamily, null);
@@ -70,7 +70,7 @@ namespace DnsProxy.Common
             }
 
             foreach (var domainName in host.DomainNames)
-                result.Add(new PtrRecord(DomainName.Parse(tempIpAddress), 30, DomainName.Parse(domainName)));
+                result.Add(new PtrRecord(DomainName.Parse(tempIpAddress), 300, DomainName.Parse(domainName)));
             return (tempIpAddress, result);
         }
     }
