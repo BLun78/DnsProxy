@@ -134,18 +134,15 @@ namespace DnsProxy.Strategies
                 {
                     foreach (DnsQuestion dnsQuestion in dnsWriteContext.Response.Questions)
                     {
+                        await DoStrategy(dnsWriteContext.HostsResolverStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
                         foreach (IDnsResolverStrategy dnsResolverStrategy in dnsWriteContext.DnsResolverStrategies)
                         {
                             if (dnsResolverStrategy.MatchPattern(dnsQuestion))
                             {
                                 await DoStrategy(dnsResolverStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
-                                if (dnsWriteContext.Response.AnswerRecords.Any())
-                                {
-                                    break;
-                                }
+                                // TODO: braek
                             }
                         }
-                        await DoStrategy(dnsWriteContext.HostsResolverStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
                         await DoStrategy(dnsWriteContext.InternalNameServerResolverStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
                         await DoStrategy(dnsWriteContext.DefaultDnsStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
                     }
@@ -184,6 +181,10 @@ namespace DnsProxy.Strategies
                 {
                     _logger.LogError(e, "A strategy error for the dns question {0} with the error message >> [{1}]", dnsQuestion?.Name?.ToString(), e.Message);
                 }
+            }
+            else
+            {
+                this._logger.LogInformation("Query is found! {0}", dnsResolverStrategy?.GetType()?.ToString());
             }
         }
 

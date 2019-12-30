@@ -22,15 +22,15 @@ namespace DnsProxy.Models.Rules
             QueryTimeout = rule.QueryTimeout;
         }
         
-        public Strategies Strategy { get; }
-        public bool IsEnabled { get; }
-        public string DomainName { get; }
-        public string DomainNamePattern { get; }
+        public Strategies Strategy { get; set; }
+        public bool IsEnabled { get; set; }
+        public string DomainName { get; set; }
+        public string DomainNamePattern { get; set; }
        
         /// <summary>
         ///     Query timeout in milliseconds
         /// </summary>
-        public int QueryTimeout { get; }
+        public int QueryTimeout { get; set; }
 
         public abstract Type GetStraegy();
 

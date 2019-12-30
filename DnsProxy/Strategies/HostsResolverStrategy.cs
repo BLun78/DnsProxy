@@ -62,15 +62,16 @@ namespace DnsProxy.Strategies
                 switch (dnsQuestion.RecordType)
                 {
                     case RecordType.Ptr:
+                        var recordsPtr = _memoryCache.Get<List<DnsRecordBase>>(dnsQuestion.Name.ToString());
+                        if (recordsPtr != null && recordsPtr.Any()) result.AddRange(recordsPtr);
+                        break;
                     case RecordType.A:
                     case RecordType.Aaaa:
-                        var records = _memoryCache.Get<List<DnsRecordBase>>(dnsQuestion.RecordType);
+                        var records = _memoryCache.Get<List<AddressRecordBase>>(dnsQuestion.Name.ToString());
                         if (records != null && records.Any()) result.AddRange(records);
                         break;
                 }
-
-
-            return Task.FromResult(result);
+                return Task.FromResult(result);
         }
 
         public override Models.Strategies GetStrategy()
@@ -115,19 +116,17 @@ namespace DnsProxy.Strategies
                     foreach (var ipAddress in host.IpAddresses)
                     {
                         var tempHost = host.ToPtrRecords(ipAddress);
-                        var entry = _memoryCache.CreateEntry(tempHost.Item1);
-                        entry.SetAbsoluteExpiration(TimeSpan.MaxValue);
-                        entry.SetValue(tempHost.Item2);
-                        entry.SetPriority(CacheItemPriority.NeverRemove);
+                        var cacheoptions = new MemoryCacheEntryOptions();
+                        cacheoptions.SetPriority(CacheItemPriority.NeverRemove);
+                        _memoryCache.Set(ipAddress, tempHost, cacheoptions);
                     }
 
                     foreach (var domainName in host.DomainNames)
                     {
                         var tempHost = host.ToAddressRecord(domainName);
-                        var entry = _memoryCache.CreateEntry(domainName);
-                        entry.SetAbsoluteExpiration(TimeSpan.MaxValue);
-                        entry.SetValue(tempHost);
-                        entry.SetPriority(CacheItemPriority.NeverRemove);
+                        var cacheoptions = new MemoryCacheEntryOptions();
+                        cacheoptions.SetPriority(CacheItemPriority.NeverRemove);
+                        _memoryCache.Set(domainName, tempHost, cacheoptions);
                     }
                 }
         }
