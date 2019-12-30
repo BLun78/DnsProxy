@@ -16,13 +16,16 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Strategies
@@ -33,7 +36,8 @@ namespace DnsProxy.Strategies
 
         public DnsResolverStrategy(
             ILogger<DnsResolverStrategy> logger,
-            IDnsContextAccessor dnsContextAccessor) : base(logger, dnsContextAccessor)
+            IDnsContextAccessor dnsContextAccessor,
+            IMemoryCache memoryCache) : base(logger, dnsContextAccessor, memoryCache)
         {
             Order = 2000;
             DnsClient = new List<DnsClient>();
@@ -52,7 +56,13 @@ namespace DnsProxy.Strategies
                 var response = await dnsClient.ResolveAsync(dnsQuestion.Name, dnsQuestion.RecordType,
                         dnsQuestion.RecordClass, null, cancellationToken)
                     .ConfigureAwait(false);
+
                 result.AddRange(response.AnswerRecords);
+            }
+
+            if (result.Any())
+            {
+                StoreInCache(result, dnsQuestion.Name.ToString(), new MemoryCacheEntryOptions().SetAbsoluteExpiration(new TimeSpan(0, 0, result.First().TimeToLive)));
             }
 
             LogDnsQuestionAndResult(dnsQuestion, result);

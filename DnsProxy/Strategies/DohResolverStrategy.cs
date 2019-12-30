@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,7 +41,7 @@ namespace DnsProxy.Strategies
             ILogger<DohResolverStrategy> logger,
             IMemoryCache memoryCache,
             IHttpClientFactory httpClientFactory,
-            IDnsContextAccessor dnsContextAccessor) : base(logger, dnsContextAccessor)
+            IDnsContextAccessor dnsContextAccessor) : base(logger, dnsContextAccessor, memoryCache)
         {
             _memoryCache = memoryCache;
             _dohClient = new DohClient();
@@ -70,7 +71,15 @@ namespace DnsProxy.Strategies
             {
                 var resultAnswer = answer.ToDnsRecord();
                result.Add(resultAnswer);
+
+              
             }
+
+            if (result.Any())
+            {
+                StoreInCache(result, dnsQuestion.Name.ToString(), new MemoryCacheEntryOptions().SetAbsoluteExpiration(new TimeSpan(0, 0, result.First().TimeToLive)));
+            }
+
             LogDnsQuestionAndResult(dnsQuestion, result);
             return result;
         }

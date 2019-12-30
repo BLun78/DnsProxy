@@ -24,8 +24,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common;
+using DnsProxy.Models;
 using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Strategies
@@ -36,13 +38,17 @@ namespace DnsProxy.Strategies
     {
         protected readonly ILogger<BaseResolverStrategy<TRule>> Logger;
         protected readonly IDnsContextAccessor DnsContextAccessor;
+        private readonly IMemoryCache _memoryCache;
         public TRule Rule { get; protected set; }
         IRule IDnsResolverStrategy.Rule => Rule;
 
-        protected BaseResolverStrategy(ILogger<BaseResolverStrategy<TRule>> logger, IDnsContextAccessor dnsContextAccessor)
+        protected BaseResolverStrategy(ILogger<BaseResolverStrategy<TRule>> logger, 
+            IDnsContextAccessor dnsContextAccessor,
+            IMemoryCache memoryCache)
         {
             Logger = logger;
             DnsContextAccessor = dnsContextAccessor;
+            _memoryCache = memoryCache;
         }
 
         public int Order { get; protected set; }
@@ -92,6 +98,16 @@ namespace DnsProxy.Strategies
             var dnsContext = DnsContextAccessor.DnsContext;
             Logger.LogTrace("ClientIpAddress: {0} resolve {1} (#{2}, {3}).", dnsContext?.IpEndPoint, answers?.FirstOrDefault()?.ToString(),
                 dnsContext?.Request?.TransactionID.ToString(), dnsQuestion.RecordType);
+        }
+
+
+        protected void StoreInCache(List<DnsRecordBase> data, string key, MemoryCacheEntryOptions cacheEntryOptions)
+        {
+            var cacheItem = new CacheItem(data);
+            var lastChar = key.Substring(key.Length - 1, 1);
+            _memoryCache.Set(lastChar == "."
+                ? key
+                : $"{key}.", cacheItem, cacheEntryOptions);
         }
 
         #region IDisposable Support

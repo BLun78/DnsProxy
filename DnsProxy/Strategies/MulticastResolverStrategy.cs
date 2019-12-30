@@ -25,6 +25,7 @@ using DnsProxy.Common;
 using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Makaretu.Dns;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Strategies
@@ -33,7 +34,8 @@ namespace DnsProxy.Strategies
     {
         public MulticastResolverStrategy(
             ILogger<MulticastResolverStrategy> logger,
-            IDnsContextAccessor dnsContextAccessor) : base(logger, dnsContextAccessor)
+            IDnsContextAccessor dnsContextAccessor,
+            IMemoryCache memoryCache) : base(logger, dnsContextAccessor, memoryCache)
         {
             Order = 5000;
         }

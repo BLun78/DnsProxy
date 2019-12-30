@@ -24,6 +24,7 @@ using ARSoft.Tools.Net.Dns;
 using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Makaretu.Dns.Resolving;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -39,14 +40,15 @@ namespace DnsProxy.Strategies
         public InternalNameServerResolverStrategy(
             ILogger<InternalNameServerResolverStrategy> logger,
             IOptionsMonitor<NameServerOptions> nameServerOptions,
-            IDnsContextAccessor dnsContextAccessor) : base(logger, dnsContextAccessor)
+            IDnsContextAccessor dnsContextAccessor,
+            IMemoryCache memoryCache) : base(logger, dnsContextAccessor, memoryCache)
         {
             _nameServerOptions = nameServerOptions;
             _nameServerOptionsListener = _nameServerOptions.OnChange(NameServerOptionsListener);
 
             var catalog = new Catalog();
             catalog.IncludeRootHints();
-            _resolver = new NameServer {Catalog = catalog};
+            _resolver = new NameServer { Catalog = catalog };
             Order = 100;
         }
 

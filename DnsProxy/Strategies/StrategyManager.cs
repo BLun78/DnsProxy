@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
@@ -136,6 +135,12 @@ namespace DnsProxy.Strategies
                     {
                         try
                         {
+                            await DoStrategyAsync(dnsWriteContext.HostsResolverStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
+                            if (dnsWriteContext.Response.AnswerRecords.Any())
+                            {
+                                continue;
+                            }
+
                             var patternList = dnsWriteContext.DnsResolverStrategies
                                 .Where(dnsResolverStrategy => dnsResolverStrategy.MatchPattern(dnsQuestion)).ToList();
 
@@ -151,13 +156,7 @@ namespace DnsProxy.Strategies
                             {
                                 continue;
                             }
-
-                            await DoStrategyAsync(dnsWriteContext.HostsResolverStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
-                            if (dnsWriteContext.Response.AnswerRecords.Any())
-                            {
-                                continue;
-                            }
-
+                            
                             await DoStrategyAsync(dnsWriteContext.InternalNameServerResolverStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
                             if (dnsWriteContext.Response.AnswerRecords.Any())
                             {
@@ -172,7 +171,7 @@ namespace DnsProxy.Strategies
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine(e);
+                            _logger.LogError(e,"At the resolving process is an error raised: [{0}]",e.Message);
                             throw;
                         }
                     }

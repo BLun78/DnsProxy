@@ -43,7 +43,7 @@ namespace DnsProxy.Strategies
             ILogger<HostsResolverStrategy> logger,
             IMemoryCache memoryCache,
             IOptionsMonitor<HostsConfig> hostConfigOptionsMonitor,
-            IDnsContextAccessor dnsContextAccessor) : base(logger, dnsContextAccessor)
+            IDnsContextAccessor dnsContextAccessor) : base(logger, dnsContextAccessor, memoryCache)
         {
             CacheCancellationToken = new CancellationToken();
             _memoryCache = memoryCache;
@@ -70,13 +70,19 @@ namespace DnsProxy.Strategies
                     break;
             }
 
-            LogDnsQuestionAndResult(dnsQuestion, result);
+            LogDnsQuestionAndResultFromCache(dnsQuestion, result);
             return Task.FromResult(result);
         }
 
         public override Models.Strategies GetStrategy()
         {
             return Models.Strategies.Hosts;
+        }
+        protected void LogDnsQuestionAndResultFromCache(DnsQuestion dnsQuestion, List<DnsRecordBase> answers)
+        {
+            var dnsContext = DnsContextAccessor.DnsContext;
+            Logger.LogTrace("Cache >> ClientIpAddress: {0} resolve by cache to {1} (#{2}, {3}).", dnsContext?.IpEndPoint, answers?.FirstOrDefault()?.ToString(),
+                dnsContext?.Request?.TransactionID.ToString(), dnsQuestion.RecordType);
         }
 
         public override void OnRuleChanged()
@@ -99,13 +105,18 @@ namespace DnsProxy.Strategies
 
         private void ParseHostConfig(HostsConfig hostConfig, string listener = "")
         {
-            Logger.LogInformation("listner={listner}", listener);
-
             if (_hostConfigCache != null)
                 foreach (var host in _hostConfigCache.Hosts)
                 {
-                    foreach (var ipAddress in host.IpAddresses) _memoryCache.Remove(ipAddress);
-                    foreach (var domainName in host.DomainNames) _memoryCache.Remove(domainName);
+                    foreach (var ipAddress in host.IpAddresses)
+                    {
+                        var tempHost = host.ToPtrRecords(ipAddress);
+                        RemoveCacheItem(tempHost.Item1);
+                    }
+                    foreach (var domainName in host.DomainNames)
+                    {
+                        RemoveCacheItem(domainName);
+                    }
                 }
 
             _hostConfigCache = (HostsConfig)hostConfig.Clone();
@@ -116,21 +127,30 @@ namespace DnsProxy.Strategies
                     foreach (var ipAddress in host.IpAddresses)
                     {
                         var tempHost = host.ToPtrRecords(ipAddress);
-                        var cacheItem = new CacheItem(tempHost.Item2.Cast<DnsRecordBase>().ToList());
-                        var cacheoptions = new MemoryCacheEntryOptions();
-                        cacheoptions.SetPriority(CacheItemPriority.NeverRemove);
-                        _memoryCache.Set($"{tempHost.Item1}.", cacheItem, cacheoptions);
+                        StoreInCache(tempHost.Item2.Cast<DnsRecordBase>().ToList(), tempHost.Item1);
                     }
 
                     foreach (var domainName in host.DomainNames)
                     {
                         var tempHost = host.ToAddressRecord(domainName);
-                        var cacheItem = new CacheItem(tempHost.Cast<DnsRecordBase>().ToList());
-                        var cacheoptions = new MemoryCacheEntryOptions();
-                        cacheoptions.SetPriority(CacheItemPriority.NeverRemove);
-                        _memoryCache.Set($"{domainName}.", cacheItem, cacheoptions);
+                        StoreInCache(tempHost.Cast<DnsRecordBase>().ToList(), domainName);
                     }
                 }
+        }
+
+        private void RemoveCacheItem(string key)
+        {
+            var lastChar = key.Substring(key.Length - 1, 1);
+            _memoryCache.Remove(lastChar == "."
+                ? key
+                : $"{key}.");
+        }
+
+        private void StoreInCache(List<DnsRecordBase> data, string key)
+        {
+            var cacheoptions = new MemoryCacheEntryOptions();
+            cacheoptions.SetPriority(CacheItemPriority.NeverRemove);
+            StoreInCache(data, key, cacheoptions);
         }
     }
 }
