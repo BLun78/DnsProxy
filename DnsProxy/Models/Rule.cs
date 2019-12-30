@@ -64,8 +64,8 @@ namespace DnsProxy.Models
                     return new DnsRule(this);
                 case Strategies.DoH:
                     return new DohRule(this);
-                case Strategies.Multicast:
-                    return new MulticastRule(this);
+                case Strategies.Aws:
+                    return new AwsRule(this);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(Strategy), Strategy, null);
             }

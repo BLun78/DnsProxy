@@ -30,7 +30,7 @@ namespace DnsProxy.Models
         [EnumMember(Value = nameof(Dns))] Dns = 3,
         [EnumMember(Value = nameof(DoH))] DoH = 4,
 
-        [EnumMember(Value = nameof(Multicast))]
-        Multicast = 5
+        [EnumMember(Value = nameof(Aws))]
+        Aws = 5
     }
 }

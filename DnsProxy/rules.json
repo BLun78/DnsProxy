@@ -3,8 +3,12 @@
     "Rules": [
       {
         "DomainNamePattern": "(.*)\\.box",
-        "Strategy": "Multicast",
-        "IsEnabled": false,
+        "NameServer": [
+          "10.10.34.21"
+        ],
+        "Strategy": "Dns",
+        "IsEnabled": true,
+        "CompressionMutation": true,
         "QueryTimeout": 30000
       },
       {
@@ -26,7 +30,7 @@
         "QueryTimeout": 30000
       },
       {
-        "DomainNamePattern": "blun.de.",
+        "DomainName": "blun.de.",
         "Strategy": "DoH",
         "NameServer": [
           "https://cloudflare-dns.com/dns-query"
@@ -52,7 +56,7 @@
           ""
         ],
         "IpAddress": "",
-        // Dns, DoH, Multicast
+        // Dns, DoH
         "Strategy": "",
         "IsEnabled": false,
         "CompressionMutation": false,

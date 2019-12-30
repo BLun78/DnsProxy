@@ -69,12 +69,10 @@ namespace DnsProxy.Common
             services.AddTransient<IDnsResolverStrategy, DohResolverStrategy>();
             services.AddTransient<IDnsResolverStrategy, DnsResolverStrategy>();
             services.AddSingleton<IDnsResolverStrategy, InternalNameServerResolverStrategy>();
-            services.AddSingleton<IDnsResolverStrategy, MulticastResolverStrategy>();
             services.AddSingleton<IDnsResolverStrategy, HostsResolverStrategy>();
             services.AddTransient<DohResolverStrategy>();
             services.AddTransient<DnsResolverStrategy>();
             services.AddSingleton<InternalNameServerResolverStrategy>();
-            services.AddSingleton<MulticastResolverStrategy>();
             services.AddSingleton<HostsResolverStrategy>();
 
             // .net core frameworks
@@ -90,9 +88,8 @@ namespace DnsProxy.Common
             {
                 builder
                     .SetMinimumLevel(LogLevel.Trace)
-                    //.AddFilter("Microsoft", LogLevel.Warning)
-                    //.AddFilter("Default", LogLevel.Trace)
-                    //.AddFilter("System", LogLevel.Warning)
+                    .AddFilter("Microsoft", LogLevel.Warning)
+                    .AddFilter("System", LogLevel.Warning)
                     //.AddFilter("DnsProxy.Program", LogLevel.Trace)
                     //.AddFilter("DnsProxy.Dns", LogLevel.Trace)
                     //.AddFilter("DnsProxy.Dns.DnsServer", LogLevel.Trace)

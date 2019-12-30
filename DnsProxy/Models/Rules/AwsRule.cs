@@ -21,19 +21,19 @@ using DnsProxy.Strategies;
 
 namespace DnsProxy.Models.Rules
 {
-    internal class MulticastRule : RuleBase, IRule, IRuleStrategy
+    internal class AwsRule : RuleBase, IRule, IRuleStrategy
     {
-        public MulticastRule() : base()
+        public AwsRule() : base()
         {
         }
 
-        public MulticastRule(Rule rule) : base(rule)
+        public AwsRule(Rule rule) : base(rule)
         {
         }
 
         public override Type GetStraegy()
         {
-            return typeof(MulticastResolverStrategy);
+            return null;
         }
     }
 }

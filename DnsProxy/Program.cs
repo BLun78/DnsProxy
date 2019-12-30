@@ -55,9 +55,10 @@ namespace DnsProxy
                 Title = ApplicationInformation.DefaultTitle;
                 ApplicationInformation.LogAssemblyInformation();
                 Logger.LogInformation("starts up {DefaultTitle}", ApplicationInformation.DefaultTitle);
-                _dnsServer = ServiceProvider.GetService<DnsServer>();
-
-                return await WaitForEndAsync().ConfigureAwait(true);
+                using (_dnsServer = ServiceProvider.GetService<DnsServer>())
+                {
+                    return await WaitForEndAsync().ConfigureAwait(true);
+                }
             }
 #pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception e)
@@ -70,7 +71,6 @@ namespace DnsProxy
             finally
             {
                 Logger.LogInformation("stop {DefaultTitle}", ApplicationInformation.DefaultTitle);
-                await Task.Delay(100).ConfigureAwait(true);
             }
         }
 
@@ -101,7 +101,6 @@ namespace DnsProxy
                     }
                 }
 
-                _dnsServer.StopServer();
                 CancellationTokenSource.Cancel();
                 CancellationTokenSource.Dispose();
                 return 0;

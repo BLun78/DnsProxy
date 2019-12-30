@@ -61,8 +61,9 @@ namespace DnsProxy.Dns
 
         public void Dispose()
         {
+            StopServer();
             _dnsHostConfigListener?.Dispose();
-            ((IDisposable) _server)?.Dispose();
+            ((IDisposable)_server)?.Dispose();
         }
 
         [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "<Pending>")]
@@ -90,7 +91,7 @@ namespace DnsProxy.Dns
             StartServer(dnsHostConfig.ListenerPort);
         }
 
-        public void StartServer(int? listnerPort = null)
+        private void StartServer(int? listnerPort = null)
         {
             var ipEndPoint = new IPEndPoint(IPAddress.Any, listnerPort ?? DefaultDnsPort);
             _server = new ARSoft.Tools.Net.Dns.DnsServer(ipEndPoint, 10000, 10000);
@@ -101,7 +102,7 @@ namespace DnsProxy.Dns
             _server.Start();
         }
 
-        public void StopServer()
+        private void StopServer()
         {
             _server.Stop();
         }
@@ -114,7 +115,7 @@ namespace DnsProxy.Dns
                 && upstreamResponse.AnswerRecords.Any())
                 return upstreamResponse;
 
-            return await Task.FromResult((DnsMessage) null).ConfigureAwait(false);
+            return await Task.FromResult((DnsMessage)null).ConfigureAwait(false);
         }
 
         private async Task OnQueryReceived(object sender, QueryReceivedEventArgs e)
