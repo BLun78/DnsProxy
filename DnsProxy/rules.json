@@ -14,7 +14,7 @@
           "https://cloudflare-dns.com/dns-query"
         ],
         "IsEnabled": true,
-        "QueryTimeout": 10000
+        "QueryTimeout": 30000
       },
       {
         "DomainNamePattern": "(.*)\\.blun.de.",
@@ -23,7 +23,7 @@
           "https://cloudflare-dns.com/dns-query"
         ],
         "IsEnabled": true,
-        "QueryTimeout": 10000
+        "QueryTimeout": 30000
       },
       {
         "DomainNamePattern": "blun.de.",
@@ -32,7 +32,7 @@
           "https://cloudflare-dns.com/dns-query"
         ],
         "IsEnabled": true,
-        "QueryTimeout": 10000
+        "QueryTimeout": 30000
       },
       {
         "DomainName": "www.google.de",

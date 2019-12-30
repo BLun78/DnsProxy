@@ -10,7 +10,6 @@
   "DnsDefaultServer": {
     "Servers": {
       "NameServer": [
-        "10.211.55.1",
         "1.1.1.1",
         "9.9.9.9"
       ],

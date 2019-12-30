@@ -16,6 +16,8 @@
 
 #endregion
 
+using System.Text.RegularExpressions;
+
 namespace DnsProxy.Models.Rules
 {
     internal interface IRule : IRuleStrategy
@@ -29,5 +31,7 @@ namespace DnsProxy.Models.Rules
         ///     Query timeout in milliseconds
         /// </summary>
         int QueryTimeout { get; }
+
+        Regex GetDomainNameRegex();
     }
 }

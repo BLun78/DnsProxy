@@ -63,7 +63,7 @@ namespace DnsProxy.Strategies
             Rule = rule;
         }
 
-        public bool MatchPattern(DnsQuestion dnsQuestion)
+        public virtual bool MatchPattern(DnsQuestion dnsQuestion)
         {
             string pattern;
             if (!string.IsNullOrWhiteSpace(Rule.DomainNamePattern))
@@ -79,8 +79,8 @@ namespace DnsProxy.Strategies
             {
                 throw new NotSupportedException($"On Attribute {nameof(Rule.DomainName)} or {nameof(Rule.DomainNamePattern)} must be set!");
             }
-
-            var match = Regex.Match(dnsQuestion.Name.ToString(), pattern);
+            
+            var match = Rule.GetDomainNameRegex().Match(dnsQuestion.Name.ToString());
             Logger.LogTrace("--> Pattern: {pattern} --> Question {Question}  ->> IsMatch=={match}", pattern, dnsQuestion.Name.ToString(), match.Success);
             return match.Success;
         }
@@ -89,13 +89,13 @@ namespace DnsProxy.Strategies
         {
             var dnsContext = DnsContextAccessor.DnsContext;
             Logger.LogTrace("ClientIpAddress: {0} requested {1} (#{2}, {3}).", dnsContext?.IpEndPoint, dnsQuestion.Name,
-                dnsContext?.Request?.TransactionID, dnsQuestion.RecordType);
+                dnsContext?.Request?.TransactionID.ToString(), dnsQuestion.RecordType);
         }
         protected void LogDnsQuestionAndResult(DnsQuestion dnsQuestion, List<DnsRecordBase> answers)
         {
             var dnsContext = DnsContextAccessor.DnsContext;
             Logger.LogTrace("ClientIpAddress: {0} resolve {1} (#{2}, {3}).", dnsContext?.IpEndPoint, answers?.FirstOrDefault()?.ToString(),
-                dnsContext?.Request?.TransactionID, dnsQuestion.RecordType);
+                dnsContext?.Request?.TransactionID.ToString(), dnsQuestion.RecordType);
         }
 
         #region IDisposable Support

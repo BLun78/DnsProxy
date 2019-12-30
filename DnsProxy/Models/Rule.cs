@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 using DnsProxy.Models.Rules;
 
 namespace DnsProxy.Models
@@ -41,6 +42,11 @@ namespace DnsProxy.Models
         public string DomainNamePattern { get; set; }
 
         public Type GetStraegy()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Regex GetDomainNameRegex()
         {
             throw new NotImplementedException();
         }

@@ -8,33 +8,48 @@ namespace DnsProxy.Models.Rules
 {
     internal abstract class RuleBase : IRule, IRuleStrategy
     {
-        private readonly IRule _rule;
-
-        protected RuleBase() : this(new MinimumRule())
+        protected RuleBase()
         {
+            _lockObject = new object();
         }
 
-        protected RuleBase(IRule rule)
+        protected RuleBase(IRule rule) : this()
         {
-            _rule = rule;
+            Strategy = rule.Strategy;
+            IsEnabled = rule.IsEnabled;
+            DomainName = rule.DomainName;
+            DomainNamePattern = rule.DomainNamePattern;
+            QueryTimeout = rule.QueryTimeout;
         }
-
-        public Strategies Strategy => _rule.Strategy;
-        public bool IsEnabled => _rule.IsEnabled;
-        public string DomainName => _rule.DomainName;
-        public string DomainNamePattern => _rule.DomainNamePattern;
-
+        
+        public Strategies Strategy { get; }
+        public bool IsEnabled { get; }
+        public string DomainName { get; }
+        public string DomainNamePattern { get; }
+       
         /// <summary>
         ///     Query timeout in milliseconds
         /// </summary>
-        public int QueryTimeout => _rule.QueryTimeout;
+        public int QueryTimeout { get; }
 
         public abstract Type GetStraegy();
 
         public Regex GetDomainNameRegex()
         {
-            return new Regex(DomainNamePattern);
+            if (_regex == null)
+            {
+                lock (_lockObject)
+                {
+                    if (_regex == null)
+                    {
+                        _regex = new Regex(DomainNamePattern);
+                    }
+                }
+            }
+            return _regex;
         }
+        private Regex _regex;
+        private readonly object _lockObject;
 
         public static List<IPAddress> GetNameServerIpAddresses(List<string> nameServerIpAdresses)
         {
@@ -44,26 +59,6 @@ namespace DnsProxy.Models.Rules
         public static List<Uri> GetNameServerUri(List<string> nameServerUri)
         {
             return new List<Uri>(nameServerUri.Select(x => new Uri(x)));
-        }
-
-        private class MinimumRule : IRule
-        {
-            public MinimumRule()
-            {
-                Strategy = Strategies.None;
-                IsEnabled = false;
-            }
-
-            public Type GetStraegy()
-            {
-                throw new NotSupportedException();
-            }
-
-            public Strategies Strategy { get; }
-            public bool IsEnabled { get; }
-            public string DomainName { get; }
-            public string DomainNamePattern { get; }
-            public int QueryTimeout { get; }
         }
     }
 }

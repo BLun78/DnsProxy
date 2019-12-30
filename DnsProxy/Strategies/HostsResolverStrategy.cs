@@ -83,6 +83,11 @@ namespace DnsProxy.Strategies
             throw new NotImplementedException();
         }
 
+        public override bool MatchPattern(DnsQuestion dnsQuestion)
+        {
+            return true;
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (!disposedValue)

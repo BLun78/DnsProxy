@@ -12,6 +12,14 @@
         "DomainNames": [
           "cloudflare-dns.com"
         ]
+      },
+      {
+        "IpAddresses": [
+          "10.10.34.21"
+        ],
+        "DomainNames": [
+          "blablabla1978.de"
+        ]
       }
     ]
   }
