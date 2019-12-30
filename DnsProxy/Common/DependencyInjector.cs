@@ -26,6 +26,7 @@ using DnsProxy.Strategies;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 
 namespace DnsProxy.Common
 {
@@ -94,7 +95,14 @@ namespace DnsProxy.Common
                     //.AddFilter("DnsProxy.Dns", LogLevel.Trace)
                     //.AddFilter("DnsProxy.Dns.DnsServer", LogLevel.Trace)
                     //.AddFilter("DnsProxy", LogLevel.Trace)
-                    .AddConsole(options => { options.IncludeScopes = true; });
+                    .AddConsole(options =>
+                    {
+                        options.IncludeScopes = true;
+                        options.Format = ConsoleLoggerFormat.Default;
+                        options.LogToStandardErrorThreshold = LogLevel.Warning;
+                        options.DisableColors = false;
+                        options.TimestampFormat = "[dd.MM.yyyy hh:mm:ss]";
+                    });
             });
             services.AddMemoryCache();
             // https://github.com/aspnet/Extensions/tree/master/src/HttpClientFactory

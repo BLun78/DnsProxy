@@ -30,7 +30,6 @@ namespace DnsProxy
     {
         private static ILogger<Program> Logger;
         private static string _title;
-        private static DnsServer _dnsServer;
         internal static ApplicationInformation ApplicationInformation { get; private set; }
         internal static CancellationTokenSource CancellationTokenSource { get; private set; }
         internal static Configuration Configuration { get; private set; }
@@ -55,7 +54,7 @@ namespace DnsProxy
                 Title = ApplicationInformation.DefaultTitle;
                 ApplicationInformation.LogAssemblyInformation();
                 Logger.LogInformation("starts up {DefaultTitle}", ApplicationInformation.DefaultTitle);
-                using (_dnsServer = ServiceProvider.GetService<DnsServer>())
+                using (var dnsServer = ServiceProvider.GetService<DnsServer>())
                 {
                     return await WaitForEndAsync().ConfigureAwait(true);
                 }
