@@ -210,6 +210,9 @@
         <e p="bin" t="ExcludeRecursive" />
         <e p="Common" t="Include">
           <e p="ApplicationInformation.cs" t="Include" />
+          <e p="Aws" t="Include">
+            <e p="AwsCredentials.cs" t="Include" />
+          </e>
           <e p="Configuration.cs" t="Include" />
           <e p="DependencyInjector.cs" t="Include" />
           <e p="DnsMessageExtensions.cs" t="Include" />
@@ -224,6 +227,12 @@
         <e p="DnsProxy.csproj" t="IncludeRecursive" />
         <e p="hosts.json" t="Include" />
         <e p="Models" t="Include">
+          <e p="AuthenticationType.cs" t="Include" />
+          <e p="Aws" t="Include">
+            <e p="AwsUserAccount.cs" t="Include" />
+            <e p="UserRole.cs" t="Include" />
+          </e>
+          <e p="CacheItem.cs" t="Include" />
           <e p="Context" t="Include">
             <e p="DnsContext.cs" t="Include" />
             <e p="DnsContextAccessor.cs" t="Include" />
@@ -238,13 +247,13 @@
           <e p="InternalNameServerConfig.cs" t="Include" />
           <e p="Rule.cs" t="Include" />
           <e p="Rules" t="Include">
+            <e p="AwsRule.cs" t="Include" />
             <e p="DnsRule.cs" t="Include" />
             <e p="DohRule.cs" t="Include" />
             <e p="HostsRule.cs" t="Include" />
             <e p="InternalNameServerRule.cs" t="Include" />
             <e p="IRule.cs" t="Include" />
             <e p="IRuleStrategy.cs" t="Include" />
-            <e p="MulticastRule.cs" t="Include" />
             <e p="RuleBase.cs" t="Include" />
           </e>
           <e p="RulesConfig.cs" t="Include" />
@@ -268,13 +277,13 @@
         </e>
         <e p="rules.json" t="Include" />
         <e p="Strategies" t="Include">
+          <e p="AwsVpcResolverStrategy.cs" t="Include" />
           <e p="BaseResolverStrategy.cs" t="Include" />
           <e p="DnsResolverStrategy.cs" t="Include" />
           <e p="DohResolverStrategy.cs" t="Include" />
           <e p="HostsResolverStrategy.cs" t="Include" />
           <e p="IDnsResolverStrategy.cs" t="Include" />
           <e p="InternalNameServerResolverStrategy.cs" t="Include" />
-          <e p="MulticastResolverStrategy.cs" t="Include" />
           <e p="StrategyManager.cs" t="Include" />
         </e>
       </e>

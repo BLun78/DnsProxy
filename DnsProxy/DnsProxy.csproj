@@ -70,6 +70,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AWSSDK.EC2" Version="3.3.147.2" />
+    <PackageReference Include="AWSSDK.SecurityToken" Version="3.3.104.15" />
     <PackageReference Include="Makaretu.Dns" Version="2.0.1" />
     <PackageReference Include="Makaretu.Dns.Multicast" Version="0.27.0" />
     <PackageReference Include="Makaretu.Dns.Unicast" Version="0.11.1" />

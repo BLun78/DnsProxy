@@ -17,16 +17,21 @@
 #endregion
 
 using System;
+using System.Net;
+using System.Net.Http;
 using System.Reflection;
+using System.Security.Authentication;
 using System.Threading;
 using DnsProxy.Dns;
 using DnsProxy.Models;
 using DnsProxy.Models.Context;
 using DnsProxy.Strategies;
+using Makaretu.Dns;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Options;
 
 namespace DnsProxy.Common
 {
@@ -58,13 +63,14 @@ namespace DnsProxy.Common
             services.AddSingleton(Assembly.GetExecutingAssembly());
             services.AddSingleton<ApplicationInformation>();
             services.AddSingleton<DnsServer>();
+            services.AddSingleton<DohClient>();
             services.AddSingleton(_cancellationTokenSource);
 
             // Dns Context
             services.AddSingleton<IDnsContextAccessor>(_dnsContextAccessor);
             services.AddSingleton<IWriteDnsContextAccessor>(_dnsContextAccessor);
             services.AddTransient<IWriteDnsContext, DnsContext>();
-            
+
             // Stratgies
             services.AddSingleton<StrategyManager>();
             services.AddTransient<IDnsResolverStrategy, DohResolverStrategy>();
@@ -107,8 +113,57 @@ namespace DnsProxy.Common
             services.AddMemoryCache();
             // https://github.com/aspnet/Extensions/tree/master/src/HttpClientFactory
             // https://docs.microsoft.com/de-de/dotnet/standard/microservices-architecture/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests
-            services.AddHttpClient(); // not top, but it works in all Applications - BL
+            services.AddHttpClient("httpClient", c => { })
+                     .ConfigurePrimaryHttpMessageHandler(ConfigureHandler)
+                     .AddTypedClient<DohClient>((client, provider) =>
+                     {
+                         var dohClient = new DohClient
+                         {
+                             HttpClient = client
+                         };
+                         return dohClient;
+                     });
+
             return services;
+        }
+
+        private HttpMessageHandler ConfigureHandler(IServiceProvider provider)
+        {
+            var httpProxyConfigOptionsMonitor = provider.GetService<IOptionsMonitor<HttpProxyConfig>>();
+            var httpProxyConfig = httpProxyConfigOptionsMonitor.CurrentValue;
+            var handler = new HttpClientHandler();
+
+            switch (httpProxyConfig.AuthenticationType)
+            {
+                case AuthenticationType.None:
+                    break;
+                case AuthenticationType.Basic:
+                    handler.DefaultProxyCredentials = new NetworkCredential(httpProxyConfig.User, httpProxyConfig.Password);
+                    handler.Credentials = handler.DefaultProxyCredentials;
+                    break;
+                case AuthenticationType.Windows:
+                    handler.DefaultProxyCredentials = new NetworkCredential(httpProxyConfig.User, httpProxyConfig.Password, httpProxyConfig.Domain);
+                    handler.Credentials = handler.DefaultProxyCredentials;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            if (httpProxyConfig.AuthenticationType != AuthenticationType.None)
+            {
+                handler.Proxy = new WebProxy()
+                {
+                    Address = new Uri(httpProxyConfig.Uri),
+                    UseDefaultCredentials = true,
+                    BypassList = httpProxyConfig.BypassAddressesArray,
+                };
+                handler.UseDefaultCredentials = true;
+            }
+
+            handler.AutomaticDecompression = DecompressionMethods.All;
+            handler.SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13;
+
+            return handler;
         }
     }
 }

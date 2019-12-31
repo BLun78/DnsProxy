@@ -19,6 +19,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Amazon.Runtime;
 using DnsProxy.Common;
 using DnsProxy.Dns;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +36,7 @@ namespace DnsProxy
         internal static Configuration Configuration { get; private set; }
         internal static DependencyInjector DependencyInjector { get; private set; }
         internal static IServiceProvider ServiceProvider => DependencyInjector.ServiceProvider;
+        internal static AWSCredentials AwsCredentials;
 
         internal static string Title
         {

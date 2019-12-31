@@ -19,9 +19,32 @@
     }
   },
   "HttpProxyConfig": {
-    "Uri": "",
-    "AuthenticationType": "",
+    "AuthenticationType": "None",
+    "Uri": "http://127.0.0.1:8866",
     "User": "",
-    "Password": ""
+    "Password": "",
+    "Domain": "",
+    "BypassAddresses": ""
+  },
+  "AwsUserAccount": {
+    "UserAccountId": "57xxxxxxxx807",
+    "UserName": "fxxxx6",
+    "UserAccessKey": "AKxxxxxxxxxxxC6",
+    "UserSecretKey": "mm3rNxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxJXQ",
+    "Roles": [
+      {
+        "AwsAccountLabel": "0235",
+        "AwsAccountId": "4xxxxxxx4446",
+        "Role": "exxxxxxxxr"
+      },
+      {
+        "AwsAccountLabel": "0279",
+        "AwsAccountId": "3XXXXXXXXXX4",
+        "Role": "exxxxxxxxr"
+      }
+    ]
+  },
+  "Aws": {
+    "Region": "eu-central-1"
   }
 }
