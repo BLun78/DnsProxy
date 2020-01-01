@@ -22,6 +22,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Security.Authentication;
 using System.Threading;
+using Amazon.EC2;
 using DnsProxy.Dns;
 using DnsProxy.Models;
 using DnsProxy.Models.Context;
@@ -81,6 +82,8 @@ namespace DnsProxy.Common
             services.AddTransient<DnsResolverStrategy>();
             services.AddSingleton<InternalNameServerResolverStrategy>();
             services.AddSingleton<HostsResolverStrategy>();
+            services.AddSingleton<IWebProxy>(CreateHttpProxyConfig);
+            services.AddSingleton<AmazonEC2Config>(CreateAmazonEC2Config);
 
             // .net core frameworks
             services.AddOptions();
@@ -131,41 +134,69 @@ namespace DnsProxy.Common
         {
             var httpProxyConfigOptionsMonitor = provider.GetService<IOptionsMonitor<HttpProxyConfig>>();
             var httpProxyConfig = httpProxyConfigOptionsMonitor.CurrentValue;
+            var proxy = provider.GetService<IWebProxy>();
+
             var handler = new HttpClientHandler();
+            if (httpProxyConfig.AuthenticationType != AuthenticationType.None)
+            {
+                handler.Proxy = proxy;
+                handler.UseDefaultCredentials = true;
+            }
+            handler.AutomaticDecompression = DecompressionMethods.All;
+            handler.SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13;
+
+            return handler;
+        }
+
+        private IWebProxy CreateHttpProxyConfig(IServiceProvider provider)
+        {
+            var httpProxyConfigOptionsMonitor = provider.GetService<IOptionsMonitor<HttpProxyConfig>>();
+            var httpProxyConfig = httpProxyConfigOptionsMonitor.CurrentValue;
+            var proxy = new WebProxy
+            {
+                Address = new Uri(httpProxyConfig.Uri),
+                UseDefaultCredentials = false,
+                BypassList = httpProxyConfig.BypassAddressesArray
+            };
 
             switch (httpProxyConfig.AuthenticationType)
             {
                 case AuthenticationType.None:
                     break;
                 case AuthenticationType.Basic:
-                    handler.DefaultProxyCredentials =
+                    proxy.Credentials =
                         new NetworkCredential(httpProxyConfig.User, httpProxyConfig.Password);
-                    handler.Credentials = handler.DefaultProxyCredentials;
                     break;
                 case AuthenticationType.Windows:
-                    handler.DefaultProxyCredentials = new NetworkCredential(httpProxyConfig.User,
+                    proxy.Credentials = new NetworkCredential(httpProxyConfig.User,
                         httpProxyConfig.Password, httpProxyConfig.Domain);
-                    handler.Credentials = handler.DefaultProxyCredentials;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
-            if (httpProxyConfig.AuthenticationType != AuthenticationType.None)
+            return proxy;
+        }
+
+        private AmazonEC2Config CreateAmazonEC2Config(IServiceProvider provider)
+        {
+            var config = new AmazonEC2Config();
+            var httpProxyConfigOptionsMonitor = provider.GetService<IOptionsMonitor<HttpProxyConfig>>();
+            var httpProxyConfig = httpProxyConfigOptionsMonitor.CurrentValue;
+
+            switch (httpProxyConfig.AuthenticationType)
             {
-                handler.Proxy = new WebProxy
-                {
-                    Address = new Uri(httpProxyConfig.Uri),
-                    UseDefaultCredentials = true,
-                    BypassList = httpProxyConfig.BypassAddressesArray
-                };
-                handler.UseDefaultCredentials = true;
+                case AuthenticationType.None:
+                    break;
+                case AuthenticationType.Basic:
+                case AuthenticationType.Windows:
+                    var webProxy = provider.GetService<IWebProxy>();
+                    config.SetWebProxy(webProxy);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-
-            handler.AutomaticDecompression = DecompressionMethods.All;
-            handler.SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13;
-
-            return handler;
+            return config;
         }
     }
 }
