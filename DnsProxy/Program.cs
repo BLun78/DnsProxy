@@ -66,12 +66,13 @@ namespace DnsProxy
                 Title = ApplicationInformation.DefaultTitle;
                 ApplicationInformation.LogAssemblyInformation();
                 Logger.LogInformation("starts up {DefaultTitle}", ApplicationInformation.DefaultTitle);
-
-                await CheckForAwsMfaAsync().ConfigureAwait(true);
-                var aws = ServiceProvider.GetService<AwsEc2ResolverStrategy>();
-
+                
                 using (var dnsServer = ServiceProvider.GetService<DnsServer>())
                 {
+
+                    await CheckForAwsMfaAsync().ConfigureAwait(true);
+                    var aws = ServiceProvider.GetService<AwsEc2ResolverStrategy>();
+
                     return await WaitForEndAsync(dnsServer).ConfigureAwait(true);
                 }
             }
@@ -110,8 +111,8 @@ namespace DnsProxy
                 {
                     if (RequestNewMfa)
                     {
-                        dnsServer.StopServer();
                         await CheckForAwsMfaAsync().ConfigureAwait(true);
+                        dnsServer.StopServer();
                         dnsServer.StartServer();
                         RequestNewMfa = false;
                     }

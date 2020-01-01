@@ -138,12 +138,11 @@ namespace DnsProxy.Common
         {
             var httpProxyConfigOptionsMonitor = provider.GetService<IOptionsMonitor<HttpProxyConfig>>();
             var httpProxyConfig = httpProxyConfigOptionsMonitor.CurrentValue;
-            var proxy = provider.GetService<IWebProxy>();
-
+            
             var handler = new HttpClientHandler();
             if (httpProxyConfig.AuthenticationType != AuthenticationType.None)
             {
-                handler.Proxy = proxy;
+                handler.Proxy = provider.GetService<IWebProxy>();
                 handler.UseDefaultCredentials = true;
             }
             handler.AutomaticDecompression = DecompressionMethods.All;

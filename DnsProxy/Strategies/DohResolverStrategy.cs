@@ -60,15 +60,8 @@ namespace DnsProxy.Strategies
             var requestMessage = new Message();
 
             _dohClient?.Dispose();
-            try
-            {
-                _dohClient = _serviceProvider.GetService<DohClient>();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                Debugger.Break();
-            }
+            _dohClient = _serviceProvider.GetService<DohClient>();
+
 
             _dohClient.ServerUrl = Rule.NameServerUri.First()?.AbsoluteUri;
 

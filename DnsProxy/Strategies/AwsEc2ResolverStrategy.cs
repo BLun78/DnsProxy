@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.EC2;
@@ -34,7 +35,8 @@ namespace DnsProxy.Strategies
                     amazonEc2Client?.Dispose();
                     amazonEc2Client = new AmazonEC2Client(userRoleExtended.AwsCredentials, amazonEc2Config);
                     var vpcend = await amazonEc2Client.DescribeVpcEndpointsAsync(new DescribeVpcEndpointsRequest()).ConfigureAwait(true);
-
+                    var sqs = vpcend.VpcEndpoints.Where(x => x.ServiceName.Contains(".sqs")).ToList();
+                    var secretsmanager = vpcend.VpcEndpoints.Where(x => x.ServiceName.Contains(".secretsmanager")).ToList();
 
                     var b = 2;
                 }
