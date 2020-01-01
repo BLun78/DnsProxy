@@ -18,6 +18,10 @@ namespace DnsProxy.Strategies
             IMemoryCache memoryCache) : base(logger, dnsContextAccessor, memoryCache)
         {
             var client = new AmazonEC2Client();
+            //client.Config.ProxyCredentials = null;
+            //client.Config.ProxyHost = null;
+            //client.Config.GetWebProxy()
+
             // var vpcend = client.DescribeVpcEndpointsAsync();
         }
 
@@ -30,11 +34,6 @@ namespace DnsProxy.Strategies
         public override Models.Strategies GetStrategy()
         {
             return Models.Strategies.Aws;
-        }
-
-        public override void OnRuleChanged()
-        {
-            throw new NotImplementedException();
         }
     }
 }

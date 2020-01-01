@@ -38,10 +38,6 @@ namespace DnsProxy.Strategies
 {
     internal class DohResolverStrategy : BaseResolverStrategy<DohRule>, IDnsResolverStrategy<DohRule>
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IDisposable _httpProxyConfigListener;
-        private readonly IOptionsMonitor<HttpProxyConfig> _httpProxyConfigOptionsMonitor;
-        private readonly IMemoryCache _memoryCache;
         private readonly IServiceProvider _serviceProvider;
         private DohClient _dohClient;
 
@@ -49,14 +45,10 @@ namespace DnsProxy.Strategies
             ILogger<DohResolverStrategy> logger,
             IMemoryCache memoryCache,
             IServiceProvider serviceProvider,
-            IDnsContextAccessor dnsContextAccessor,
-            IOptionsMonitor<HttpProxyConfig> httpProxyConfigOptionsMonitor) : base(logger, dnsContextAccessor,
-            memoryCache)
+            IDnsContextAccessor dnsContextAccessor)
+            : base(logger, dnsContextAccessor, memoryCache)
         {
-            _memoryCache = memoryCache;
             _serviceProvider = serviceProvider;
-            _httpProxyConfigOptionsMonitor = httpProxyConfigOptionsMonitor;
-            _httpProxyConfigListener = _httpProxyConfigOptionsMonitor.OnChange(HttpProxyConfigListener);
             Order = 1000;
         }
 
@@ -110,29 +102,6 @@ namespace DnsProxy.Strategies
         public override Models.Strategies GetStrategy()
         {
             return Models.Strategies.DoH;
-        }
-
-        public override void OnRuleChanged()
-        {
-            throw new NotImplementedException();
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    _httpProxyConfigListener?.Dispose();
-                }
-            }
-
-            base.Dispose(disposing);
-        }
-
-        private void HttpProxyConfigListener(HttpProxyConfig httpProxyConfig, string name)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -35,7 +35,7 @@ namespace DnsProxy.Strategies
         IDnsResolverStrategy
         where TRule : IRule
     {
-        private readonly IMemoryCache _memoryCache;
+        protected readonly IMemoryCache MemoryCache;
         protected readonly IDnsContextAccessor DnsContextAccessor;
         protected readonly ILogger<BaseResolverStrategy<TRule>> Logger;
 
@@ -45,7 +45,7 @@ namespace DnsProxy.Strategies
         {
             Logger = logger;
             DnsContextAccessor = dnsContextAccessor;
-            _memoryCache = memoryCache;
+            MemoryCache = memoryCache;
         }
 
         public TRule Rule { get; protected set; }
@@ -55,7 +55,6 @@ namespace DnsProxy.Strategies
             CancellationToken cancellationToken);
 
         public abstract Models.Strategies GetStrategy();
-        public abstract void OnRuleChanged();
 
         void IDnsResolverStrategy.SetRule(IRule rule)
         {
@@ -108,7 +107,7 @@ namespace DnsProxy.Strategies
         {
             var cacheItem = new CacheItem(data);
             var lastChar = key.Substring(key.Length - 1, 1);
-            _memoryCache.Set(lastChar == "."
+            MemoryCache.Set(lastChar == "."
                 ? key
                 : $"{key}.", cacheItem, cacheEntryOptions);
         }

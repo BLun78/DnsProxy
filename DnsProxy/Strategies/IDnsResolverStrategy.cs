@@ -31,7 +31,6 @@ namespace DnsProxy.Strategies
         IRule Rule { get; }
         Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken);
         Models.Strategies GetStrategy();
-        void OnRuleChanged();
         void SetRule(IRule rule);
         bool MatchPattern(DnsQuestion dnsQuestion);
     }

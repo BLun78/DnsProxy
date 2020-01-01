@@ -48,8 +48,14 @@ namespace DnsProxy.Strategies
 
             var catalog = new Catalog();
             catalog.IncludeRootHints();
-            _resolver = new NameServer {Catalog = catalog};
+            _resolver = new NameServer { Catalog = catalog };
             Order = 100;
+        }
+
+
+        public override bool MatchPattern(DnsQuestion dnsQuestion)
+        {
+            return false;
         }
 
         public override Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
@@ -61,11 +67,6 @@ namespace DnsProxy.Strategies
         public override Models.Strategies GetStrategy()
         {
             return Models.Strategies.InternalNameServer;
-        }
-
-        public override void OnRuleChanged()
-        {
-            throw new NotImplementedException();
         }
 
         protected override void Dispose(bool disposing)

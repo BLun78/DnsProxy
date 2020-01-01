@@ -31,15 +31,13 @@ namespace DnsProxy.Strategies
 {
     internal class DnsResolverStrategy : BaseResolverStrategy<DnsRule>, IDnsResolverStrategy<DnsRule>
     {
-        private readonly List<DnsClient> DnsClient;
-
+       
         public DnsResolverStrategy(
             ILogger<DnsResolverStrategy> logger,
             IDnsContextAccessor dnsContextAccessor,
             IMemoryCache memoryCache) : base(logger, dnsContextAccessor, memoryCache)
         {
             Order = 2000;
-            DnsClient = new List<DnsClient>();
         }
 
         public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
@@ -47,18 +45,13 @@ namespace DnsProxy.Strategies
         {
             LogDnsQuestion(dnsQuestion);
             var result = new List<DnsRecordBase>();
+            var dnsClient = new DnsClient(Rule.NameServerIpAddresses, Rule.QueryTimeout);
 
-            DnsClient.Clear();
-            DnsClient.Add(new DnsClient(Rule.NameServerIpAddresses, Rule.QueryTimeout));
-
-            foreach (var dnsClient in DnsClient)
-            {
-                var response = await dnsClient.ResolveAsync(dnsQuestion.Name, dnsQuestion.RecordType,
+            var response = await dnsClient.ResolveAsync(dnsQuestion.Name, dnsQuestion.RecordType,
                         dnsQuestion.RecordClass, null, cancellationToken)
                     .ConfigureAwait(false);
 
-                result.AddRange(response.AnswerRecords);
-            }
+            result.AddRange(response.AnswerRecords);
 
             if (result.Any())
             {
@@ -73,16 +66,6 @@ namespace DnsProxy.Strategies
         public override Models.Strategies GetStrategy()
         {
             return Models.Strategies.Dns;
-        }
-
-        public override void OnRuleChanged()
-        {
-            DnsClient.Clear();
-            foreach (var ipAddress in Rule.NameServerIpAddresses)
-            {
-                var dns = new DnsClient(ipAddress, Rule.QueryTimeout);
-                DnsClient.Add(dns);
-            }
         }
     }
 }
