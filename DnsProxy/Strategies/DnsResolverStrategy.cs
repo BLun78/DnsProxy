@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
@@ -43,7 +42,8 @@ namespace DnsProxy.Strategies
             DnsClient = new List<DnsClient>();
         }
 
-        public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken)
+        public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
+            CancellationToken cancellationToken)
         {
             LogDnsQuestion(dnsQuestion);
             var result = new List<DnsRecordBase>();
@@ -62,7 +62,8 @@ namespace DnsProxy.Strategies
 
             if (result.Any())
             {
-                StoreInCache(result, dnsQuestion.Name.ToString(), new MemoryCacheEntryOptions().SetAbsoluteExpiration(new TimeSpan(0, 0, result.First().TimeToLive)));
+                StoreInCache(result, dnsQuestion.Name.ToString(),
+                    new MemoryCacheEntryOptions().SetAbsoluteExpiration(new TimeSpan(0, 0, result.First().TimeToLive)));
             }
 
             LogDnsQuestionAndResult(dnsQuestion, result);

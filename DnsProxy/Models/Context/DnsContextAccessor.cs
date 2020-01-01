@@ -22,26 +22,18 @@ namespace DnsProxy.Models.Context
 {
     internal class DnsContextAccessor : IDnsContextAccessor, IWriteDnsContextAccessor
     {
-        private static readonly AsyncLocal<WriteDnsContextHolder> WriteDnsContextCurrent = new AsyncLocal<WriteDnsContextHolder>();
+        private static readonly AsyncLocal<WriteDnsContextHolder> WriteDnsContextCurrent =
+            new AsyncLocal<WriteDnsContextHolder>();
 
         public IDnsContext DnsContext
         {
-            get
-            {
-                return WriteDnsContext;
-            }
-            set
-            {
-                WriteDnsContext = value as IWriteDnsContext;
-            }
+            get => WriteDnsContext;
+            set => WriteDnsContext = value as IWriteDnsContext;
         }
 
         public IWriteDnsContext WriteDnsContext
         {
-            get
-            {
-                return WriteDnsContextCurrent.Value?.Context;
-            }
+            get => WriteDnsContextCurrent.Value?.Context;
             set
             {
                 var holder = WriteDnsContextCurrent.Value;
@@ -55,7 +47,7 @@ namespace DnsProxy.Models.Context
                 {
                     // Use an object indirection to hold the DnsContext in the AsyncLocal,
                     // so it can be cleared in all ExecutionContexts when its cleared.
-                    WriteDnsContextCurrent.Value = new WriteDnsContextHolder() { Context = value };
+                    WriteDnsContextCurrent.Value = new WriteDnsContextHolder {Context = value};
                 }
             }
         }

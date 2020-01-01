@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
@@ -36,13 +35,11 @@ namespace DnsProxy.Strategies
         IDnsResolverStrategy
         where TRule : IRule
     {
-        protected readonly ILogger<BaseResolverStrategy<TRule>> Logger;
-        protected readonly IDnsContextAccessor DnsContextAccessor;
         private readonly IMemoryCache _memoryCache;
-        public TRule Rule { get; protected set; }
-        IRule IDnsResolverStrategy.Rule => Rule;
+        protected readonly IDnsContextAccessor DnsContextAccessor;
+        protected readonly ILogger<BaseResolverStrategy<TRule>> Logger;
 
-        protected BaseResolverStrategy(ILogger<BaseResolverStrategy<TRule>> logger, 
+        protected BaseResolverStrategy(ILogger<BaseResolverStrategy<TRule>> logger,
             IDnsContextAccessor dnsContextAccessor,
             IMemoryCache memoryCache)
         {
@@ -51,16 +48,18 @@ namespace DnsProxy.Strategies
             _memoryCache = memoryCache;
         }
 
-        public int Order { get; protected set; }
+        public TRule Rule { get; protected set; }
+        IRule IDnsResolverStrategy.Rule => Rule;
 
-        public abstract Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken);
+        public abstract Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
+            CancellationToken cancellationToken);
 
         public abstract Models.Strategies GetStrategy();
         public abstract void OnRuleChanged();
 
         void IDnsResolverStrategy.SetRule(IRule rule)
         {
-            Rule = (TRule)rule;
+            Rule = (TRule) rule;
         }
 
 
@@ -75,7 +74,6 @@ namespace DnsProxy.Strategies
             if (!string.IsNullOrWhiteSpace(Rule.DomainNamePattern))
             {
                 pattern = Rule.DomainNamePattern;
-
             }
             else if (!string.IsNullOrWhiteSpace(Rule.DomainName))
             {
@@ -83,9 +81,12 @@ namespace DnsProxy.Strategies
             }
 
             var match = Rule.GetDomainNameRegex().Match(dnsQuestion.Name.ToString());
-            Logger.LogTrace("--> Pattern: {pattern} --> Question {Question}  ->> IsMatch=={match}", pattern, dnsQuestion.Name.ToString(), match.Success);
+            Logger.LogTrace("--> Pattern: {pattern} --> Question {Question}  ->> IsMatch=={match}", pattern,
+                dnsQuestion.Name.ToString(), match.Success);
             return match.Success;
         }
+
+        public int Order { get; protected set; }
 
         protected void LogDnsQuestion(DnsQuestion dnsQuestion)
         {
@@ -93,10 +94,12 @@ namespace DnsProxy.Strategies
             Logger.LogTrace("ClientIpAddress: {0} requested {1} (#{2}, {3}).", dnsContext?.IpEndPoint, dnsQuestion.Name,
                 dnsContext?.Request?.TransactionID.ToString(), dnsQuestion.RecordType);
         }
+
         protected void LogDnsQuestionAndResult(DnsQuestion dnsQuestion, List<DnsRecordBase> answers)
         {
             var dnsContext = DnsContextAccessor.DnsContext;
-            Logger.LogTrace("ClientIpAddress: {0} resolve {1} (#{2}, {3}).", dnsContext?.IpEndPoint, answers?.FirstOrDefault()?.ToString(),
+            Logger.LogTrace("ClientIpAddress: {0} resolve {1} (#{2}, {3}).", dnsContext?.IpEndPoint,
+                answers?.FirstOrDefault()?.ToString(),
                 dnsContext?.Request?.TransactionID.ToString(), dnsQuestion.RecordType);
         }
 
@@ -147,6 +150,7 @@ namespace DnsProxy.Strategies
             // TODO: uncomment the following line if the finalizer is overridden above.
             // GC.SuppressFinalize(this);
         }
+
         #endregion
     }
 }

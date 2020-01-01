@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using ARSoft.Tools.Net.Dns;
 
 namespace DnsProxy.Models
@@ -11,7 +9,7 @@ namespace DnsProxy.Models
         {
             DnsRecordBases = dnsRecordBases;
         }
-        public List<DnsRecordBase> DnsRecordBases { get; }
 
+        public List<DnsRecordBase> DnsRecordBases { get; }
     }
 }

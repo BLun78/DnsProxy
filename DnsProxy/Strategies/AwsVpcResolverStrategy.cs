@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Amazon.EC2;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Amazon.EC2;
 
 namespace DnsProxy.Strategies
 {
@@ -19,14 +18,12 @@ namespace DnsProxy.Strategies
             IMemoryCache memoryCache) : base(logger, dnsContextAccessor, memoryCache)
         {
             var client = new AmazonEC2Client();
-           // var vpcend = client.DescribeVpcEndpointsAsync();
+            // var vpcend = client.DescribeVpcEndpointsAsync();
         }
 
-        public override Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken)
+        public override Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
+            CancellationToken cancellationToken)
         {
-
-
-
             throw new NotImplementedException();
         }
 

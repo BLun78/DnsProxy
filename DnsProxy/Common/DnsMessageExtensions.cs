@@ -48,6 +48,7 @@ namespace DnsProxy.Common
                         throw new ArgumentOutOfRangeException(nameof(ip.AddressFamily), ip.AddressFamily, null);
                 }
             }
+
             return result;
         }
 

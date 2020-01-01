@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Models.Rules;
@@ -52,4 +51,3 @@ namespace DnsProxy.Models.Context
         new string IpEndPoint { get; set; }
     }
 }
-

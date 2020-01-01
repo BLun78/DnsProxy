@@ -425,8 +425,8 @@ namespace ARSoft.Tools.Net.Dns
 
                 try
                 {
-                    resultData = await ((sendByTcp 
-                        ? QueryByTcpAsync(endpointInfo.ServerAddress, messageData, messageLength, null, null, token) 
+                    resultData = await ((sendByTcp
+                        ? QueryByTcpAsync(endpointInfo.ServerAddress, messageData, messageLength, null, null, token)
                         : QuerySingleResponseByUdpAsync(endpointInfo, messageData, messageLength, token)).ConfigureAwait(true));
 
                     if (resultData == null)

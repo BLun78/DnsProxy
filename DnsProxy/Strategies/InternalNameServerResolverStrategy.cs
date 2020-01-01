@@ -48,11 +48,12 @@ namespace DnsProxy.Strategies
 
             var catalog = new Catalog();
             catalog.IncludeRootHints();
-            _resolver = new NameServer { Catalog = catalog };
+            _resolver = new NameServer {Catalog = catalog};
             Order = 100;
         }
 
-        public override Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken)
+        public override Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
+            CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

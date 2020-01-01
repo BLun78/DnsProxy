@@ -8,6 +8,9 @@ namespace DnsProxy.Models.Rules
 {
     internal abstract class RuleBase : IRule, IRuleStrategy
     {
+        private readonly object _lockObject;
+        private Regex _regex;
+
         protected RuleBase()
         {
             _lockObject = new object();
@@ -21,12 +24,12 @@ namespace DnsProxy.Models.Rules
             DomainNamePattern = rule.DomainNamePattern;
             QueryTimeout = rule.QueryTimeout;
         }
-        
+
         public Strategies Strategy { get; set; }
         public bool IsEnabled { get; set; }
         public string DomainName { get; set; }
         public string DomainNamePattern { get; set; }
-       
+
         /// <summary>
         ///     Query timeout in milliseconds
         /// </summary>
@@ -46,7 +49,6 @@ namespace DnsProxy.Models.Rules
                         if (!string.IsNullOrWhiteSpace(DomainNamePattern))
                         {
                             pattern = DomainNamePattern;
-
                         }
                         else if (!string.IsNullOrWhiteSpace(DomainName))
                         {
@@ -54,16 +56,17 @@ namespace DnsProxy.Models.Rules
                         }
                         else
                         {
-                            throw new NotSupportedException($"On Attribute {nameof(DomainName)} or {nameof(DomainNamePattern)} must be set!");
+                            throw new NotSupportedException(
+                                $"On Attribute {nameof(DomainName)} or {nameof(DomainNamePattern)} must be set!");
                         }
+
                         _regex = new Regex(pattern);
                     }
                 }
             }
+
             return _regex;
         }
-        private Regex _regex;
-        private readonly object _lockObject;
 
         public static List<IPAddress> GetNameServerIpAddresses(List<string> nameServerIpAdresses)
         {

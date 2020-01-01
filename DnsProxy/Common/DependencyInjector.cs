@@ -37,9 +37,9 @@ namespace DnsProxy.Common
 {
     internal class DependencyInjector
     {
+        private static DnsContextAccessor _dnsContextAccessor;
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly IConfigurationRoot _configuration;
-        private static DnsContextAccessor _dnsContextAccessor;
 
         public DependencyInjector(IConfigurationRoot configuration, CancellationTokenSource cancellationTokenSource)
         {
@@ -114,15 +114,15 @@ namespace DnsProxy.Common
             // https://github.com/aspnet/Extensions/tree/master/src/HttpClientFactory
             // https://docs.microsoft.com/de-de/dotnet/standard/microservices-architecture/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests
             services.AddHttpClient("httpClient", c => { })
-                     .ConfigurePrimaryHttpMessageHandler(ConfigureHandler)
-                     .AddTypedClient<DohClient>((client, provider) =>
-                     {
-                         var dohClient = new DohClient
-                         {
-                             HttpClient = client
-                         };
-                         return dohClient;
-                     });
+                .ConfigurePrimaryHttpMessageHandler(ConfigureHandler)
+                .AddTypedClient((client, provider) =>
+                {
+                    var dohClient = new DohClient
+                    {
+                        HttpClient = client
+                    };
+                    return dohClient;
+                });
 
             return services;
         }
@@ -138,11 +138,13 @@ namespace DnsProxy.Common
                 case AuthenticationType.None:
                     break;
                 case AuthenticationType.Basic:
-                    handler.DefaultProxyCredentials = new NetworkCredential(httpProxyConfig.User, httpProxyConfig.Password);
+                    handler.DefaultProxyCredentials =
+                        new NetworkCredential(httpProxyConfig.User, httpProxyConfig.Password);
                     handler.Credentials = handler.DefaultProxyCredentials;
                     break;
                 case AuthenticationType.Windows:
-                    handler.DefaultProxyCredentials = new NetworkCredential(httpProxyConfig.User, httpProxyConfig.Password, httpProxyConfig.Domain);
+                    handler.DefaultProxyCredentials = new NetworkCredential(httpProxyConfig.User,
+                        httpProxyConfig.Password, httpProxyConfig.Domain);
                     handler.Credentials = handler.DefaultProxyCredentials;
                     break;
                 default:
@@ -151,11 +153,11 @@ namespace DnsProxy.Common
 
             if (httpProxyConfig.AuthenticationType != AuthenticationType.None)
             {
-                handler.Proxy = new WebProxy()
+                handler.Proxy = new WebProxy
                 {
                     Address = new Uri(httpProxyConfig.Uri),
                     UseDefaultCredentials = true,
-                    BypassList = httpProxyConfig.BypassAddressesArray,
+                    BypassList = httpProxyConfig.BypassAddressesArray
                 };
                 handler.UseDefaultCredentials = true;
             }

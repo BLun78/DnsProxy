@@ -28,18 +28,18 @@ namespace DnsProxy.Strategies
 {
     internal interface IDnsResolverStrategy : IDisposable, IOrder
     {
+        IRule Rule { get; }
         Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken);
         Models.Strategies GetStrategy();
         void OnRuleChanged();
         void SetRule(IRule rule);
-        IRule Rule { get; }
         bool MatchPattern(DnsQuestion dnsQuestion);
     }
 
     internal interface IDnsResolverStrategy<TRule> : IDnsResolverStrategy
         where TRule : IRule
     {
-        void SetRule(TRule rule);
         TRule Rule { get; }
+        void SetRule(TRule rule);
     }
 }

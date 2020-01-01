@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon;
 using Amazon.Runtime;
 using Amazon.SecurityToken;
 using Amazon.SecurityToken.Model;
@@ -29,7 +28,8 @@ namespace DnsProxy.Common.Aws
         }
 
         public async Task<AWSCredentials> CheckMfa(string awsAccount, string AccountId, string UserName,
-            string accessKey, string secretKey, string targetAccountId, string targetRole, CancellationToken cancellationToken)
+            string accessKey, string secretKey, string targetAccountId, string targetRole,
+            CancellationToken cancellationToken)
         {
             var mfaTOTP = await GetMfaAsync(awsAccount, cancellationToken).ConfigureAwait(false);
             try
@@ -46,7 +46,8 @@ namespace DnsProxy.Common.Aws
                 };
 
                 var getSessionTokenResponse =
-                    await stsClient.GetSessionTokenAsync(getSessionTokenRequest, cancellationToken).ConfigureAwait(false);
+                    await stsClient.GetSessionTokenAsync(getSessionTokenRequest, cancellationToken)
+                        .ConfigureAwait(false);
                 MfaAwsSessionCredentials = getSessionTokenResponse.Credentials;
 
 

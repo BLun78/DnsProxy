@@ -25,7 +25,7 @@ namespace DnsProxy.Models.Rules
 {
     internal class DnsRule : RuleBase, IRule, IRuleStrategy
     {
-        public DnsRule() : base()
+        public DnsRule()
         {
         }
 

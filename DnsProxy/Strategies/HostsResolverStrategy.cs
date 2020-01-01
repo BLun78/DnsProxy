@@ -55,7 +55,8 @@ namespace DnsProxy.Strategies
 
         internal static CancellationToken CacheCancellationToken { get; private set; }
 
-        public override Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken)
+        public override Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
+            CancellationToken cancellationToken)
         {
             LogDnsQuestion(dnsQuestion);
             var result = new List<DnsRecordBase>();
@@ -66,7 +67,7 @@ namespace DnsProxy.Strategies
                 case RecordType.A:
                 case RecordType.Aaaa:
                     var caxchItem = _memoryCache.Get<CacheItem>(dnsQuestion.Name.ToString());
-                    if (caxchItem != null && caxchItem.DnsRecordBases.Any()) result.AddRange((caxchItem.DnsRecordBases));
+                    if (caxchItem != null && caxchItem.DnsRecordBases.Any()) result.AddRange(caxchItem.DnsRecordBases);
                     break;
             }
 
@@ -78,12 +79,6 @@ namespace DnsProxy.Strategies
         {
             return Models.Strategies.Hosts;
         }
-        protected void LogDnsQuestionAndResultFromCache(DnsQuestion dnsQuestion, List<DnsRecordBase> answers)
-        {
-            var dnsContext = DnsContextAccessor.DnsContext;
-            Logger.LogTrace("Cache >> ClientIpAddress: {0} resolve by cache to {1} (#{2}, {3}).", dnsContext?.IpEndPoint, answers?.FirstOrDefault()?.ToString(),
-                dnsContext?.Request?.TransactionID.ToString(), dnsQuestion.RecordType);
-        }
 
         public override void OnRuleChanged()
         {
@@ -93,6 +88,14 @@ namespace DnsProxy.Strategies
         public override bool MatchPattern(DnsQuestion dnsQuestion)
         {
             return true;
+        }
+
+        protected void LogDnsQuestionAndResultFromCache(DnsQuestion dnsQuestion, List<DnsRecordBase> answers)
+        {
+            var dnsContext = DnsContextAccessor.DnsContext;
+            Logger.LogTrace("Cache >> ClientIpAddress: {0} resolve by cache to {1} (#{2}, {3}).",
+                dnsContext?.IpEndPoint, answers?.FirstOrDefault()?.ToString(),
+                dnsContext?.Request?.TransactionID.ToString(), dnsQuestion.RecordType);
         }
 
         protected override void Dispose(bool disposing)
@@ -113,13 +116,14 @@ namespace DnsProxy.Strategies
                         var tempHost = host.ToPtrRecords(ipAddress);
                         RemoveCacheItem(tempHost.Item1);
                     }
+
                     foreach (var domainName in host.DomainNames)
                     {
                         RemoveCacheItem(domainName);
                     }
                 }
 
-            _hostConfigCache = (HostsConfig)hostConfig.Clone();
+            _hostConfigCache = (HostsConfig) hostConfig.Clone();
 
             if (_hostConfigCache != null)
                 foreach (var host in _hostConfigCache.Hosts)

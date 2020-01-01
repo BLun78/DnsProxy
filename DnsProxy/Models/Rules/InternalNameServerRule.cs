@@ -23,7 +23,7 @@ namespace DnsProxy.Models.Rules
 {
     internal class InternalNameServerRule : RuleBase, IRule, IRuleStrategy
     {
-        public InternalNameServerRule() : base()
+        public InternalNameServerRule()
         {
         }
 

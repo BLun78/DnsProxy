@@ -30,20 +30,20 @@ using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Makaretu.Dns;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DnsProxy.Strategies
 {
     internal class DohResolverStrategy : BaseResolverStrategy<DohRule>, IDnsResolverStrategy<DohRule>
     {
-        private DohClient _dohClient;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly IDisposable _httpProxyConfigListener;
         private readonly IOptionsMonitor<HttpProxyConfig> _httpProxyConfigOptionsMonitor;
         private readonly IMemoryCache _memoryCache;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IHttpClientFactory _httpClientFactory;
+        private DohClient _dohClient;
 
         public DohResolverStrategy(
             ILogger<DohResolverStrategy> logger,

@@ -31,12 +31,12 @@ namespace DnsProxy
     {
         private static ILogger<Program> Logger;
         private static string _title;
+        internal static AWSCredentials AwsCredentials;
         internal static ApplicationInformation ApplicationInformation { get; private set; }
         internal static CancellationTokenSource CancellationTokenSource { get; private set; }
         internal static Configuration Configuration { get; private set; }
         internal static DependencyInjector DependencyInjector { get; private set; }
         internal static IServiceProvider ServiceProvider => DependencyInjector.ServiceProvider;
-        internal static AWSCredentials AwsCredentials;
 
         internal static string Title
         {

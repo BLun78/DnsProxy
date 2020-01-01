@@ -23,7 +23,7 @@ namespace DnsProxy.Models.Rules
 {
     internal class HostsRule : RuleBase, IRule, IRuleStrategy
     {
-        public HostsRule() :base()
+        public HostsRule()
         {
         }
 

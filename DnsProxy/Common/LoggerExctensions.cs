@@ -29,13 +29,13 @@
 //                    var soa = dnsRecordBase as SoaRecord;
 //                    return new List<string>() { };
 //                case RecordType.Mb:
-                  
+
 //                case RecordType.Mg:
-                  
+
 //                case RecordType.Mr:
-                   
+
 //                case RecordType.Null:
-                    
+
 //                case RecordType.Wks:
 //                    var wks = dnsRecordBase as WksRecord;
 //                    return new List<string>() { };
@@ -46,7 +46,7 @@
 //                    var hinfo = dnsRecordBase as HInfoRecord;
 //                    return new List<string>() { };
 //                case RecordType.MInfo:
-                    
+
 //                case RecordType.Mx:
 //                    var mx = dnsRecordBase as MxRecord;
 //                    return new List<string>() { };
@@ -96,17 +96,17 @@
 //                    var tsig = dnsRecordBase as TSigRecord;
 //                    return new List<string>() { };
 //                case RecordType.Axfr:
-                   
+
 //                case RecordType.MailB:
-                   
+
 //                case RecordType.MailA:
 //                case RecordType.Any:
-                    
+
 //                case RecordType.Uri:
 //                    var uri = dnsRecordBase as UriRecord;
 //                    return new List<string>() { };
 //                case RecordType.CAA:
-               
+
 //                case RecordType.Dhcid:
 //                    var dhcid = dnsRecordBase as DhcidRecord;
 //                    return new List<string>() { };
@@ -123,7 +123,7 @@
 //                    var nsap = dnsRecordBase as NsapRecord;
 //                    return new List<string>() { };
 //                case RecordType.NsapPtr:
-                   
+
 //                case RecordType.Sig:
 //                    var sig = dnsRecordBase as DhcidRecord;
 //                    return new List<string>() { };
@@ -140,11 +140,11 @@
 //                    var loc = dnsRecordBase as LocRecord;
 //                    return new List<string>() { };
 //                case RecordType.Invalid:
-                
+
 //                case RecordType.Eid:
 
 //                case RecordType.NimLoc:
-                 
+
 //                case RecordType.AtmA:
 
 //                case RecordType.Naptr:
@@ -157,7 +157,7 @@
 //                    var cert = dnsRecordBase as CertRecord;
 //                    return new List<string>() { };
 //                case RecordType.Sink:
-                   
+
 //                case RecordType.Apl:
 //                    var apl = dnsRecordBase as AplRecord;
 //                    return new List<string>() { };
@@ -200,3 +200,4 @@
 //        }
 //    }
 //}
+

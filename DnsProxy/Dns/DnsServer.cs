@@ -63,7 +63,7 @@ namespace DnsProxy.Dns
         {
             StopServer();
             _dnsHostConfigListener?.Dispose();
-            ((IDisposable)_server)?.Dispose();
+            ((IDisposable) _server)?.Dispose();
         }
 
         [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "<Pending>")]
@@ -109,13 +109,14 @@ namespace DnsProxy.Dns
 
         private async Task<DnsMessage> DoQuery(DnsMessage dnsMessage, string ipEndPoint)
         {
-            var upstreamResponse = await _strategyManager.ResolveAsync(dnsMessage, ipEndPoint, _cancellationTokenSource.Token)
+            var upstreamResponse = await _strategyManager
+                .ResolveAsync(dnsMessage, ipEndPoint, _cancellationTokenSource.Token)
                 .ConfigureAwait(false);
             if (upstreamResponse?.AnswerRecords != null
                 && upstreamResponse.AnswerRecords.Any())
                 return upstreamResponse;
 
-            return await Task.FromResult((DnsMessage)null).ConfigureAwait(false);
+            return await Task.FromResult((DnsMessage) null).ConfigureAwait(false);
         }
 
         private async Task OnQueryReceived(object sender, QueryReceivedEventArgs e)
@@ -123,7 +124,8 @@ namespace DnsProxy.Dns
             if (e.Query is DnsMessage message
                 && message.Questions.Count == 1)
             {
-                var upstreamResponse = await DoQuery(message, e.RemoteEndpoint.Address.ToString()).ConfigureAwait(false);
+                var upstreamResponse =
+                    await DoQuery(message, e.RemoteEndpoint.Address.ToString()).ConfigureAwait(false);
                 if (upstreamResponse != null)
                 {
                     upstreamResponse.ReturnCode = ReturnCode.NoError;

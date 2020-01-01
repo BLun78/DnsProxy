@@ -17,13 +17,12 @@
 #endregion
 
 using System;
-using DnsProxy.Strategies;
 
 namespace DnsProxy.Models.Rules
 {
     internal class AwsRule : RuleBase, IRule, IRuleStrategy
     {
-        public AwsRule() : base()
+        public AwsRule()
         {
         }
 

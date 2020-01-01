@@ -33,7 +33,6 @@ namespace DnsProxy.Strategies
 {
     internal class StrategyManager : IDisposable
     {
-        private readonly object _lockObjectRules;
         private readonly IDisposable _dnsDefaultServerListener;
         private readonly IOptionsMonitor<DnsDefaultServer> _dnsDefaultServerOptionsMonitor;
         private readonly IDisposable _dnsHostConfigListener;
@@ -42,6 +41,7 @@ namespace DnsProxy.Strategies
         private readonly IOptionsMonitor<HostsConfig> _hostsConfigOptionsMonitor;
         private readonly IDisposable _internalNameServerConfigListener;
         private readonly IOptionsMonitor<InternalNameServerConfig> _internalNameServerConfigOptionsMonitor;
+        private readonly object _lockObjectRules;
         private readonly ILogger<StrategyManager> _logger;
         private readonly IDisposable _rulesConfigListner;
         private readonly IOptionsMonitor<RulesConfig> _rulesConfigOptionsMonitor;
@@ -117,25 +117,29 @@ namespace DnsProxy.Strategies
 
         private static IDnsResolverStrategy CreateStrategy(IRule rule, IServiceScope scope)
         {
-            var strategy = (IDnsResolverStrategy)scope.ServiceProvider.GetService(rule.GetStraegy());
+            var strategy = (IDnsResolverStrategy) scope.ServiceProvider.GetService(rule.GetStraegy());
             strategy.SetRule(rule);
             return strategy;
         }
 
-        public async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, string ipEndPoint, CancellationToken cancellationToken)
+        public async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, string ipEndPoint,
+            CancellationToken cancellationToken)
         {
             using (var scope = _serviceProvider.CreateScope())
             {
                 var dnsWriteContext = GetWriteDnsContext(scope, dnsMessage, ipEndPoint, cancellationToken);
 
-                using (var globalQueryTimeoutCts = new CancellationTokenSource(_dnsDefaultServerOptionsMonitor.CurrentValue.Servers.QueryTimeout * 2))
-                using (var joinedGlobalCts = CancellationTokenSource.CreateLinkedTokenSource(globalQueryTimeoutCts.Token, cancellationToken))
+                using (var globalQueryTimeoutCts =
+                    new CancellationTokenSource(_dnsDefaultServerOptionsMonitor.CurrentValue.Servers.QueryTimeout * 2))
+                using (var joinedGlobalCts =
+                    CancellationTokenSource.CreateLinkedTokenSource(globalQueryTimeoutCts.Token, cancellationToken))
                 {
-                    foreach (DnsQuestion dnsQuestion in dnsWriteContext.Response.Questions)
+                    foreach (var dnsQuestion in dnsWriteContext.Response.Questions)
                     {
                         try
                         {
-                            await DoStrategyAsync(dnsWriteContext.HostsResolverStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
+                            await DoStrategyAsync(dnsWriteContext.HostsResolverStrategy, dnsQuestion, dnsWriteContext,
+                                joinedGlobalCts.Token).ConfigureAwait(false);
                             if (dnsWriteContext.Response.AnswerRecords.Any())
                             {
                                 continue;
@@ -146,32 +150,35 @@ namespace DnsProxy.Strategies
 
                             foreach (var dnsResolverStrategy in patternList)
                             {
-                                await DoStrategyAsync(dnsResolverStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
+                                await DoStrategyAsync(dnsResolverStrategy, dnsQuestion, dnsWriteContext,
+                                    joinedGlobalCts.Token).ConfigureAwait(false);
                                 if (dnsWriteContext.Response.AnswerRecords.Any())
                                 {
                                     break;
                                 }
                             }
-                            if (dnsWriteContext.Response.AnswerRecords.Any())
-                            {
-                                continue;
-                            }
-                            
-                            await DoStrategyAsync(dnsWriteContext.InternalNameServerResolverStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
+
                             if (dnsWriteContext.Response.AnswerRecords.Any())
                             {
                                 continue;
                             }
 
-                            await DoStrategyAsync(dnsWriteContext.DefaultDnsStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
+                            await DoStrategyAsync(dnsWriteContext.InternalNameServerResolverStrategy, dnsQuestion,
+                                dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
                             if (dnsWriteContext.Response.AnswerRecords.Any())
                             {
                                 continue;
                             }
+
+                            await DoStrategyAsync(dnsWriteContext.DefaultDnsStrategy, dnsQuestion, dnsWriteContext,
+                                joinedGlobalCts.Token).ConfigureAwait(false);
+                            if (dnsWriteContext.Response.AnswerRecords.Any())
+                            {
+                            }
                         }
                         catch (Exception e)
                         {
-                            _logger.LogError(e,"At the resolving process is an error raised: [{0}]",e.Message);
+                            _logger.LogError(e, "At the resolving process is an error raised: [{0}]", e.Message);
                             throw;
                         }
                     }
@@ -180,21 +187,25 @@ namespace DnsProxy.Strategies
                     dnsWriteContext.Response.IsQuery = false;
 
 
-                    if (!dnsWriteContext.Response.AnswerRecords.Any()) dnsWriteContext.Response.ReturnCode = ReturnCode.ServerFailure;
+                    if (!dnsWriteContext.Response.AnswerRecords.Any())
+                        dnsWriteContext.Response.ReturnCode = ReturnCode.ServerFailure;
 
                     return dnsWriteContext.Response;
                 }
             }
         }
 
-        private async Task DoStrategyAsync(IDnsResolverStrategy dnsResolverStrategy, DnsQuestion dnsQuestion, IWriteDnsContext dnsWriteContext, CancellationToken joinedGlobalCtx)
+        private async Task DoStrategyAsync(IDnsResolverStrategy dnsResolverStrategy, DnsQuestion dnsQuestion,
+            IWriteDnsContext dnsWriteContext, CancellationToken joinedGlobalCtx)
         {
             if (!dnsWriteContext.Response.AnswerRecords.Any() && dnsResolverStrategy != null)
             {
                 try
                 {
-                    using (var strategyQueryTimeoutCts = new CancellationTokenSource(dnsResolverStrategy.Rule.QueryTimeout * 2))
-                    using (var joinedStrategyCts = CancellationTokenSource.CreateLinkedTokenSource(strategyQueryTimeoutCts.Token, joinedGlobalCtx))
+                    using (var strategyQueryTimeoutCts =
+                        new CancellationTokenSource(dnsResolverStrategy.Rule.QueryTimeout * 2))
+                    using (var joinedStrategyCts =
+                        CancellationTokenSource.CreateLinkedTokenSource(strategyQueryTimeoutCts.Token, joinedGlobalCtx))
                     {
                         var answer = await dnsResolverStrategy
                             .ResolveAsync(dnsQuestion, joinedStrategyCts.Token)
@@ -204,20 +215,23 @@ namespace DnsProxy.Strategies
                 }
                 catch (ArgumentOutOfRangeException aoore)
                 {
-                    _logger.LogWarning(aoore, "A mapping is not supportet [{0}] for that dns question! >> [{1}]", aoore.ActualValue, aoore.Message);
+                    _logger.LogWarning(aoore, "A mapping is not supportet [{0}] for that dns question! >> [{1}]",
+                        aoore.ActualValue, aoore.Message);
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "A strategy error for the dns question {0} with the error message >> [{1}]", dnsQuestion?.Name?.ToString(), e.Message);
+                    _logger.LogError(e, "A strategy error for the dns question {0} with the error message >> [{1}]",
+                        dnsQuestion?.Name?.ToString(), e.Message);
                 }
             }
             else
             {
-                this._logger.LogInformation("Query is found! {0}", dnsResolverStrategy?.GetType()?.ToString());
+                _logger.LogInformation("Query is found! {0}", dnsResolverStrategy?.GetType()?.ToString());
             }
         }
 
-        private IWriteDnsContext GetWriteDnsContext(IServiceScope scope, DnsMessage dnsMessage, string ipEndPoint, CancellationToken cancellationToken)
+        private IWriteDnsContext GetWriteDnsContext(IServiceScope scope, DnsMessage dnsMessage, string ipEndPoint,
+            CancellationToken cancellationToken)
         {
             var dnsContextAccessor = _serviceProvider.GetService<IWriteDnsContextAccessor>();
             var dnsWriteContext = _serviceProvider.GetService<IWriteDnsContext>();
@@ -227,23 +241,27 @@ namespace DnsProxy.Strategies
             dnsWriteContext.RootCancellationToken = cancellationToken;
             dnsWriteContext.Request = dnsMessage;
             dnsWriteContext.Response = dnsMessage.CreateResponseInstance();
-            dnsWriteContext.DefaultDnsStrategy = CreateStrategy(_dnsDefaultServerOptionsMonitor.CurrentValue.Servers.GetInternalRule(), scope);
+            dnsWriteContext.DefaultDnsStrategy =
+                CreateStrategy(_dnsDefaultServerOptionsMonitor.CurrentValue.Servers.GetInternalRule(), scope);
 
             dnsWriteContext.HostsResolverStrategy = _hostsConfigOptionsMonitor.CurrentValue.Rule.IsEnabled
                 ? CreateStrategy(_hostsConfigOptionsMonitor.CurrentValue.Rule, scope)
                 : null;
 
-            dnsWriteContext.InternalNameServerResolverStrategy = _internalNameServerConfigOptionsMonitor.CurrentValue.Rule.IsEnabled
-                ? CreateStrategy(_internalNameServerConfigOptionsMonitor.CurrentValue.Rule, scope)
-                : null;
+            dnsWriteContext.InternalNameServerResolverStrategy =
+                _internalNameServerConfigOptionsMonitor.CurrentValue.Rule.IsEnabled
+                    ? CreateStrategy(_internalNameServerConfigOptionsMonitor.CurrentValue.Rule, scope)
+                    : null;
 
-            var strategies = new List<Models.Strategies>() { Models.Strategies.Hosts, Models.Strategies.InternalNameServer };
+            var strategies = new List<Models.Strategies>
+                {Models.Strategies.Hosts, Models.Strategies.InternalNameServer};
             lock (_lockObjectRules)
             {
                 dnsWriteContext.DnsResolverStrategies = Rules
                     .Where(y => !strategies.Contains(y.Strategy) && y.IsEnabled)
                     .Select(x => CreateStrategy(x, scope)).ToList();
             }
+
             return dnsWriteContext;
         }
     }
