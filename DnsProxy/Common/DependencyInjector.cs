@@ -25,6 +25,7 @@ using System.Threading;
 using Amazon.EC2;
 using DnsProxy.Dns;
 using DnsProxy.Models;
+using DnsProxy.Models.Aws;
 using DnsProxy.Models.Context;
 using DnsProxy.Strategies;
 using Makaretu.Dns;
@@ -82,8 +83,10 @@ namespace DnsProxy.Common
             services.AddTransient<DnsResolverStrategy>();
             services.AddSingleton<InternalNameServerResolverStrategy>();
             services.AddSingleton<HostsResolverStrategy>();
+            services.AddSingleton<AwsEc2ResolverStrategy>();
             services.AddSingleton<IWebProxy>(CreateHttpProxyConfig);
             services.AddSingleton<AmazonEC2Config>(CreateAmazonEC2Config);
+            services.AddSingleton<AwsContext>(CreateAwsContext);
 
             // .net core frameworks
             services.AddOptions();
@@ -93,6 +96,7 @@ namespace DnsProxy.Common
             services.Configure<DnsDefaultServer>(_configuration.GetSection(nameof(DnsDefaultServer)));
             services.Configure<HttpProxyConfig>(_configuration.GetSection(nameof(HttpProxyConfig)));
             services.Configure<InternalNameServerConfig>(_configuration.GetSection(nameof(InternalNameServerConfig)));
+            services.Configure<AwsSettings>(_configuration.GetSection(nameof(AwsSettings)));
 
             services.AddLogging(builder =>
             {
@@ -198,5 +202,11 @@ namespace DnsProxy.Common
             }
             return config;
         }
+        
+        private AwsContext CreateAwsContext(IServiceProvider provider)
+        {
+            return AwsContext;
+        }
+        public static AwsContext AwsContext;
     }
 }

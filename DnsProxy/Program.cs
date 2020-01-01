@@ -17,22 +17,32 @@
 #endregion
 
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.Runtime;
 using DnsProxy.Common;
+using DnsProxy.Common.Aws;
 using DnsProxy.Dns;
+using DnsProxy.Models;
+using DnsProxy.Models.Aws;
+using DnsProxy.Strategies;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace DnsProxy
 {
     public sealed class Program
     {
+        private static volatile bool RequestNewMfa;
         private static ILogger<Program> Logger;
         private static string _title;
-        internal static AWSCredentials AwsCredentials;
         internal static ApplicationInformation ApplicationInformation { get; private set; }
+
+        private static IOptionsMonitor<AwsSettings> AwsSettingsOptionsMonitor;
+        private static IDisposable AwsSettingsOptionsMonitorListner;
+
         internal static CancellationTokenSource CancellationTokenSource { get; private set; }
         internal static Configuration Configuration { get; private set; }
         internal static DependencyInjector DependencyInjector { get; private set; }
@@ -56,9 +66,13 @@ namespace DnsProxy
                 Title = ApplicationInformation.DefaultTitle;
                 ApplicationInformation.LogAssemblyInformation();
                 Logger.LogInformation("starts up {DefaultTitle}", ApplicationInformation.DefaultTitle);
+
+                await CheckForAwsMfaAsync().ConfigureAwait(true);
+                var aws = ServiceProvider.GetService<AwsEc2ResolverStrategy>();
+
                 using (var dnsServer = ServiceProvider.GetService<DnsServer>())
                 {
-                    return await WaitForEndAsync().ConfigureAwait(true);
+                    return await WaitForEndAsync(dnsServer).ConfigureAwait(true);
                 }
             }
 #pragma warning disable CA1031 // Do not catch general exception types
@@ -83,15 +97,25 @@ namespace DnsProxy
 
             Logger = DependencyInjector.ServiceProvider.GetService<ILogger<Program>>();
             ApplicationInformation = DependencyInjector.ServiceProvider.GetService<ApplicationInformation>();
+            AwsSettingsOptionsMonitor = ServiceProvider.GetService<IOptionsMonitor<AwsSettings>>();
+            AwsSettingsOptionsMonitorListner = AwsSettingsOptionsMonitor.OnChange(settings => RequestNewMfa = true);
         }
 
-        private static Task<int> WaitForEndAsync()
+        private static async Task<int> WaitForEndAsync(DnsServer dnsServer)
         {
-            return Task.Run(() =>
+            return await Task.Run(async () =>
             {
                 var exit = false;
                 while (!exit)
                 {
+                    if (RequestNewMfa)
+                    {
+                        dnsServer.StopServer();
+                        await CheckForAwsMfaAsync().ConfigureAwait(true);
+                        dnsServer.StartServer();
+                        RequestNewMfa = false;
+                    }
+
                     var key = Console.ReadKey(true);
                     switch (key.Modifiers, key.Key)
                     {
@@ -102,10 +126,38 @@ namespace DnsProxy
                     }
                 }
 
-                CancellationTokenSource.Cancel();
-                CancellationTokenSource.Dispose();
+                CancellationTokenSource?.Cancel();
+                CancellationTokenSource?.Dispose();
+                AwsSettingsOptionsMonitorListner?.Dispose();
                 return 0;
-            });
+            }).ConfigureAwait(true);
+        }
+
+        private static async Task CheckForAwsMfaAsync()
+        {
+            var awsSettings = AwsSettingsOptionsMonitor.CurrentValue;
+            var rules = ServiceProvider.GetService<IOptionsMonitor<RulesConfig>>().CurrentValue;
+            var aws = rules.Rules.FirstOrDefault(x => x.IsEnabled == false && x.Strategy == Models.Strategies.Aws);
+
+            if (aws == null) return;
+
+            var awsContext = new AwsContext(awsSettings);
+            var mfa = new AwsMfa();
+
+            foreach (var userAccount in awsContext.AwsSettings.UserAccounts)
+            {
+                var mfsToken = await mfa.GetMfaAsync(userAccount, CancellationTokenSource.Token)
+                    .ConfigureAwait(true);
+
+                await mfa.CreateAwsCredentialsAsync(userAccount, mfsToken, CancellationTokenSource.Token).ConfigureAwait(true);
+
+                foreach (var role in userAccount.Roles)
+                {
+                    await mfa.AssumeRoleAsync(userAccount, role, CancellationTokenSource.Token).ConfigureAwait(true);
+                }
+            }
+
+            DependencyInjector.AwsContext = awsContext;
         }
     }
 }

@@ -34,7 +34,7 @@ namespace DnsProxy.Dns
 {
     internal class DnsServer : IDisposable
     {
-        private const int DefaultDnsPort = 53;
+        private readonly int DefaultDnsPort = 53;
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly IDisposable _dnsHostConfigListener;
         private readonly IOptionsMonitor<DnsHostConfig> _dnsHostConfigOptionsMonitor;
@@ -56,6 +56,7 @@ namespace DnsProxy.Dns
             _cancellationTokenSource = cancellationTokenSource;
             _dnsHostConfigListener = _dnsHostConfigOptionsMonitor.OnChange(DnsHostConfigListener);
             CreateNetworkWhitelist();
+            DefaultDnsPort = _dnsHostConfigOptionsMonitor.CurrentValue.ListenerPort;
             StartServer(_dnsHostConfigOptionsMonitor.CurrentValue.ListenerPort);
         }
 
@@ -91,7 +92,7 @@ namespace DnsProxy.Dns
             StartServer(dnsHostConfig.ListenerPort);
         }
 
-        private void StartServer(int? listnerPort = null)
+        public void StartServer(int? listnerPort = null)
         {
             var ipEndPoint = new IPEndPoint(IPAddress.Any, listnerPort ?? DefaultDnsPort);
             _server = new ARSoft.Tools.Net.Dns.DnsServer(ipEndPoint, 10000, 10000);
@@ -102,7 +103,7 @@ namespace DnsProxy.Dns
             _server.Start();
         }
 
-        private void StopServer()
+        public void StopServer()
         {
             _server.Stop();
         }

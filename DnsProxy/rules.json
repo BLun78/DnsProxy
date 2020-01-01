@@ -21,6 +21,14 @@
         "QueryTimeout": 30000
       },
       {
+        "DomainNamePattern": "(.*)\\.amazonaws.com.",
+        "Strategy": "Aws",
+        "NameServer": [
+        ],
+        "IsEnabled": false,
+        "QueryTimeout": 30000
+      },
+      {
         "DomainNamePattern": "(.*)\\.blun.de.",
         "Strategy": "DoH",
         "NameServer": [
