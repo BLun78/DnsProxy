@@ -27,6 +27,7 @@ using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DnsProxy.Strategies
 {
@@ -34,23 +35,31 @@ namespace DnsProxy.Strategies
         where TRule : IRule
         where TClient : AmazonServiceClient, IAmazonService, IDisposable, new()
     {
-        protected readonly AwsContext AwsContext;
+        protected AwsContext AwsContext;
         protected readonly ClientConfig AwsClientConfig;
+        protected readonly IServiceProvider ServiceProvider;
         protected TClient AwsClient;
 
         protected AwsBaseResolverStrategy(ILogger<AwsBaseResolverStrategy<TRule, TClient>> logger,
             IDnsContextAccessor dnsContextAccessor,
             IMemoryCache memoryCache,
             AwsContext awsContext,
-            ClientConfig awsClientConfig)
+            ClientConfig awsClientConfig,
+            IServiceProvider serviceProvider)
             : base(logger, dnsContextAccessor, memoryCache)
         {
             AwsContext = awsContext;
             AwsClientConfig = awsClientConfig;
+            ServiceProvider = serviceProvider;
         }
 
         public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken)
         {
+            if (AwsContext == null)
+            {
+                AwsContext = ServiceProvider.GetService<AwsContext>();
+            }
+
             var result = new List<DnsRecordBase>();
             AwsClient?.Dispose();
             foreach (var awsSettingsUserAccount in AwsContext.AwsSettings.UserAccounts)

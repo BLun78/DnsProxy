@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.APIGateway;
+using Amazon.APIGateway.Model;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Models.Aws;
 using DnsProxy.Models.Context;
@@ -28,14 +29,15 @@ using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Strategies
 {
-    internal class AwsApiGateyResolverStrategy : AwsBaseResolverStrategy<AwsApiGatewayRule, AmazonAPIGatewayClient>, IDnsResolverStrategy<AwsApiGatewayRule>
+    internal class AwsApiGatewayResolverStrategy : AwsBaseResolverStrategy<AwsApiGatewayRule, AmazonAPIGatewayClient>, IDnsResolverStrategy<AwsApiGatewayRule>
     {
 
-        public AwsApiGateyResolverStrategy(ILogger<AwsApiGateyResolverStrategy> logger,
+        public AwsApiGatewayResolverStrategy(ILogger<AwsApiGatewayResolverStrategy> logger,
             IDnsContextAccessor dnsContextAccessor,
             IMemoryCache memoryCache,
             AwsContext awsContext,
-            AmazonAPIGatewayConfig amazonApiGatewayConfig) : base(logger, dnsContextAccessor, memoryCache, awsContext, amazonApiGatewayConfig)
+            AmazonAPIGatewayConfig amazonApiGatewayConfig,
+            IServiceProvider serviceProvider) : base(logger, dnsContextAccessor, memoryCache, awsContext, amazonApiGatewayConfig, serviceProvider)
         {
         }
 
@@ -44,9 +46,11 @@ namespace DnsProxy.Strategies
             return Models.Strategies.AwsApiGateway;
         }
 
-        public override Task<List<DnsRecordBase>> AwsResolveAsync(DnsQuestion dnsQuestion, List<string> ScanVpcIds, CancellationToken cancellationToken)
+        public override async Task<List<DnsRecordBase>> AwsResolveAsync(DnsQuestion dnsQuestion, List<string> ScanVpcIds, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var vpc = await AwsClient.GetRestApisAsync(new GetRestApisRequest(), cancellationToken).ConfigureAwait(true);
+
+            return null;
         }
     }
 }

@@ -15,10 +15,8 @@
 #endregion
 
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon.Runtime;
 using DnsProxy.Common;
 using DnsProxy.Common.Aws;
 using DnsProxy.Dns;
@@ -67,12 +65,9 @@ namespace DnsProxy
                 
                 using (var dnsServer = ServiceProvider.GetService<DnsServer>())
                 {
-
                     await CheckForAwsMfaAsync().ConfigureAwait(true);
                     var aws = ServiceProvider.GetService<AwsVpcManager>();
-                    _ = aws.StartReadingVpcAsync().ConfigureAwait(true);
-
-                    var awsDb = ServiceProvider.GetService<AwsDocDbResolverStrategy>();
+                    await aws.StartReadingVpcAsync().ConfigureAwait(true);
 
                     return await WaitForEndAsync(dnsServer).ConfigureAwait(true);
                 }
@@ -135,29 +130,36 @@ namespace DnsProxy
 
         private static async Task CheckForAwsMfaAsync()
         {
-            var awsSettings = AwsSettingsOptionsMonitor.CurrentValue;
-            var rules = ServiceProvider.GetService<IOptionsMonitor<RulesConfig>>().CurrentValue;
-            //var aws = rules.Rules.FirstOrDefault(x => x.IsEnabled == false && x.Strategy == Models.Strategies.Aws);
-
-            //if (aws == null) return;
-
-            var awsContext = new AwsContext(awsSettings);
-            var mfa = new AwsMfa();
-
-            foreach (var userAccount in awsContext.AwsSettings.UserAccounts)
+            try
             {
-                var mfsToken = await mfa.GetMfaAsync(userAccount, CancellationTokenSource.Token)
-                    .ConfigureAwait(true);
+                var awsSettings = AwsSettingsOptionsMonitor.CurrentValue;
+                var rules = ServiceProvider.GetService<IOptionsMonitor<RulesConfig>>().CurrentValue;
+                //var aws = rules.Rules.FirstOrDefault(x => x.IsEnabled == false && x.Strategy == Models.Strategies.Aws);
 
-                await mfa.CreateAwsCredentialsAsync(userAccount, mfsToken, CancellationTokenSource.Token).ConfigureAwait(true);
+                //if (aws == null) return;
 
-                foreach (var role in userAccount.Roles)
+                var awsContext = new AwsContext(awsSettings);
+                var mfa = new AwsMfa();
+
+                foreach (var userAccount in awsContext.AwsSettings.UserAccounts)
                 {
-                    await mfa.AssumeRoleAsync(userAccount, role, CancellationTokenSource.Token).ConfigureAwait(true);
-                }
-            }
+                    var mfsToken = await mfa.GetMfaAsync(userAccount, CancellationTokenSource.Token)
+                        .ConfigureAwait(true);
 
-            DependencyInjector.AwsContext = awsContext;
+                    await mfa.CreateAwsCredentialsAsync(userAccount, mfsToken, CancellationTokenSource.Token).ConfigureAwait(true);
+
+                    foreach (var role in userAccount.Roles)
+                    {
+                        await mfa.AssumeRoleAsync(userAccount, role, CancellationTokenSource.Token).ConfigureAwait(true);
+                    }
+                }
+
+                DependencyInjector.AwsContext = awsContext;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
     }
 }

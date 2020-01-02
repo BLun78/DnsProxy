@@ -49,19 +49,23 @@ namespace DnsProxy.Common.Aws
         {
             foreach (var awsSettingsUserAccount in _awsContext.AwsSettings.UserAccounts)
             {
-                await ReadVpc(_amazonEc2Config, awsSettingsUserAccount.AwsCredentials).ConfigureAwait(true);
+                await ReadVpc(_amazonEc2Config, awsSettingsUserAccount.AwsCredentials, awsSettingsUserAccount).ConfigureAwait(true);
                 foreach (var userRoleExtended in awsSettingsUserAccount.Roles)
                 {
-                    await ReadVpc(_amazonEc2Config, userRoleExtended.AwsCredentials).ConfigureAwait(true);
+                    await ReadVpc(_amazonEc2Config, userRoleExtended.AwsCredentials, userRoleExtended).ConfigureAwait(true);
                 }
             }
             amazonEc2Client?.Dispose();
         }
 
-        private async Task ReadVpc(AmazonEC2Config amazonEc2Config, AWSCredentials awsCredentials)
+        private async Task ReadVpc(AmazonEC2Config amazonEc2Config, AWSCredentials awsCredentials, IAwsDoScan awsDoScan)
         {
             try
             {
+                if (!awsDoScan.DoScan)
+                {
+                    return;
+                }
                 amazonEc2Client?.Dispose();
                 amazonEc2Client = new AmazonEC2Client(awsCredentials, amazonEc2Config);
 

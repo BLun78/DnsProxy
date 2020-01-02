@@ -82,14 +82,14 @@ namespace DnsProxy.Common
             services.AddTransient<IDnsResolverStrategy, DnsResolverStrategy>();
             services.AddSingleton<IDnsResolverStrategy, InternalNameServerResolverStrategy>();
             services.AddSingleton<IDnsResolverStrategy, HostsResolverStrategy>();
-            services.AddTransient<IDnsResolverStrategy, AwsApiGateyResolverStrategy>();
+            services.AddTransient<IDnsResolverStrategy, AwsApiGatewayResolverStrategy>();
             services.AddTransient<IDnsResolverStrategy, AwsDocDbResolverStrategy>();
             services.AddTransient<IDnsResolverStrategy, AwsElasticCacheResolverStrategy>();
             services.AddTransient<DohResolverStrategy>();
             services.AddTransient<DnsResolverStrategy>();
             services.AddSingleton<InternalNameServerResolverStrategy>();
             services.AddSingleton<HostsResolverStrategy>();
-            services.AddTransient<AwsApiGateyResolverStrategy>();
+            services.AddTransient<AwsApiGatewayResolverStrategy>();
             services.AddTransient<AwsDocDbResolverStrategy>();
             services.AddTransient<AwsElasticCacheResolverStrategy>();
 
@@ -101,7 +101,7 @@ namespace DnsProxy.Common
             services.AddSingleton<AmazonDocDBConfig>(CreateAmazonConfig<AmazonDocDBConfig>);
             services.AddSingleton<AmazonAPIGatewayConfig>(CreateAmazonConfig<AmazonAPIGatewayConfig>);
             services.AddSingleton<AmazonElastiCacheConfig>(CreateAmazonConfig<AmazonElastiCacheConfig>);
-            services.AddSingleton<AwsContext>(CreateAwsContext);
+            services.AddTransient<AwsContext>(CreateAwsContext);
 
             // .net core frameworks
             services.AddOptions();

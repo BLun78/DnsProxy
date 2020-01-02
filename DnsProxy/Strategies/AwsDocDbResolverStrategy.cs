@@ -37,7 +37,8 @@ namespace DnsProxy.Strategies
             IDnsContextAccessor dnsContextAccessor,
             IMemoryCache memoryCache,
             AwsContext awsContext,
-            AmazonDocDBConfig amazonDocDbConfig) : base(logger, dnsContextAccessor, memoryCache, awsContext, amazonDocDbConfig)
+            AmazonDocDBConfig amazonDocDbConfig,
+            IServiceProvider serviceProvider) : base(logger, dnsContextAccessor, memoryCache, awsContext, amazonDocDbConfig, serviceProvider)
         {
         }
 

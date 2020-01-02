@@ -66,6 +66,8 @@ namespace DnsProxy.Models
                     return new AwsDocDbRule(this);
                 case Strategies.AwsElasticCache:
                     return new AwsElasticCacheRule(this);
+                case Strategies.AwsApiGateway:
+                    return new AwsApiGatewayRule(this);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(Strategy), Strategy, null);
             }
