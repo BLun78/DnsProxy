@@ -136,14 +136,17 @@ namespace DnsProxy.Common
 
         private HttpMessageHandler ConfigureHandler(IServiceProvider provider)
         {
-            var httpProxyConfigOptionsMonitor = provider.GetService<IOptionsMonitor<HttpProxyConfig>>();
-            var httpProxyConfig = httpProxyConfigOptionsMonitor.CurrentValue;
-            
+            var httpProxyConfig = provider.GetService<IOptions<HttpProxyConfig>>().Value;
+
             var handler = new HttpClientHandler();
-            if (httpProxyConfig.AuthenticationType != AuthenticationType.None)
+            if (string.IsNullOrWhiteSpace(httpProxyConfig.Uri))
             {
-                handler.Proxy = provider.GetService<IWebProxy>();
-                handler.UseDefaultCredentials = true;
+                var webProxy = provider.GetService<IWebProxy>();
+                if (webProxy != null)
+                {
+                    handler.Proxy = webProxy;
+                    handler.UseDefaultCredentials = true;
+                }
             }
             handler.AutomaticDecompression = DecompressionMethods.All;
             handler.SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13;
@@ -153,8 +156,13 @@ namespace DnsProxy.Common
 
         private IWebProxy CreateHttpProxyConfig(IServiceProvider provider)
         {
-            var httpProxyConfigOptionsMonitor = provider.GetService<IOptionsMonitor<HttpProxyConfig>>();
-            var httpProxyConfig = httpProxyConfigOptionsMonitor.CurrentValue;
+            var httpProxyConfig = provider.GetService<IOptions<HttpProxyConfig>>().Value;
+
+            if (string.IsNullOrWhiteSpace(httpProxyConfig.Uri))
+            {
+                return null;
+            }
+
             var proxy = new WebProxy
             {
                 Address = new Uri(httpProxyConfig.Uri),
@@ -184,24 +192,20 @@ namespace DnsProxy.Common
         private AmazonEC2Config CreateAmazonEC2Config(IServiceProvider provider)
         {
             var config = new AmazonEC2Config();
-            var httpProxyConfigOptionsMonitor = provider.GetService<IOptionsMonitor<HttpProxyConfig>>();
-            var httpProxyConfig = httpProxyConfigOptionsMonitor.CurrentValue;
+            var httpProxyConfig = provider.GetService<IOptions<HttpProxyConfig>>().Value;
 
-            switch (httpProxyConfig.AuthenticationType)
+            if (!string.IsNullOrWhiteSpace(httpProxyConfig.Uri))
             {
-                case AuthenticationType.None:
-                    break;
-                case AuthenticationType.Basic:
-                case AuthenticationType.Windows:
-                    var webProxy = provider.GetService<IWebProxy>();
+                var webProxy = provider.GetService<IWebProxy>();
+                if (webProxy != null)
+                {
                     config.SetWebProxy(webProxy);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                }
             }
+
             return config;
         }
-        
+
         private AwsContext CreateAwsContext(IServiceProvider provider)
         {
             return AwsContext;
