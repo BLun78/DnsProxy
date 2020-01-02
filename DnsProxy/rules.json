@@ -21,11 +21,24 @@
         "QueryTimeout": 30000
       },
       {
-        "DomainNamePattern": "(.*)\\.amazonaws.com.",
+        "DomainNamePattern": "(.*)\\.docdb.amazonaws.com.",
         "Strategy": "AwsDocDb",
-        "NameServer": [ 
-        ],
-        "IsEnabled": false,
+        "NameServer": [],
+        "IsEnabled": true,
+        "QueryTimeout": 30000
+      },
+      {
+        "DomainNamePattern": "(.*)\\.cache.amazonaws.com.",
+        "Strategy": "AwsElasticCache",
+        "NameServer": [],
+        "IsEnabled": true,
+        "QueryTimeout": 30000
+      },
+      {
+        "DomainNamePattern": "(.*)\\.execute-api.eu-central-1.amazonaws.com.",
+        "Strategy": "AwsApiGateway",
+        "NameServer": [],
+        "IsEnabled": true,
         "QueryTimeout": 30000
       },
       {
