@@ -15,11 +15,17 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DnsProxy.Models.Aws
 {
-    internal class AwsSettings
+    internal class AwsSettingsExtended : AwsSettings
     {
-        public List<UserAccount> UserAccounts { get; set; }
+        public AwsSettingsExtended(AwsSettings awsSettings)
+        {
+            UserAccounts = awsSettings.UserAccounts.Select(x => new UserAccountExtended(x)).ToList();
+        }
+
+        public new List<UserAccountExtended> UserAccounts { get; set; }
     }
 }

@@ -14,12 +14,21 @@
 //    limitations under the License.
 #endregion
 
-using System.Collections.Generic;
+using Amazon.Runtime;
 
 namespace DnsProxy.Models.Aws
 {
-    internal class AwsSettings
+    internal class UserRoleExtended : UserRole, IAwsDoScan
     {
-        public List<UserAccount> UserAccounts { get; set; }
+        public UserRoleExtended(UserRole userRole)
+        {
+            AwsAccountId = userRole.AwsAccountId;
+            AwsAccountLabel = userRole.AwsAccountLabel;
+            Role = userRole.Role;
+            DoScan = userRole.DoScan;
+            ScanVpcIds = userRole.ScanVpcIds;
+        }
+
+        public AWSCredentials AwsCredentials { get; set; }
     }
 }

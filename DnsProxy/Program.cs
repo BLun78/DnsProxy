@@ -1,6 +1,5 @@
 ﻿#region Apache License-2.0
-
-// Copyright 2019 Bjoern Lundstroem
+// Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
 //    you may not use this file except in compliance with the License.
@@ -13,7 +12,6 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
-
 #endregion
 
 using System;
@@ -71,7 +69,10 @@ namespace DnsProxy
                 {
 
                     await CheckForAwsMfaAsync().ConfigureAwait(true);
-                    var aws = ServiceProvider.GetService<AwsEc2ResolverStrategy>();
+                    var aws = ServiceProvider.GetService<AwsVpcManager>();
+                    _ = aws.StartReadingVpcAsync().ConfigureAwait(true);
+
+                    var awsDb = ServiceProvider.GetService<AwsDocDbResolverStrategy>();
 
                     return await WaitForEndAsync(dnsServer).ConfigureAwait(true);
                 }
@@ -112,8 +113,6 @@ namespace DnsProxy
                     if (RequestNewMfa)
                     {
                         await CheckForAwsMfaAsync().ConfigureAwait(true);
-                        dnsServer.StopServer();
-                        dnsServer.StartServer();
                         RequestNewMfa = false;
                     }
 
@@ -138,9 +137,9 @@ namespace DnsProxy
         {
             var awsSettings = AwsSettingsOptionsMonitor.CurrentValue;
             var rules = ServiceProvider.GetService<IOptionsMonitor<RulesConfig>>().CurrentValue;
-            var aws = rules.Rules.FirstOrDefault(x => x.IsEnabled == false && x.Strategy == Models.Strategies.Aws);
+            //var aws = rules.Rules.FirstOrDefault(x => x.IsEnabled == false && x.Strategy == Models.Strategies.Aws);
 
-            if (aws == null) return;
+            //if (aws == null) return;
 
             var awsContext = new AwsContext(awsSettings);
             var mfa = new AwsMfa();

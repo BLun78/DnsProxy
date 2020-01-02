@@ -1,6 +1,5 @@
 ﻿#region Apache License-2.0
-
-// Copyright 2019 Bjoern Lundstroem
+// Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
 //    you may not use this file except in compliance with the License.
@@ -13,7 +12,6 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
-
 #endregion
 
 using System;
@@ -22,7 +20,12 @@ using System.Net.Http;
 using System.Reflection;
 using System.Security.Authentication;
 using System.Threading;
+using Amazon.APIGateway;
+using Amazon.DocDB;
 using Amazon.EC2;
+using Amazon.ElastiCache;
+using Amazon.Runtime;
+using DnsProxy.Common.Aws;
 using DnsProxy.Dns;
 using DnsProxy.Models;
 using DnsProxy.Models.Aws;
@@ -79,13 +82,25 @@ namespace DnsProxy.Common
             services.AddTransient<IDnsResolverStrategy, DnsResolverStrategy>();
             services.AddSingleton<IDnsResolverStrategy, InternalNameServerResolverStrategy>();
             services.AddSingleton<IDnsResolverStrategy, HostsResolverStrategy>();
+            services.AddTransient<IDnsResolverStrategy, AwsApiGateyResolverStrategy>();
+            services.AddTransient<IDnsResolverStrategy, AwsDocDbResolverStrategy>();
+            services.AddTransient<IDnsResolverStrategy, AwsElasticCacheResolverStrategy>();
             services.AddTransient<DohResolverStrategy>();
             services.AddTransient<DnsResolverStrategy>();
             services.AddSingleton<InternalNameServerResolverStrategy>();
             services.AddSingleton<HostsResolverStrategy>();
-            services.AddSingleton<AwsEc2ResolverStrategy>();
+            services.AddTransient<AwsApiGateyResolverStrategy>();
+            services.AddTransient<AwsDocDbResolverStrategy>();
+            services.AddTransient<AwsElasticCacheResolverStrategy>();
+
+            // common
+            services.AddSingleton<AwsDocDbResolverStrategy>();
+            services.AddSingleton<AwsVpcManager>();
             services.AddSingleton<IWebProxy>(CreateHttpProxyConfig);
-            services.AddSingleton<AmazonEC2Config>(CreateAmazonEC2Config);
+            services.AddSingleton<AmazonEC2Config>(CreateAmazonConfig<AmazonEC2Config>);
+            services.AddSingleton<AmazonDocDBConfig>(CreateAmazonConfig<AmazonDocDBConfig>);
+            services.AddSingleton<AmazonAPIGatewayConfig>(CreateAmazonConfig<AmazonAPIGatewayConfig>);
+            services.AddSingleton<AmazonElastiCacheConfig>(CreateAmazonConfig<AmazonElastiCacheConfig>);
             services.AddSingleton<AwsContext>(CreateAwsContext);
 
             // .net core frameworks
@@ -189,9 +204,10 @@ namespace DnsProxy.Common
             return proxy;
         }
 
-        private AmazonEC2Config CreateAmazonEC2Config(IServiceProvider provider)
+        private TConfig CreateAmazonConfig<TConfig>(IServiceProvider provider)
+            where TConfig : class, IClientConfig, new()
         {
-            var config = new AmazonEC2Config();
+            IClientConfig config = new TConfig() as ClientConfig;
             var httpProxyConfig = provider.GetService<IOptions<HttpProxyConfig>>().Value;
 
             if (!string.IsNullOrWhiteSpace(httpProxyConfig.Uri))
@@ -199,11 +215,10 @@ namespace DnsProxy.Common
                 var webProxy = provider.GetService<IWebProxy>();
                 if (webProxy != null)
                 {
-                    config.SetWebProxy(webProxy);
+                    ((ClientConfig)config)?.SetWebProxy(webProxy);
                 }
             }
-
-            return config;
+            return config as TConfig;
         }
 
         private AwsContext CreateAwsContext(IServiceProvider provider)

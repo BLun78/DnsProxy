@@ -15,11 +15,25 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Linq;
+using Amazon.Runtime;
 
 namespace DnsProxy.Models.Aws
 {
-    internal class AwsSettings
+    internal class UserAccountExtended : UserAccount, IAwsDoScan
     {
-        public List<UserAccount> UserAccounts { get; set; }
+        public UserAccountExtended(UserAccount userAccount)
+        {
+            Roles = userAccount.Roles.Select(x => new UserRoleExtended(x)).ToList();
+            UserAccountId = userAccount.UserAccountId;
+            UserName = userAccount.UserName;
+            UserAccessKey = userAccount.UserAccessKey;
+            UserSecretKey = userAccount.UserSecretKey;
+            DoScan = userAccount.DoScan;
+            ScanVpcIds = userAccount.ScanVpcIds;
+        }
+
+        public new List<UserRoleExtended> Roles { get; set; }
+        public AWSCredentials AwsCredentials { get; set; }
     }
 }

@@ -22,8 +22,8 @@
       },
       {
         "DomainNamePattern": "(.*)\\.amazonaws.com.",
-        "Strategy": "Aws",
-        "NameServer": [
+        "Strategy": "AwsDocDb",
+        "NameServer": [ 
         ],
         "IsEnabled": false,
         "QueryTimeout": 30000
@@ -64,7 +64,7 @@
           ""
         ],
         "IpAddress": "",
-        // Dns, DoH
+        // Dns, DoH, AwsDocDb, AwsElasticCache, AwsApiGateway
         "Strategy": "",
         "IsEnabled": false,
         "CompressionMutation": false,

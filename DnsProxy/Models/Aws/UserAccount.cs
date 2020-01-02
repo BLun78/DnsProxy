@@ -1,62 +1,31 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Amazon.Runtime;
+﻿#region Apache License-2.0
+// Copyright 2020 Bjoern Lundstroem
+// 
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+// 
+//      http://www.apache.org/licenses/LICENSE-2.0
+// 
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
+#endregion
+
+using System.Collections.Generic;
 
 namespace DnsProxy.Models.Aws
 {
-    internal class AwsContext
-    {
-        public AwsContext(AwsSettings awsSettings)
-        {
-            AwsSettings = new AwsSettingsExtended(awsSettings);
-        }
-
-        public AwsSettingsExtended AwsSettings { get; set; }
-    }
-
-    internal class AwsSettingsExtended : AwsSettings
-    {
-        public AwsSettingsExtended(AwsSettings awsSettings)
-        {
-            UserAccounts = awsSettings.UserAccounts.Select(x => new UserAccountExtended(x)).ToList();
-        }
-
-        public new List<UserAccountExtended> UserAccounts { get; set; }
-    }
-
-    internal class UserAccountExtended : UserAccount
-    {
-        public UserAccountExtended(UserAccount userAccount)
-        {
-            Roles = userAccount.Roles.Select(x => new UserRoleExtended(x)).ToList();
-            UserAccountId = userAccount.UserAccountId;
-            UserName = userAccount.UserName;
-            UserAccessKey = userAccount.UserAccessKey;
-            UserSecretKey = userAccount.UserSecretKey;
-        }
-
-        public new List<UserRoleExtended> Roles { get; set; }
-        public AWSCredentials AwsCredentials { get; set; }
-    }
-
-    internal class UserRoleExtended : UserRole
-    {
-        public UserRoleExtended(UserRole userRole)
-        {
-            AwsAccountId = userRole.AwsAccountId;
-            AwsAccountLabel = userRole.AwsAccountLabel;
-            Role = userRole.Role;
-        }
-
-        public AWSCredentials AwsCredentials { get; set; }
-    }
-
     internal class UserAccount
     {
         public string UserAccountId { get; set; }
         public string UserName { get; set; }
         public string UserAccessKey { get; set; }
         public string UserSecretKey { get; set; }
+        public bool DoScan { get; set; }
+        public List<string> ScanVpcIds { get; set; }
         public List<UserRole> Roles { get; set; }
     }
 }

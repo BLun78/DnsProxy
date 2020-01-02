@@ -14,12 +14,24 @@
 //    limitations under the License.
 #endregion
 
-using System.Collections.Generic;
+using System;
+using DnsProxy.Strategies;
 
-namespace DnsProxy.Models.Aws
+namespace DnsProxy.Models.Rules
 {
-    internal class AwsSettings
+    internal class AwsElasticCacheRule : RuleBase, IRule, IRuleStrategy
     {
-        public List<UserAccount> UserAccounts { get; set; }
+        public AwsElasticCacheRule()
+        {
+        }
+
+        public AwsElasticCacheRule(Rule rule) : base(rule)
+        {
+        }
+
+        public override Type GetStraegy()
+        {
+            return typeof(AwsElasticCacheResolverStrategy);
+        }
     }
 }
