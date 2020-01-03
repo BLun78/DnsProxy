@@ -64,7 +64,7 @@ namespace DnsProxy.Common.Aws
             {
                 if (awsSettingsUserAccount.DoScan)
                 {
-                    await ReadVpc(awsSettingsUserAccount.AwsCredentials, awsSettingsUserAccount, cancellationToken)
+                    await ReadVpcAsync(awsSettingsUserAccount.AwsCredentials, awsSettingsUserAccount, cancellationToken)
                         .ConfigureAwait(true);
                 }
 
@@ -72,32 +72,32 @@ namespace DnsProxy.Common.Aws
                 {
                     if (userRoleExtended.DoScan)
                     {
-                        await ReadVpc(userRoleExtended.AwsCredentials, userRoleExtended, cancellationToken)
+                        await ReadVpcAsync(userRoleExtended.AwsCredentials, userRoleExtended, cancellationToken)
                             .ConfigureAwait(true);
                     }
                 }
             }
         }
 
-        private async Task ReadVpc(AWSCredentials awsCredentials, IAwsDoScan awsDoScan,
-            CancellationToken cancellationToken)
+        private async Task ReadVpcAsync(AWSCredentials awsCredentials, IAwsDoScan awsDoScan, CancellationToken cancellationToken)
         {
             try
             {
                 var result = new List<DnsRecordBase>();
                 using (var amazonEc2Client = new AmazonEC2Client(awsCredentials, _amazonEc2Config))
                 {
-                    var endpoints = await ReadVpcEndpoint(amazonEc2Client, awsDoScan, cancellationToken)
+                    var endpoints = await ReadVpcEndpointAsync(amazonEc2Client, awsDoScan, cancellationToken)
                         .ConfigureAwait(true);
 
-                    var readApiGateway = await ReadApiGateway(awsCredentials, endpoints, awsDoScan, cancellationToken)
+                    var readApiGateway = await ReadApiGatewayAsync(awsCredentials, endpoints, cancellationToken)
                         .ConfigureAwait(true);
                     result.AddRange(readApiGateway);
 
-                    var readEndpoints = await ReadEndpoints(awsCredentials, endpoints, awsDoScan, cancellationToken)
-                        .ConfigureAwait(true);
+                    var readEndpoints = ReadEndpoints(endpoints);
                     result.AddRange(readEndpoints);
                 }
+
+
             }
             catch (AmazonEC2Exception aee)
             {
@@ -117,8 +117,7 @@ namespace DnsProxy.Common.Aws
             }
         }
 
-        private async Task<List<DnsRecordBase>> ReadEndpoints(AWSCredentials awsCredentials, List<Endpoint> endpoints,
-            IAwsDoScan awsDoScan, CancellationToken cancellationToken)
+        private IEnumerable<DnsRecordBase> ReadEndpoints(IEnumerable<Endpoint> endpoints)
         {
             var result = new List<DnsRecordBase>();
             var listEndpoints = endpoints.Where(x => !x.VpcEndpoint.ServiceName.Contains(".s3")).ToList();
@@ -140,8 +139,7 @@ namespace DnsProxy.Common.Aws
             return result;
         }
 
-        private async Task<List<DnsRecordBase>> ReadApiGateway(AWSCredentials awsCredentials, List<Endpoint> endpoints,
-            IAwsDoScan awsDoScan, CancellationToken cancellationToken)
+        private async Task<List<DnsRecordBase>> ReadApiGatewayAsync(AWSCredentials awsCredentials, IEnumerable<Endpoint> endpoints, CancellationToken cancellationToken)
         {
             var result = new List<DnsRecordBase>();
             using (var amazonApiGatewayClient = new AmazonAPIGatewayClient(awsCredentials, _amazonApiGatewayConfig))
@@ -161,7 +159,7 @@ namespace DnsProxy.Common.Aws
                         var item = orderedApis[i];
                         var net = endpoint.NetworkInterfaces.First();
                         var domainName = CreateDomainName(endpoint.VpcEndpoint.ServiceName, item.Id);
-                        
+
                         result.Add(new ARecord(
                             DomainName.Parse(domainName),
                             TTL,
@@ -201,7 +199,7 @@ namespace DnsProxy.Common.Aws
             return domainName;
         }
 
-        private async Task<List<Endpoint>> ReadVpcEndpoint(AmazonEC2Client amazonEc2Client, IAwsDoScan awsDoScan,
+        private async Task<List<Endpoint>> ReadVpcEndpointAsync(AmazonEC2Client amazonEc2Client, IAwsDoScan awsDoScan,
             CancellationToken cancellationToken)
         {
             var vpc = await amazonEc2Client.DescribeVpcsAsync(CreateDescribeVpcsRequest(awsDoScan), cancellationToken)
