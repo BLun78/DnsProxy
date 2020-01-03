@@ -63,8 +63,8 @@ namespace DnsProxy.Strategies
                 case RecordType.Ptr:
                 case RecordType.A:
                 case RecordType.Aaaa:
-                    var caxchItem = MemoryCache.Get<CacheItem>(dnsQuestion.Name.ToString());
-                    if (caxchItem != null && caxchItem.DnsRecordBases.Any()) result.AddRange(caxchItem.DnsRecordBases);
+                    var cacheItem = MemoryCache.Get<CacheItem>(dnsQuestion.Name.ToString());
+                    if (cacheItem != null && cacheItem.DnsRecordBases.Any()) result.AddRange(cacheItem.DnsRecordBases);
                     break;
             }
 
@@ -76,7 +76,7 @@ namespace DnsProxy.Strategies
         {
             return Models.Strategies.Hosts;
         }
-        
+
         public override bool MatchPattern(DnsQuestion dnsQuestion)
         {
             return true;
@@ -115,7 +115,7 @@ namespace DnsProxy.Strategies
                     }
                 }
 
-            _hostConfigCache = (HostsConfig) hostConfig.Clone();
+            _hostConfigCache = (HostsConfig)hostConfig.Clone();
 
             if (_hostConfigCache != null)
                 foreach (var host in _hostConfigCache.Hosts)

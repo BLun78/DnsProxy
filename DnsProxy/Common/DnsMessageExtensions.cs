@@ -54,23 +54,35 @@ namespace DnsProxy.Common
         public static (string, List<PtrRecord>) ToPtrRecords(this Host host, string ipAddress)
         {
             var result = new List<PtrRecord>();
-            var ip = IPAddress.Parse(ipAddress);
-            string tempIpAddress;
-            switch (ip.AddressFamily)
-            {
-                case AddressFamily.InterNetwork:
-                    tempIpAddress = $"{ipAddress}.in-addr.arpa";
-                    break;
-                case AddressFamily.InterNetworkV6:
-                    tempIpAddress = $"{ipAddress}.ip6.arpa";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(ip.AddressFamily), ip.AddressFamily, null);
-            }
+            var tempIpAddress = CreatePtrIpAddressName(ipAddress);
 
             foreach (var domainName in host.DomainNames)
                 result.Add(new PtrRecord(DomainName.Parse(tempIpAddress), 300, DomainName.Parse(domainName)));
             return (tempIpAddress, result);
+        }
+
+        public static string CreatePtrIpAddressName(this string ipAddress)
+        {
+            var ip = IPAddress.Parse(ipAddress);
+            return CreatePtrIpAddressName(ip);
+        }
+
+        public static string CreatePtrIpAddressName(this IPAddress ipAddress)
+        {
+            string tempIpAddress;
+            switch (ipAddress.AddressFamily)
+            {
+                case AddressFamily.InterNetwork:
+                    tempIpAddress = $"{ipAddress.ToString()}.in-addr.arpa";
+                    break;
+                case AddressFamily.InterNetworkV6:
+                    tempIpAddress = $"{ipAddress.ToString()}.ip6.arpa";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(ipAddress.AddressFamily), ipAddress.AddressFamily, null);
+            }
+
+            return tempIpAddress;
         }
     }
 }
