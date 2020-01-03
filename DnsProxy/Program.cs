@@ -67,7 +67,7 @@ namespace DnsProxy
                 {
                     await CheckForAwsMfaAsync().ConfigureAwait(true);
                     var aws = ServiceProvider.GetService<AwsVpcManager>();
-                    await aws.StartReadingVpcAsync().ConfigureAwait(true);
+                    await aws.StartReadingVpcAsync(CancellationTokenSource.Token).ConfigureAwait(true);
 
                     return await WaitForEndAsync(dnsServer).ConfigureAwait(true);
                 }

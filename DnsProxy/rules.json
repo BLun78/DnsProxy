@@ -22,22 +22,28 @@
       },
       {
         "DomainNamePattern": "(.*)\\.docdb.amazonaws.com.",
-        "Strategy": "AwsDocDb",
-        "NameServer": [],
+        "Strategy": "DoH",
+        "NameServer": [
+          "https://cloudflare-dns.com/dns-query"
+        ],
         "IsEnabled": true,
         "QueryTimeout": 30000
       },
       {
         "DomainNamePattern": "(.*)\\.cache.amazonaws.com.",
-        "Strategy": "AwsElasticCache",
-        "NameServer": [],
+        "Strategy": "DoH",
+        "NameServer": [
+          "https://cloudflare-dns.com/dns-query"
+        ],
         "IsEnabled": true,
         "QueryTimeout": 30000
       },
       {
         "DomainNamePattern": "(.*)\\.execute-api.eu-central-1.amazonaws.com.",
-        "Strategy": "AwsApiGateway",
-        "NameServer": [],
+        "Strategy": "DoH",
+        "NameServer": [
+          "https://cloudflare-dns.com/dns-query"
+        ],
         "IsEnabled": true,
         "QueryTimeout": 30000
       },
