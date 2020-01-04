@@ -1,5 +1,5 @@
 # DnsProxy
-[[Deustch](https://github.com/BLun78/DnsProxy/blob/master/README.de.md)]
+[[Deutsch](https://github.com/BLun78/DnsProxy/blob/master/README.de.md)]
 
 ## Description
 A DNS proxy for software developers for the hybrid cloud in the enterprise environment.
