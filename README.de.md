@@ -1,17 +1,17 @@
-# DnsProxy
-[[Deustch](https://github.com/BLun78/DnsProxy/blob/master/README.de.md)]
+# DNS-Proxy
+[[English](https://github.com/BLun78/DnsProxy/blob/master/README.md)]
 
-## Description
-A DNS proxy for software developers for the hybrid cloud in the enterprise environment.
+## Beschreibung
+Ein DNS-Proxy für Softwareentwickler für die Hybrid-Cloud im Enterpriseumfeld.
 
-Please consider that if the administrator of your network has not connected a public DNS, there must be a reason!
+Bitte bedenkt wenn der Administrator eures Netzwerkes keinen Public-DNS angeschlossen hat, hat dies sicherlich einen Grund!!!
 
 ## Feature
-- Default Dns e.g. DHCP DNS server
-- DNS client
-- DNS over HTTPS client (DoH)
-- own hosts configuration with hosts.json
-- read AWS VpcRndpoints for Hybrid Cloud (including ApiGateway endpoints)
+- Default Dns z. B. DHCP DNS-Server
+- DNS Client
+- DNS over HTTPS Client (DoH)
+- Eigene Hosts configuration mit hosts.json
+- AWS VpcRndpoints für Hybrid Cloud einlesen (inklusive ApiGateway Endpoints)
 
 ## Lizenz
 Frei verwendbar ohne Garantien das alles 100% nach DNS-RFC funktioniert. 
@@ -32,71 +32,70 @@ limitations under the License.
 ```
 [Apache License 2.0 for DNS-Proxy](https://github.com/BLun78/DnsProxy/blob/master/LICENSE)
 
-This project uses a modified version of the library [ARSoft.Tools.Net](https://github.com/alexreinert/ARSoft.Tools.Net). This library is available under the [Apache License 2.0](https://github.com/alexreinert/ARSoft.Tools.Net/blob/master/LICENSE). Only code quality changes and the migration to .Net Core 3.1 were made.
+Diese Projekt nutzt einen modifizierte Version von der Bibliothek [ARSoft.Tools.Net](https://github.com/alexreinert/ARSoft.Tools.Net). Diese Bibliothek steht unter der [Apache License 2.0](https://github.com/alexreinert/ARSoft.Tools.Net/blob/master/LICENSE). Es wurden nur Code-Quality-Änderungen und die Migration zu .Net Core 3.1 gemacht.
 
-For [DNS over HTTPS (DoH)](https://en.wikipedia.org/wiki/DNS_over_HTTPS) the library [Makaretu.Dns.Unicast](https://github.com/richardschneider/net-udns) is used. This library is available under the [MIT license](https://github.com/richardschneider/net-udns/blob/master/LICENSE)
-
+Für [DNS over HTTPS (DoH)](https://en.wikipedia.org/wiki/DNS_over_HTTPS) wird die Bibliothek [Makaretu.Dns.Unicast](https://github.com/richardschneider/net-udns) verwendet. Diese Bibliothek steht unter der [MIT Lizens](https://github.com/richardschneider/net-udns/blob/master/LICENSE)
 
 ## Requirement
-- Windows 10 with .Net Core 3.1 - 64 Bit 
-- Linux with .Net Core 3.1 - 64 Bit 
-- MacOs with .Net Core 3.1 - 64 Bit 
+- Windows 10 mit .Net Core 3.1 - 64 Bit 
+- Linux mit .Net Core 3.1 - 64 Bit 
+- MacOs mit .Net Core 3.1 - 64 Bit 
 
-## Configuration
+## Konfiguration
 ### config.json
 
 ```Javascript
 {
   "DnsHostConfig": {
-    "ListenerPort": 53, // Port of the DNS service - 53 is default port
-    "NetworkWhitelist": [ // List of allowed networks that are allowed to access the service
+    "ListenerPort": 53, // Port des DNS Dienstes - 53 ist default Port
+    "NetworkWhitelist": [ // Liste der erlaubten Netzwerke die auf den Dienst zugreifen dürfen
       "127.0.0.1/32",
       "10.10.34.0/24"
     ],
-    "DefaultQueryTimeout": 50000 // Server timeout per DNS request
+    "DefaultQueryTimeout": 50000 // Server Timeout pro DNS-Request
   },
   "DnsDefaultServer": { // Fallback DNS Server
     "Servers": {
-      "NameServers": [
+      "NameServer": [
         "1.1.1.1",
         "9.9.9.9",
         "8.8.4.4",
         "8.8.8.8"
       ],
-      "Strategy": "Dns", // Dns or DoH recommended
+      "Strategy": "Dns", // Dns or DoH empfohlen
       "CompressionMutation": true,
-      "QueryTimeout": 5000 // Timeout for queries to external servers
+      "QueryTimeout": 5000 // Timeout bei anfragen an fremden Servern
     }
   },
-  // Proxy settings
+  // Proxy einstellungen
   "HttpProxyConfig": {
-    "AuthenticationType": "None"
+    "AuthenticationType": "None",
     "Uri": "http://127.0.0.1:8866",
-    "User": ""
-    "Password": ""
-    "Domain": ""
+    "User": "",
+    "Password": "",
+    "Domain": "",
     "BypassAddresses": ""
   },
-  "AwsSettings": { // For hybrid cloud, the public IP address e.g. of SQS.[zone].amazonaws.com can be transferred to the Vpc endpoint.
+  "AwsSettings": { // Für Hybrid-Cloud kann man die Public IPAdresse z.B. von SQS.[zone].amazonaws.com hiermit auf den VpcEndpoint umschreiben.
     "UserAccounts": [
       {
-        "UserAccountId": "5xxxxxxxxxxxxxx7",
-        "UserName": "xxxxxxxx"
-        "UserAccessKey": "Axxxxxxxxxxxxxxxxxxxxxxxxx6",
-        "UserSecretKey": "mxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxQ",
-        "DoScan": false, // Should the acaunt
+        "UserAccountId": "5xxxxxxxxxxxx7",
+        "UserName": "xxxxxxxx",
+        "UserAccessKey": "Axxxxxxxxxxxxxxxxxxx6",
+        "UserSecretKey": "mxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxQ",
+        "DoScan": false, // Soll der Akaunt
         "ScanVpcIds": [],
-        "Roles": [ // Aws roles for the role change
+        "Roles": [ // Aws Rollen für den Rollen-Wechsel
           {
-            "AwsAccountLabel": "blah, blah, blah."
-            "AwsAccountId": "6xxxxxxxxxxxxxx",
-            "Role": "engineer."
+            "AwsAccountLabel": "blabla",
+            "AwsAccountId": "6xxxxxxxxxxxx",
+            "Role": "engineer",
             "DoScan": true,
             "ScanVpcIds": [ "vpc-0e355e36f7f9152f6" ]
           },
           {
             "AwsAccountLabel": "blublu",
-            "AwsAccountId": "3xxxxxxxxxxxx4"
+            "AwsAccountId": "3xxxxxxxxxx4",
             "Role": "developer",
             "DoScan": false,
             "ScanVpcIds": []
@@ -105,7 +104,7 @@ For [DNS over HTTPS (DoH)](https://en.wikipedia.org/wiki/DNS_over_HTTPS) the lib
       }
     ]
   },
-  "Aws": { // AWS Framework Configuration
+  "Aws": { // AWS Framework Konfiguration
     "Region": "eu-central-1"
   }
 }
