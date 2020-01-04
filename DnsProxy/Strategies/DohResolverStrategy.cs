@@ -69,8 +69,7 @@ namespace DnsProxy.Strategies
                 requestMessage.Questions.Add(question);
                 try
                 {
-                    var responseMessage =
-                        await _dohClient.QueryAsync(requestMessage, cancellationToken).ConfigureAwait(false);
+                    var responseMessage = await _dohClient.QueryAsync(requestMessage, cancellationToken).ConfigureAwait(false);
 
                     foreach (var answer in responseMessage.Answers)
                     {

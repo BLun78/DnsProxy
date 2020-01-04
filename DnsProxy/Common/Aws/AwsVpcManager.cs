@@ -129,7 +129,7 @@ namespace DnsProxy.Common.Aws
         private IEnumerable<DnsRecordBase> ReadEndpoints(IEnumerable<Endpoint> endpoints)
         {
             var result = new List<DnsRecordBase>();
-            var listEndpoints = endpoints.Where(x => !x.VpcEndpoint.ServiceName.Contains(".s3")).ToList();
+            var listEndpoints = endpoints.Where(x => !x.VpcEndpoint.ServiceName.Contains(".s3", StringComparison.InvariantCulture)).ToList();
             foreach (var endpoint in listEndpoints)
             {
                 var net = endpoint.NetworkInterfaces.First();
@@ -154,7 +154,7 @@ namespace DnsProxy.Common.Aws
             using (var amazonApiGatewayClient = new AmazonAPIGatewayClient(awsCredentials, _amazonApiGatewayConfig))
             {
                 var apiGatewayNetworkInterfaces =
-                    endpoints.Where(x => x.VpcEndpoint.ServiceName.Contains(".execute-api")).ToList();
+                    endpoints.Where(x => x.VpcEndpoint.ServiceName.Contains(".execute-api", StringComparison.InvariantCulture)).ToList();
                 var apis = await amazonApiGatewayClient.GetRestApisAsync(new GetRestApisRequest(), cancellationToken)
                     .ConfigureAwait(true);
                 var orderedApis = apis.Items.Where(x =>

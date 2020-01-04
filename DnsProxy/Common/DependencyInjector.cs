@@ -198,7 +198,7 @@ namespace DnsProxy.Common
                         httpProxyConfig.Password, httpProxyConfig.Domain);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(httpProxyConfig.AuthenticationType), httpProxyConfig.AuthenticationType, null);
             }
 
             return proxy;

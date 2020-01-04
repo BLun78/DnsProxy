@@ -14,12 +14,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Y\**" />
-    <EmbeddedResource Remove="Y\**" />
-    <None Remove="Y\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Remove="Dns\DnsRecord\DhcpIRecord.cs" />
     <Compile Remove="IPAddressExtension.cs" />
   </ItemGroup>

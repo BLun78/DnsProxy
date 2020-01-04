@@ -207,11 +207,13 @@
         <e p="UdpClientExtensions.cs" t="Include" />
       </e>
       <e p="DnsProxy" t="IncludeRecursive">
+        <e p=".config.json" t="Include" />
         <e p="bin" t="ExcludeRecursive" />
         <e p="Common" t="Include">
           <e p="ApplicationInformation.cs" t="Include" />
           <e p="Aws" t="Include">
-            <e p="AwsCredentials.cs" t="Include" />
+            <e p="AwsMfa.cs" t="Include" />
+            <e p="AwsVpcManager.cs" t="Include" />
           </e>
           <e p="Configuration.cs" t="Include" />
           <e p="DependencyInjector.cs" t="Include" />
@@ -229,8 +231,15 @@
         <e p="Models" t="Include">
           <e p="AuthenticationType.cs" t="Include" />
           <e p="Aws" t="Include">
-            <e p="AwsUserAccount.cs" t="Include" />
+            <e p="AwsContext.cs" t="Include" />
+            <e p="AwsSettings.cs" t="Include" />
+            <e p="AwsSettingsExtended.cs" t="Include" />
+            <e p="Endpoint.cs" t="Include" />
+            <e p="IAwsDoScan.cs" t="Include" />
+            <e p="UserAccount.cs" t="Include" />
+            <e p="UserAccountExtended.cs" t="Include" />
             <e p="UserRole.cs" t="Include" />
+            <e p="UserRoleExtended.cs" t="Include" />
           </e>
           <e p="CacheItem.cs" t="Include" />
           <e p="Context" t="Include">
@@ -247,7 +256,9 @@
           <e p="InternalNameServerConfig.cs" t="Include" />
           <e p="Rule.cs" t="Include" />
           <e p="Rules" t="Include">
-            <e p="AwsRule.cs" t="Include" />
+            <e p="AwsApiGatewayRule.cs" t="Include" />
+            <e p="AwsDocDbRule.cs" t="Include" />
+            <e p="AwsElasticCacheRule.cs" t="Include" />
             <e p="DnsRule.cs" t="Include" />
             <e p="DohRule.cs" t="Include" />
             <e p="HostsRule.cs" t="Include" />
@@ -277,7 +288,10 @@
         </e>
         <e p="rules.json" t="Include" />
         <e p="Strategies" t="Include">
-          <e p="AwsVpcResolverStrategy.cs" t="Include" />
+          <e p="AwsApiGatewayResolverStrategy.cs" t="Include" />
+          <e p="AwsBaseResolverStrategy.cs" t="Include" />
+          <e p="AwsDocDbResolverStrategy.cs" t="Include" />
+          <e p="AwsElasticCacheResolverStrategy.cs" t="Include" />
           <e p="BaseResolverStrategy.cs" t="Include" />
           <e p="DnsResolverStrategy.cs" t="Include" />
           <e p="DohResolverStrategy.cs" t="Include" />

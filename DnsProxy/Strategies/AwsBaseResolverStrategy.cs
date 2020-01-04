@@ -64,17 +64,17 @@ namespace DnsProxy.Strategies
             AwsClient?.Dispose();
             foreach (var awsSettingsUserAccount in AwsContext.AwsSettings.UserAccounts)
             {
-                await DoScan(dnsQuestion, cancellationToken, awsSettingsUserAccount, result).ConfigureAwait(false);
+                await DoScanAsync(dnsQuestion, cancellationToken, awsSettingsUserAccount, result).ConfigureAwait(false);
                 foreach (var userRoleExtended in awsSettingsUserAccount.Roles)
                 {
-                    await DoScan(dnsQuestion, cancellationToken, userRoleExtended, result).ConfigureAwait(false);
+                    await DoScanAsync(dnsQuestion, cancellationToken, userRoleExtended, result).ConfigureAwait(false);
                 }
             }
             AwsClient?.Dispose();
             return result;
         }
 
-        private async Task DoScan(DnsQuestion dnsQuestion, CancellationToken cancellationToken, IAwsDoScan awsDoScan, List<DnsRecordBase> result)
+        private async Task DoScanAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken, IAwsDoScan awsDoScan, List<DnsRecordBase> result)
         {
             if (awsDoScan.DoScan)
             {

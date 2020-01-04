@@ -14,7 +14,7 @@ Bitte bedenkt wenn der Administrator eures Netzwerkes keinen Public-DNS angeschl
 - AWS VpcRndpoints für Hybrid Cloud einlesen (inklusive ApiGateway Endpoints)
 
 ## Lizenz
-Frei verwendbar ohne Garantien das alles 100% nach DNS-RFC funktioniert. 
+Frei verwendbar ohne Garantien das alles 100% nach DNS-RFC funktioniert.
 ```Text
 Copyright 2020 Bjoern Lundstroem
 

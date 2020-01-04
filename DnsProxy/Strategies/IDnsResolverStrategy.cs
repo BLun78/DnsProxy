@@ -36,7 +36,7 @@ namespace DnsProxy.Strategies
     internal interface IDnsResolverStrategy<TRule> : IDnsResolverStrategy
         where TRule : IRule
     {
-        TRule Rule { get; }
+        new TRule Rule { get; }
         void SetRule(TRule rule);
     }
 }

@@ -25,6 +25,7 @@ using UnknownRecord = ARSoft.Tools.Net.Dns.UnknownRecord;
 
 namespace DnsProxy.Common
 {
+#pragma warning disable CS0618 // Type or member is obsolete
 #pragma warning disable CS0612 // Type or member is obsolete
     internal static class MapperExtensions
     {
@@ -695,4 +696,5 @@ namespace DnsProxy.Common
     }
 
 #pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore CS0612 // Type or member is obsolete
 }
