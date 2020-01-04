@@ -55,29 +55,35 @@ namespace DnsProxy.Strategies
         {
             LogDnsQuestion(dnsQuestion);
             var result = new List<DnsRecordBase>();
-            var requestMessage = new Message();
 
-            _dohClient?.Dispose();
-            _dohClient = _serviceProvider.GetService<DohClient>();
-
-
-            _dohClient.ServerUrl = Rule.NameServerUri.First()?.AbsoluteUri;
-
-            var question = new Question
+            foreach (var nameServerUri in Rule.NameServerUri)
             {
-                Name = dnsQuestion.Name.ToDomainName(),
-                Type = dnsQuestion.RecordType.ToDnsType(),
-                Class = dnsQuestion.RecordClass.ToDnsClass()
-            };
+                _dohClient?.Dispose();
+                _dohClient = _serviceProvider.GetService<DohClient>();
+                _dohClient.ServerUrl = Rule.NameServerUri.First()?.AbsoluteUri;
 
-            requestMessage.Questions.Add(question);
+                var question = new Question
+                {
+                    Name = dnsQuestion.Name.ToDomainName(),
+                    Type = dnsQuestion.RecordType.ToDnsType(),
+                    Class = dnsQuestion.RecordClass.ToDnsClass()
+                };
 
-            var responseMessage = await _dohClient.QueryAsync(requestMessage, cancellationToken).ConfigureAwait(false);
+                var requestMessage = new Message();
+                requestMessage.Questions.Add(question);
 
-            foreach (var answer in responseMessage.Answers)
-            {
-                var resultAnswer = answer.ToDnsRecord();
-                result.Add(resultAnswer);
+                var responseMessage = await _dohClient.QueryAsync(requestMessage, cancellationToken).ConfigureAwait(false);
+
+                foreach (var answer in responseMessage.Answers)
+                {
+                    var resultAnswer = answer.ToDnsRecord();
+                    result.Add(resultAnswer);
+                }
+
+                if (result.Any())
+                {
+                    break;
+                }
             }
 
             if (result.Any())
