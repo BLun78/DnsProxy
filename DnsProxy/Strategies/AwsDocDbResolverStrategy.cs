@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,11 +13,11 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.DocDB;
@@ -30,30 +31,32 @@ using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Strategies
 {
-    internal class AwsDocDbResolverStrategy : AwsBaseResolverStrategy<AwsDocDbRule, AmazonDocDBClient>, IDnsResolverStrategy<AwsDocDbRule>
+    internal class AwsDocDbResolverStrategy : AwsBaseResolverStrategy<AwsDocDbRule, AmazonDocDBClient>,
+        IDnsResolverStrategy<AwsDocDbRule>
     {
-
         public AwsDocDbResolverStrategy(ILogger<AwsDocDbResolverStrategy> logger,
             IDnsContextAccessor dnsContextAccessor,
             IMemoryCache memoryCache,
             AwsContext awsContext,
             AmazonDocDBConfig amazonDocDbConfig,
-            IServiceProvider serviceProvider) : base(logger, dnsContextAccessor, memoryCache, awsContext, amazonDocDbConfig, serviceProvider)
+            IServiceProvider serviceProvider) : base(logger, dnsContextAccessor, memoryCache, awsContext,
+            amazonDocDbConfig, serviceProvider)
         {
         }
 
-        public override async Task<List<DnsRecordBase>> AwsResolveAsync(DnsQuestion dnsQuestion, List<string> ScanVpcIds, CancellationToken cancellationToken)
+        public override Models.Strategies GetStrategy()
+        {
+            return Models.Strategies.AwsDocDb;
+        }
+
+        public override async Task<List<DnsRecordBase>> AwsResolveAsync(DnsQuestion dnsQuestion,
+            List<string> ScanVpcIds, CancellationToken cancellationToken)
         {
             var clusters = await AwsClient.DescribeDBClustersAsync(new DescribeDBClustersRequest(), cancellationToken)
                 .ConfigureAwait(true);
 
 
             return null;
-        }
-
-        public override Models.Strategies GetStrategy()
-        {
-            return Models.Strategies.AwsDocDb;
         }
     }
 }

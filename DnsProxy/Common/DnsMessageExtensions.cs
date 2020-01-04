@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +13,7 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
 using System;
@@ -73,13 +75,14 @@ namespace DnsProxy.Common
             switch (ipAddress.AddressFamily)
             {
                 case AddressFamily.InterNetwork:
-                    tempIpAddress = $"{ipAddress.ToString()}.in-addr.arpa";
+                    tempIpAddress = $"{ipAddress}.in-addr.arpa";
                     break;
                 case AddressFamily.InterNetworkV6:
-                    tempIpAddress = $"{ipAddress.ToString()}.ip6.arpa";
+                    tempIpAddress = $"{ipAddress}.ip6.arpa";
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(ipAddress.AddressFamily), ipAddress.AddressFamily, null);
+                    throw new ArgumentOutOfRangeException(nameof(ipAddress.AddressFamily), ipAddress.AddressFamily,
+                        null);
             }
 
             return tempIpAddress;

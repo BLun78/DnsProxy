@@ -38,12 +38,12 @@ namespace DnsProxy.Common.Aws
 {
     internal class AwsVpcManager
     {
-        private readonly int TTL;
         private readonly AmazonAPIGatewayConfig _amazonApiGatewayConfig;
         private readonly AmazonEC2Config _amazonEc2Config;
         private readonly AwsContext _awsContext;
         private readonly ILogger<AwsVpcManager> _logger;
         private readonly IMemoryCache _memoryCache;
+        private readonly int TTL;
 
         public AwsVpcManager(ILogger<AwsVpcManager> logger,
             IMemoryCache memoryCache,
@@ -80,7 +80,8 @@ namespace DnsProxy.Common.Aws
             }
         }
 
-        private async Task ReadVpcAsync(AWSCredentials awsCredentials, IAwsDoScan awsDoScan, CancellationToken cancellationToken)
+        private async Task ReadVpcAsync(AWSCredentials awsCredentials, IAwsDoScan awsDoScan,
+            CancellationToken cancellationToken)
         {
             try
             {
@@ -99,14 +100,14 @@ namespace DnsProxy.Common.Aws
                 }
 
                 var groupedResult = (from record in result
-                    group record by record.Name.ToString() into newRecords
+                    group record by record.Name.ToString()
+                    into newRecords
                     orderby newRecords.Key
-                    select  newRecords).ToList();
-                foreach (IGrouping<string, DnsRecordBase> dnsRecordBases in groupedResult)
+                    select newRecords).ToList();
+                foreach (var dnsRecordBases in groupedResult)
                 {
-                    this.StoreInCache(dnsRecordBases.ToList() , dnsRecordBases.Key);
+                    StoreInCache(dnsRecordBases.ToList(), dnsRecordBases.Key);
                 }
-
             }
             catch (AmazonEC2Exception aee)
             {
@@ -129,7 +130,8 @@ namespace DnsProxy.Common.Aws
         private IEnumerable<DnsRecordBase> ReadEndpoints(IEnumerable<Endpoint> endpoints)
         {
             var result = new List<DnsRecordBase>();
-            var listEndpoints = endpoints.Where(x => !x.VpcEndpoint.ServiceName.Contains(".s3", StringComparison.InvariantCulture)).ToList();
+            var listEndpoints = endpoints
+                .Where(x => !x.VpcEndpoint.ServiceName.Contains(".s3", StringComparison.InvariantCulture)).ToList();
             foreach (var endpoint in listEndpoints)
             {
                 var net = endpoint.NetworkInterfaces.First();
@@ -148,13 +150,15 @@ namespace DnsProxy.Common.Aws
             return result;
         }
 
-        private async Task<List<DnsRecordBase>> ReadApiGatewayAsync(AWSCredentials awsCredentials, IEnumerable<Endpoint> endpoints, CancellationToken cancellationToken)
+        private async Task<List<DnsRecordBase>> ReadApiGatewayAsync(AWSCredentials awsCredentials,
+            IEnumerable<Endpoint> endpoints, CancellationToken cancellationToken)
         {
             var result = new List<DnsRecordBase>();
             using (var amazonApiGatewayClient = new AmazonAPIGatewayClient(awsCredentials, _amazonApiGatewayConfig))
             {
                 var apiGatewayNetworkInterfaces =
-                    endpoints.Where(x => x.VpcEndpoint.ServiceName.Contains(".execute-api", StringComparison.InvariantCulture)).ToList();
+                    endpoints.Where(x =>
+                        x.VpcEndpoint.ServiceName.Contains(".execute-api", StringComparison.InvariantCulture)).ToList();
                 var apis = await amazonApiGatewayClient.GetRestApisAsync(new GetRestApisRequest(), cancellationToken)
                     .ConfigureAwait(true);
                 var orderedApis = apis.Items.Where(x =>

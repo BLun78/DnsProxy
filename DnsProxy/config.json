@@ -42,7 +42,7 @@
             "AwsAccountId": "6xxxxxxxxxxxx",
             "Role": "engineer",
             "DoScan": true,
-            "ScanVpcIds": [ "vpc-0xxxxxxxxxxxxxx6" ]
+            "ScanVpcIds": ["vpc-0xxxxxxxxxxxxxx6"]
           },
           {
             "AwsAccountLabel": "blublu",

@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +13,7 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
 using System;
@@ -29,7 +31,6 @@ namespace DnsProxy.Strategies
 {
     internal class DnsResolverStrategy : BaseResolverStrategy<DnsRule>, IDnsResolverStrategy<DnsRule>
     {
-       
         public DnsResolverStrategy(
             ILogger<DnsResolverStrategy> logger,
             IDnsContextAccessor dnsContextAccessor,
@@ -46,8 +47,8 @@ namespace DnsProxy.Strategies
             var dnsClient = new DnsClient(Rule.NameServerIpAddresses, Rule.QueryTimeout);
 
             var response = await dnsClient.ResolveAsync(dnsQuestion.Name, dnsQuestion.RecordType,
-                        dnsQuestion.RecordClass, null, cancellationToken)
-                    .ConfigureAwait(false);
+                    dnsQuestion.RecordClass, null, cancellationToken)
+                .ConfigureAwait(false);
 
             result.AddRange(response.AnswerRecords);
 

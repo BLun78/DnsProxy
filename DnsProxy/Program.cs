@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +13,7 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
 using System;
@@ -22,7 +24,6 @@ using DnsProxy.Common.Aws;
 using DnsProxy.Dns;
 using DnsProxy.Models;
 using DnsProxy.Models.Aws;
-using DnsProxy.Strategies;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -34,10 +35,10 @@ namespace DnsProxy
         private static volatile bool RequestNewMfa;
         private static ILogger<Program> Logger;
         private static string _title;
-        internal static ApplicationInformation ApplicationInformation { get; private set; }
 
         private static IOptionsMonitor<AwsSettings> AwsSettingsOptionsMonitor;
         private static IDisposable AwsSettingsOptionsMonitorListner;
+        internal static ApplicationInformation ApplicationInformation { get; private set; }
 
         internal static CancellationTokenSource CancellationTokenSource { get; private set; }
         internal static Configuration Configuration { get; private set; }
@@ -62,7 +63,7 @@ namespace DnsProxy
                 Title = ApplicationInformation.DefaultTitle;
                 ApplicationInformation.LogAssemblyInformation();
                 Logger.LogInformation("starts up {DefaultTitle}", ApplicationInformation.DefaultTitle);
-                
+
                 using (var dnsServer = ServiceProvider.GetService<DnsServer>())
                 {
                     await CheckForAwsMfaAsync().ConfigureAwait(true);
@@ -146,11 +147,13 @@ namespace DnsProxy
                     var mfsToken = await mfa.GetMfaAsync(userAccount, CancellationTokenSource.Token)
                         .ConfigureAwait(true);
 
-                    await mfa.CreateAwsCredentialsAsync(userAccount, mfsToken, CancellationTokenSource.Token).ConfigureAwait(true);
+                    await mfa.CreateAwsCredentialsAsync(userAccount, mfsToken, CancellationTokenSource.Token)
+                        .ConfigureAwait(true);
 
                     foreach (var role in userAccount.Roles)
                     {
-                        await mfa.AssumeRoleAsync(userAccount, role, CancellationTokenSource.Token).ConfigureAwait(true);
+                        await mfa.AssumeRoleAsync(userAccount, role, CancellationTokenSource.Token)
+                            .ConfigureAwait(true);
                     }
                 }
 

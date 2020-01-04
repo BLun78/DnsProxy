@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +13,7 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
 using System;
@@ -42,13 +44,13 @@ namespace DnsProxy.Common.Aws
             return $"arn:aws:iam::{targetAccountId}:role/{targetRole}";
         }
 
-        public async Task CreateAwsCredentialsAsync(UserAccountExtended userAccount, string mfaToken, CancellationToken cancellationToken)
+        public async Task CreateAwsCredentialsAsync(UserAccountExtended userAccount, string mfaToken,
+            CancellationToken cancellationToken)
         {
             var basicAwsCredentials = new BasicAWSCredentials(userAccount.UserAccessKey, userAccount.UserSecretKey);
 
             using (var stsClient = new AmazonSecurityTokenServiceClient(basicAwsCredentials))
             {
-
                 var getSessionTokenRequest = new GetSessionTokenRequest
                 {
                     DurationSeconds = 3600,
@@ -61,12 +63,11 @@ namespace DnsProxy.Common.Aws
                         .ConfigureAwait(false);
                 userAccount.AwsCredentials = getSessionTokenResponse.Credentials;
             }
-
         }
 
-        public async Task AssumeRoleAsync(UserAccountExtended userAccount, UserRoleExtended userRole, CancellationToken cancellationToken)
+        public async Task AssumeRoleAsync(UserAccountExtended userAccount, UserRoleExtended userRole,
+            CancellationToken cancellationToken)
         {
-
             using (var stsClient = new AmazonSecurityTokenServiceClient(userAccount.AwsCredentials))
             {
                 var role2 = await stsClient.AssumeRoleAsync(new AssumeRoleRequest
@@ -78,7 +79,8 @@ namespace DnsProxy.Common.Aws
                 var tempAccessKeyId = role2.Credentials.AccessKeyId;
                 var tempSessionToken = role2.Credentials.SessionToken;
                 var tempSecretAccessKey = role2.Credentials.SecretAccessKey;
-                userRole.AwsCredentials = new SessionAWSCredentials(tempAccessKeyId, tempSecretAccessKey, tempSessionToken);
+                userRole.AwsCredentials =
+                    new SessionAWSCredentials(tempAccessKeyId, tempSecretAccessKey, tempSessionToken);
             }
         }
     }

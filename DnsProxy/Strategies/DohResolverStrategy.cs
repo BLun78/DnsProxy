@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +13,7 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
 using System;
@@ -47,7 +49,8 @@ namespace DnsProxy.Strategies
             Order = 1000;
         }
 
-        public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken)
+        public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
+            CancellationToken cancellationToken)
         {
             LogDnsQuestion(dnsQuestion);
             var result = new List<DnsRecordBase>();
@@ -69,7 +72,8 @@ namespace DnsProxy.Strategies
                 requestMessage.Questions.Add(question);
                 try
                 {
-                    var responseMessage = await _dohClient.QueryAsync(requestMessage, cancellationToken).ConfigureAwait(false);
+                    var responseMessage =
+                        await _dohClient.QueryAsync(requestMessage, cancellationToken).ConfigureAwait(false);
 
                     foreach (var answer in responseMessage.Answers)
                     {
@@ -77,7 +81,7 @@ namespace DnsProxy.Strategies
                         result.Add(resultAnswer);
                     }
                 }
-                catch (System.IO.IOException ioe)
+                catch (IOException ioe)
                 {
                     HandelIoException(ioe, nameServerUri);
                 }
@@ -85,7 +89,7 @@ namespace DnsProxy.Strategies
                 {
                     Logger.LogError(e, "DoH [{0}]: unexpectet error [{1}]", nameServerUri, e.Message);
                 }
-                
+
                 if (result.Any())
                 {
                     break;
@@ -102,12 +106,17 @@ namespace DnsProxy.Strategies
             return result;
         }
 
+        public override Models.Strategies GetStrategy()
+        {
+            return Models.Strategies.DoH;
+        }
+
         private void HandelIoException(IOException ioe, Uri nameServerUri)
         {
             var message = ioe.Message.Split("'");
             if (message.Length == 3)
             {
-                if (Makaretu.Dns.MessageStatus.TryParse(message[1], out MessageStatus messageStatus))
+                if (Enum.TryParse(message[1], out MessageStatus messageStatus))
                 {
                     switch (messageStatus)
                     {
@@ -159,11 +168,6 @@ namespace DnsProxy.Strategies
             {
                 Logger.LogWarning(ioe, "DoH [{0}]: unexpectet IO-error [{1}]", nameServerUri, ioe.Message);
             }
-        }
-
-        public override Models.Strategies GetStrategy()
-        {
-            return Models.Strategies.DoH;
         }
     }
 }

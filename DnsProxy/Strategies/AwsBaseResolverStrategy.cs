@@ -26,8 +26,8 @@ using DnsProxy.Models.Aws;
 using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Strategies
 {
@@ -35,10 +35,10 @@ namespace DnsProxy.Strategies
         where TRule : IRule
         where TClient : AmazonServiceClient, IAmazonService, IDisposable, new()
     {
-        protected AwsContext AwsContext;
         protected readonly ClientConfig AwsClientConfig;
         protected readonly IServiceProvider ServiceProvider;
         protected TClient AwsClient;
+        protected AwsContext AwsContext;
 
         protected AwsBaseResolverStrategy(ILogger<AwsBaseResolverStrategy<TRule, TClient>> logger,
             IDnsContextAccessor dnsContextAccessor,
@@ -53,7 +53,8 @@ namespace DnsProxy.Strategies
             ServiceProvider = serviceProvider;
         }
 
-        public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken)
+        public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
+            CancellationToken cancellationToken)
         {
             if (AwsContext == null)
             {
@@ -70,23 +71,27 @@ namespace DnsProxy.Strategies
                     await DoScanAsync(dnsQuestion, cancellationToken, userRoleExtended, result).ConfigureAwait(false);
                 }
             }
+
             AwsClient?.Dispose();
             return result;
         }
 
-        private async Task DoScanAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken, IAwsDoScan awsDoScan, List<DnsRecordBase> result)
+        private async Task DoScanAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken,
+            IAwsDoScan awsDoScan, List<DnsRecordBase> result)
         {
             if (awsDoScan.DoScan)
             {
                 AwsClient?.Dispose();
-                AwsClient = (TClient)Activator.CreateInstance(typeof(TClient), awsDoScan.AwsCredentials, AwsClientConfig);
+                AwsClient = (TClient) Activator.CreateInstance(typeof(TClient), awsDoScan.AwsCredentials,
+                    AwsClientConfig);
                 var userAccountResult = await AwsResolveAsync(dnsQuestion, awsDoScan.ScanVpcIds, cancellationToken)
                     .ConfigureAwait(true);
                 result.AddRange(userAccountResult);
             }
         }
 
-        public abstract Task<List<DnsRecordBase>> AwsResolveAsync(DnsQuestion dnsQuestion, List<string> ScanVpcIds, CancellationToken cancellationToken);
+        public abstract Task<List<DnsRecordBase>> AwsResolveAsync(DnsQuestion dnsQuestion, List<string> ScanVpcIds,
+            CancellationToken cancellationToken);
 
         protected override void Dispose(bool disposing)
         {

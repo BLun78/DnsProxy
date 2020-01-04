@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +13,7 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
 using System;
@@ -43,6 +45,7 @@ namespace DnsProxy.Common
     internal class DependencyInjector
     {
         private static DnsContextAccessor _dnsContextAccessor;
+        public static AwsContext AwsContext;
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly IConfigurationRoot _configuration;
 
@@ -96,12 +99,12 @@ namespace DnsProxy.Common
             // common
             services.AddSingleton<AwsDocDbResolverStrategy>();
             services.AddSingleton<AwsVpcManager>();
-            services.AddSingleton<IWebProxy>(CreateHttpProxyConfig);
-            services.AddSingleton<AmazonEC2Config>(CreateAmazonConfig<AmazonEC2Config>);
-            services.AddSingleton<AmazonDocDBConfig>(CreateAmazonConfig<AmazonDocDBConfig>);
-            services.AddSingleton<AmazonAPIGatewayConfig>(CreateAmazonConfig<AmazonAPIGatewayConfig>);
-            services.AddSingleton<AmazonElastiCacheConfig>(CreateAmazonConfig<AmazonElastiCacheConfig>);
-            services.AddTransient<AwsContext>(CreateAwsContext);
+            services.AddSingleton(CreateHttpProxyConfig);
+            services.AddSingleton(CreateAmazonConfig<AmazonEC2Config>);
+            services.AddSingleton(CreateAmazonConfig<AmazonDocDBConfig>);
+            services.AddSingleton(CreateAmazonConfig<AmazonAPIGatewayConfig>);
+            services.AddSingleton(CreateAmazonConfig<AmazonElastiCacheConfig>);
+            services.AddTransient(CreateAwsContext);
 
             // .net core frameworks
             services.AddOptions();
@@ -163,6 +166,7 @@ namespace DnsProxy.Common
                     handler.UseDefaultCredentials = true;
                 }
             }
+
             handler.AutomaticDecompression = DecompressionMethods.All;
             handler.SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13;
 
@@ -198,7 +202,8 @@ namespace DnsProxy.Common
                         httpProxyConfig.Password, httpProxyConfig.Domain);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(httpProxyConfig.AuthenticationType), httpProxyConfig.AuthenticationType, null);
+                    throw new ArgumentOutOfRangeException(nameof(httpProxyConfig.AuthenticationType),
+                        httpProxyConfig.AuthenticationType, null);
             }
 
             return proxy;
@@ -215,9 +220,10 @@ namespace DnsProxy.Common
                 var webProxy = provider.GetService<IWebProxy>();
                 if (webProxy != null)
                 {
-                    ((ClientConfig)config)?.SetWebProxy(webProxy);
+                    ((ClientConfig) config)?.SetWebProxy(webProxy);
                 }
             }
+
             return config as TConfig;
         }
 
@@ -225,6 +231,5 @@ namespace DnsProxy.Common
         {
             return AwsContext;
         }
-        public static AwsContext AwsContext;
     }
 }
