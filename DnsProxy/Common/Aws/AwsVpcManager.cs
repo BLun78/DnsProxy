@@ -28,6 +28,7 @@ using Amazon.EC2;
 using Amazon.EC2.Model;
 using Amazon.Runtime;
 using ARSoft.Tools.Net.Dns;
+using DnsProxy.Models;
 using DnsProxy.Models.Aws;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -55,7 +56,7 @@ namespace DnsProxy.Common.Aws
             _awsContext = awsContext;
             _amazonEc2Config = amazonEc2Config;
             _amazonApiGatewayConfig = amazonApiGatewayConfig;
-            TTL = 24 * 60 * 60;
+            TTL = 60 * 60;
         }
 
         public async Task StartReadingVpcAsync(CancellationToken cancellationToken)
@@ -97,6 +98,14 @@ namespace DnsProxy.Common.Aws
                     result.AddRange(readEndpoints);
                 }
 
+                var groupedResult = (from record in result
+                    group record by record.Name.ToString() into newRecords
+                    orderby newRecords.Key
+                    select  newRecords).ToList();
+                foreach (IGrouping<string, DnsRecordBase> dnsRecordBases in groupedResult)
+                {
+                    this.StoreInCache(dnsRecordBases.ToList() , dnsRecordBases.Key);
+                }
 
             }
             catch (AmazonEC2Exception aee)
@@ -237,6 +246,22 @@ namespace DnsProxy.Common.Aws
 
             _logger.LogInformation("Read AWS VPC: [no definitions, read all!]");
             return new DescribeVpcsRequest();
+        }
+
+        private void StoreInCache(List<DnsRecordBase> data, string key)
+        {
+            var cacheoptions = new MemoryCacheEntryOptions();
+            cacheoptions.SetPriority(CacheItemPriority.NeverRemove);
+            StoreInCache(data, key, cacheoptions);
+        }
+
+        private void StoreInCache(List<DnsRecordBase> data, string key, MemoryCacheEntryOptions cacheEntryOptions)
+        {
+            var cacheItem = new CacheItem(data);
+            var lastChar = key.Substring(key.Length - 1, 1);
+            _memoryCache.Set(lastChar == "."
+                ? key
+                : $"{key}.", cacheItem, cacheEntryOptions);
         }
     }
 }

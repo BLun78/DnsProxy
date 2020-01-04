@@ -15,7 +15,8 @@
         "DomainNamePattern": "(.*)\\.amazonaws.com.",
         "Strategy": "DoH",
         "NameServer": [
-          "https://cloudflare-dns.com/dns-query"
+          "https://cloudflare-dns.com/dns-query",
+          "https://dns.google/dns-query"
         ],
         "IsEnabled": true,
         "QueryTimeout": 30000
@@ -24,7 +25,8 @@
         "DomainNamePattern": "(.*)\\.docdb.amazonaws.com.",
         "Strategy": "DoH",
         "NameServer": [
-          "https://cloudflare-dns.com/dns-query"
+          "https://cloudflare-dns.com/dns-query",
+          "https://dns.google/dns-query"
         ],
         "IsEnabled": true,
         "QueryTimeout": 30000
@@ -33,7 +35,8 @@
         "DomainNamePattern": "(.*)\\.cache.amazonaws.com.",
         "Strategy": "DoH",
         "NameServer": [
-          "https://cloudflare-dns.com/dns-query"
+          "https://cloudflare-dns.com/dns-query",
+          "https://dns.google/dns-query"
         ],
         "IsEnabled": true,
         "QueryTimeout": 30000
@@ -42,7 +45,8 @@
         "DomainNamePattern": "(.*)\\.execute-api.eu-central-1.amazonaws.com.",
         "Strategy": "DoH",
         "NameServer": [
-          "https://cloudflare-dns.com/dns-query"
+          "https://cloudflare-dns.com/dns-query",
+          "https://dns.google/dns-query"
         ],
         "IsEnabled": true,
         "QueryTimeout": 30000
@@ -51,7 +55,8 @@
         "DomainNamePattern": "(.*)\\.blun.de.",
         "Strategy": "DoH",
         "NameServer": [
-          "https://cloudflare-dns.com/dns-query"
+          "https://cloudflare-dns.com/dns-query",
+          "https://dns.google/dns-query"
         ],
         "IsEnabled": true,
         "QueryTimeout": 30000
@@ -60,7 +65,8 @@
         "DomainName": "blun.de.",
         "Strategy": "DoH",
         "NameServer": [
-          "https://cloudflare-dns.com/dns-query"
+          "https://cloudflare-dns.com/dns-query",
+          "https://dns.google/dns-query"
         ],
         "IsEnabled": true,
         "QueryTimeout": 30000

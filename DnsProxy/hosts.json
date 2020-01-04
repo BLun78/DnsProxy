@@ -12,6 +12,14 @@
         "DomainNames": [
           "cloudflare-dns.com"
         ]
+      },{
+        "IpAddresses": [
+          "8.8.4.4",
+          "8.8.8.8"
+        ],
+        "DomainNames": [
+          "dns.google"
+        ]
       },
       {
         "IpAddresses": [
