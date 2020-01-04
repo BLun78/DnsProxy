@@ -20,7 +20,8 @@
   },
   "HttpProxyConfig": {
     "AuthenticationType": "None",
-    "Uri": "http://127.0.0.1:8866",
+    "Uri": "",
+    //"Uri": "http://127.0.0.1:8866",
     "User": "",
     "Password": "",
     "Domain": "",
@@ -29,20 +30,26 @@
   "AwsSettings": {
     "UserAccounts": [
       {
-        "UserAccountId": "57xxxxxxxx807",
-        "UserName": "fxxxx6",
-        "UserAccessKey": "AKxxxxxxxxxxxC6",
-        "UserSecretKey": "mm3rNxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxJXQ",
+        "UserAccountId": "5xxxxxxxxxxxx7",
+        "UserName": "xxxxxxxx",
+        "UserAccessKey": "Axxxxxxxxxxxxxxxxxxx6",
+        "UserSecretKey": "mxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxQ",
+        "DoScan": false,
+        "ScanVpcIds": [],
         "Roles": [
           {
-            "AwsAccountLabel": "0235",
-            "AwsAccountId": "4xxxxxxx4446",
-            "Role": "exxxxxxxxr"
+            "AwsAccountLabel": "blabla",
+            "AwsAccountId": "6xxxxxxxxxxxx",
+            "Role": "engineer",
+            "DoScan": true,
+            "ScanVpcIds": [ "vpc-0e355e36f7f9152f6" ]
           },
           {
-            "AwsAccountLabel": "0279",
-            "AwsAccountId": "3XXXXXXXXXX4",
-            "Role": "exxxxxxxxr"
+            "AwsAccountLabel": "blublu",
+            "AwsAccountId": "3xxxxxxxxxx4",
+            "Role": "developer",
+            "DoScan": false,
+            "ScanVpcIds": []
           }
         ]
       }
