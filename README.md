@@ -92,7 +92,7 @@ For [DNS over HTTPS (DoH)](https://en.wikipedia.org/wiki/DNS_over_HTTPS) the lib
             "AwsAccountId": "6xxxxxxxxxxxxxx",
             "Role": "engineer."
             "DoScan": true,
-            "ScanVpcIds": [ "vpc-0e355e36f7f9152f6" ]
+            "ScanVpcIds": [ "vpc-5xxxxxxxxxxxxxxx6" ]
           },
           {
             "AwsAccountLabel": "blublu",
