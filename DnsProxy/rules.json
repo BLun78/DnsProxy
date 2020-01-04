@@ -15,8 +15,11 @@
         "DomainNamePattern": "(.*)\\.amazonaws.com.",
         "Strategy": "DoH",
         "NameServer": [
+          "https://dns.digitale-gesellschaft.ch/dns-query",
+          "https://doh.opendns.com/dns-query",
           "https://cloudflare-dns.com/dns-query",
-          "https://dns.google/dns-query"
+          "https://dns.google/dns-query",
+          "https://dns.quad9.net/dns-query"
         ],
         "IsEnabled": true,
         "QueryTimeout": 30000
@@ -25,8 +28,11 @@
         "DomainNamePattern": "(.*)\\.docdb.amazonaws.com.",
         "Strategy": "DoH",
         "NameServer": [
+          "https://dns.digitale-gesellschaft.ch/dns-query",
+          "https://doh.opendns.com/dns-query",
           "https://cloudflare-dns.com/dns-query",
-          "https://dns.google/dns-query"
+          "https://dns.google/dns-query",
+          "https://dns.quad9.net/dns-query"
         ],
         "IsEnabled": true,
         "QueryTimeout": 30000
@@ -35,8 +41,11 @@
         "DomainNamePattern": "(.*)\\.cache.amazonaws.com.",
         "Strategy": "DoH",
         "NameServer": [
+          "https://dns.digitale-gesellschaft.ch/dns-query",
+          "https://doh.opendns.com/dns-query",
           "https://cloudflare-dns.com/dns-query",
-          "https://dns.google/dns-query"
+          "https://dns.google/dns-query",
+          "https://dns.quad9.net/dns-query"
         ],
         "IsEnabled": true,
         "QueryTimeout": 30000
@@ -45,8 +54,11 @@
         "DomainNamePattern": "(.*)\\.execute-api.eu-central-1.amazonaws.com.",
         "Strategy": "DoH",
         "NameServer": [
+          "https://dns.digitale-gesellschaft.ch/dns-query",
+          "https://doh.opendns.com/dns-query",
           "https://cloudflare-dns.com/dns-query",
-          "https://dns.google/dns-query"
+          "https://dns.google/dns-query",
+          "https://dns.quad9.net/dns-query"
         ],
         "IsEnabled": true,
         "QueryTimeout": 30000
@@ -55,8 +67,11 @@
         "DomainNamePattern": "(.*)\\.blun.de.",
         "Strategy": "DoH",
         "NameServer": [
+          "https://dns.digitale-gesellschaft.ch/dns-query",
+          "https://doh.opendns.com/dns-query",
           "https://cloudflare-dns.com/dns-query",
-          "https://dns.google/dns-query"
+          "https://dns.google/dns-query",
+          "https://dns.quad9.net/dns-query"
         ],
         "IsEnabled": true,
         "QueryTimeout": 30000
@@ -65,8 +80,11 @@
         "DomainName": "blun.de.",
         "Strategy": "DoH",
         "NameServer": [
+          "https://dns.digitale-gesellschaft.ch/dns-query",
+          "https://doh.opendns.com/dns-query",
           "https://cloudflare-dns.com/dns-query",
-          "https://dns.google/dns-query"
+          "https://dns.google/dns-query",
+          "https://dns.quad9.net/dns-query"
         ],
         "IsEnabled": true,
         "QueryTimeout": 30000
@@ -81,20 +99,19 @@
         "IsEnabled": true,
         "CompressionMutation": true,
         "QueryTimeout": 30000
-      },
-      {
-        "DomainNamePattern": "",
-        "DomainName": "",
-        "NameServer": [
-          ""
-        ],
-        "IpAddress": "",
-        // Dns, DoH, AwsDocDb, AwsElasticCache, AwsApiGateway
-        "Strategy": "",
-        "IsEnabled": false,
-        "CompressionMutation": false,
-        "QueryTimeout": 30000
       }
+      //,{
+      //  "DomainNamePattern": "",
+      //  "DomainName": "",
+      //  "NameServer": [
+      //    ""
+      //  ],
+      //  "IpAddress": "",
+      //  "Strategy": "", // Dns, DoH
+      //  "IsEnabled": false,
+      //  "CompressionMutation": false,
+      //  "QueryTimeout": 30000
+      //}
     ]
   }
 }

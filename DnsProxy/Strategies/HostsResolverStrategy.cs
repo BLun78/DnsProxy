@@ -85,7 +85,7 @@ namespace DnsProxy.Strategies
         protected void LogDnsQuestionAndResultFromCache(DnsQuestion dnsQuestion, List<DnsRecordBase> answers)
         {
             var dnsContext = DnsContextAccessor.DnsContext;
-            Logger.LogTrace("Cache >> ClientIpAddress: {0} resolve by cache to {1} (#{2}, {3}).",
+            Logger.LogDebug("Cache >> ClientIpAddress: {0} resolve by cache to {1} (#{2}, {3}).",
                 dnsContext?.IpEndPoint, answers?.FirstOrDefault()?.ToString(),
                 dnsContext?.Request?.TransactionID.ToString(CultureInfo.InvariantCulture), dnsQuestion.RecordType);
         }

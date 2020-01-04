@@ -16,21 +16,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common;
-using DnsProxy.Models;
 using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Makaretu.Dns;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace DnsProxy.Strategies
 {
@@ -50,8 +47,7 @@ namespace DnsProxy.Strategies
             Order = 1000;
         }
 
-        public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
-            CancellationToken cancellationToken)
+        public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken)
         {
             LogDnsQuestion(dnsQuestion);
             var result = new List<DnsRecordBase>();
@@ -71,15 +67,26 @@ namespace DnsProxy.Strategies
 
                 var requestMessage = new Message();
                 requestMessage.Questions.Add(question);
-
-                var responseMessage = await _dohClient.QueryAsync(requestMessage, cancellationToken).ConfigureAwait(false);
-
-                foreach (var answer in responseMessage.Answers)
+                try
                 {
-                    var resultAnswer = answer.ToDnsRecord();
-                    result.Add(resultAnswer);
-                }
+                    var responseMessage =
+                        await _dohClient.QueryAsync(requestMessage, cancellationToken).ConfigureAwait(false);
 
+                    foreach (var answer in responseMessage.Answers)
+                    {
+                        var resultAnswer = answer.ToDnsRecord();
+                        result.Add(resultAnswer);
+                    }
+                }
+                catch (System.IO.IOException ioe)
+                {
+                    HandelIoException(ioe, nameServerUri);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError(e, "DoH [{0}]: unexpectet error [{1}]", nameServerUri, e.Message);
+                }
+                
                 if (result.Any())
                 {
                     break;
@@ -94,6 +101,65 @@ namespace DnsProxy.Strategies
 
             LogDnsQuestionAndResult(dnsQuestion, result);
             return result;
+        }
+
+        private void HandelIoException(IOException ioe, Uri nameServerUri)
+        {
+            var message = ioe.Message.Split("'");
+            if (message.Length == 3)
+            {
+                if (Makaretu.Dns.MessageStatus.TryParse(message[1], out MessageStatus messageStatus))
+                {
+                    switch (messageStatus)
+                    {
+                        case MessageStatus.NoError:
+                            break;
+                        case MessageStatus.FormatError:
+                            break;
+                        case MessageStatus.ServerFailure:
+                            break;
+                        case MessageStatus.NameError:
+                            break;
+                        case MessageStatus.NotImplemented:
+                            break;
+                        case MessageStatus.Refused:
+                            break;
+                        case MessageStatus.YXDomain:
+                            break;
+                        case MessageStatus.YXRRSet:
+                            break;
+                        case MessageStatus.NXRRSet:
+                            break;
+                        case MessageStatus.NotAuthoritative:
+                            break;
+                        case MessageStatus.NotZone:
+                            break;
+                        case MessageStatus.BadVersion:
+                            break;
+                        case MessageStatus.BadKey:
+                            break;
+                        case MessageStatus.BadTime:
+                            break;
+                        case MessageStatus.BADMODE:
+                            break;
+                        case MessageStatus.BADNAME:
+                            break;
+                        case MessageStatus.BADALG:
+                            break;
+                        default:
+                            Logger.LogWarning(ioe, "DoH [{0}]: unexpectet IO-error [{1}]", nameServerUri, ioe.Message);
+                            break;
+                    }
+                }
+                else
+                {
+                    Logger.LogWarning(ioe, "DoH [{0}]: unexpectet IO-error [{1}]", nameServerUri, ioe.Message);
+                }
+            }
+            else
+            {
+                Logger.LogWarning(ioe, "DoH [{0}]: unexpectet IO-error [{1}]", nameServerUri, ioe.Message);
+            }
         }
 
         public override Models.Strategies GetStrategy()
