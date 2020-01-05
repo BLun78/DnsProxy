@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>Y:\c#\DnsProxy\ARSoft.Tools.Net\ARSoft.Tools.Net.xml</DocumentationFile>
+    <DocumentationFile>ARSoft.Tools.Net.xml</DocumentationFile>
     <DefineConstants>DEBUG</DefineConstants>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
   </PropertyGroup>

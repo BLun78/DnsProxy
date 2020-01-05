@@ -310,5 +310,8 @@
     <e p="$USER_HOME$/Library/Caches/Rider2019.3/resharper-host/local/Transient/ReSharperHost/v193/SolutionCaches/_DnsProxy.-1149752334.00" t="ExcludeRecursive" />
     <e p="$APPLICATION_CONFIG_DIR$/consoles/db" t="IncludeRecursive" />
     <e p="$APPLICATION_CONFIG_DIR$/extensions" t="IncludeRecursive" />
+    <e p="Y:\c#\DnsProxy\ARSoft.Tools.Net" t="Include">
+      <e p="ARSoft.Tools.Net.xml" t="Include" />
+    </e>
   </component>
 </project>
