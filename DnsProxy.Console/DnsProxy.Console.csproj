@@ -1,7 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <PublishTrimmed>true</PublishTrimmed>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <PublishSingleFile>false</PublishSingleFile>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
 
@@ -16,7 +20,7 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
     <!-- Nuget specs -->
-    <PackageId>DnsProxy</PackageId>
+    <PackageId>DnsProxy.Console</PackageId>
     <Authors>Björn Lundström</Authors>
     <Copyright>© 2019-2020 Björn Lundström</Copyright>
     <Title>BLun DNS Proxy</Title>
@@ -29,31 +33,52 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/BLun78/DnsProxy.git</RepositoryUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-
-    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <OutputType>Library</OutputType>
+    <StartupObject>DnsProxy.Console.Program</StartupObject>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>DEBUG</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <NoWarn>1701;1702</NoWarn>
-    <DocumentationFile>DnsProxy.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <NoWarn>1701;1702</NoWarn>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\LICENSE">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
+    <None Remove=".config.json" />
+    <None Remove="config.json" />
+    <None Remove="hosts.json" />
+    <None Remove="nameserver.json" />
+    <None Remove="rules.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\.editorconfig" Link=".editorconfig" />
+    <Content Include=".config.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="config.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="hosts.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="nameserver.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="rules.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE" Link="LICENSE">
+      <PackagePath></PackagePath>
+      <Pack>True</Pack>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -88,6 +113,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ARSoft.Tools.Net\ARSoft.Tools.Net.csproj" />
+    <ProjectReference Include="..\DnsProxy\DnsProxy.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Update="Y:\c#\DnsProxy\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
 </Project>

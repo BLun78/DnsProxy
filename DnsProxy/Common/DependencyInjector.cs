@@ -167,8 +167,8 @@ namespace DnsProxy.Common
                 }
             }
 
-            handler.AutomaticDecompression = DecompressionMethods.All;
-            handler.SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13;
+            handler.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
+            handler.SslProtocols = SslProtocols.Tls12; //| SslProtocols.Tls13;
 
             return handler;
         }

@@ -28,7 +28,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace DnsProxy
+namespace DnsProxy.Console
 {
     public sealed class Program
     {
@@ -51,7 +51,7 @@ namespace DnsProxy
             set
             {
                 _title = value;
-                if (Environment.UserInteractive) Console.Title = value;
+                if (Environment.UserInteractive) System.Console.Title = value;
             }
         }
 
@@ -112,7 +112,7 @@ namespace DnsProxy
                         RequestNewMfa = false;
                     }
 
-                    var key = Console.ReadKey(true);
+                    var key = System.Console.ReadKey(true);
                     switch (key.Modifiers, key.Key)
                     {
                         case (ConsoleModifiers.Control, ConsoleKey.Q):
@@ -161,7 +161,7 @@ namespace DnsProxy
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                System.Console.WriteLine(e);
             }
         }
     }

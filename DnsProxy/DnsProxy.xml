@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DnsProxy</name>
+    </assembly>
+    <members>
+        <member name="P:DnsProxy.Models.DnsHostConfig.DefaultQueryTimeout">
+            <summary>
+                Query timeout in milliseconds
+            </summary>
+        </member>
+        <member name="P:DnsProxy.Models.Rule.QueryTimeout">
+            <summary>
+                Query timeout in milliseconds
+            </summary>
+        </member>
+        <member name="P:DnsProxy.Models.Rules.IRule.QueryTimeout">
+            <summary>
+                Query timeout in milliseconds
+            </summary>
+        </member>
+        <member name="P:DnsProxy.Models.Rules.RuleBase.QueryTimeout">
+            <summary>
+                Query timeout in milliseconds
+            </summary>
+        </member>
+    </members>
+</doc>
