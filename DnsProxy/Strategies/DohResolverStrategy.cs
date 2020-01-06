@@ -55,6 +55,7 @@ namespace DnsProxy.Strategies
             LogDnsQuestion(dnsQuestion);
             var result = new List<DnsRecordBase>();
 
+            // https://github.com/curl/curl/wiki/DNS-over-HTTPS
             foreach (var nameServerUri in Rule.NameServerUri)
             {
                 _dohClient?.Dispose();
