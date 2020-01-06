@@ -80,6 +80,7 @@ namespace DnsProxy.Common.Aws
                         }
                     }
                 }
+                _logger.LogInformation("AWS import finished!");
             }
             catch (Exception e)
             {
