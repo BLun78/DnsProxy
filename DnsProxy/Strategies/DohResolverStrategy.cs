@@ -59,7 +59,7 @@ namespace DnsProxy.Strategies
             {
                 _dohClient?.Dispose();
                 _dohClient = _serviceProvider.GetService<DohClient>();
-                _dohClient.ServerUrl = Rule.NameServerUri.First()?.AbsoluteUri;
+                _dohClient.ServerUrl = nameServerUri?.AbsoluteUri;
 
                 var question = new Question
                 {
@@ -68,12 +68,12 @@ namespace DnsProxy.Strategies
                     Class = dnsQuestion.RecordClass.ToDnsClass()
                 };
 
-                var requestMessage = new Message();
-                requestMessage.Questions.Add(question);
+                //var requestMessage = new Message();
+                //requestMessage.Questions.Add(question);
                 try
                 {
                     var responseMessage =
-                        await _dohClient.QueryAsync(requestMessage, cancellationToken).ConfigureAwait(false);
+                        await _dohClient.SecureQueryAsync(question.Name, question.Type, cancellationToken).ConfigureAwait(false);
 
                     foreach (var answer in responseMessage.Answers)
                     {
