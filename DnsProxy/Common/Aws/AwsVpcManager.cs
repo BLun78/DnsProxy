@@ -22,6 +22,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Amazon;
 using Amazon.APIGateway;
 using Amazon.APIGateway.Model;
 using Amazon.EC2;
@@ -56,6 +57,8 @@ namespace DnsProxy.Common.Aws
             _awsContext = awsContext;
             _amazonEc2Config = amazonEc2Config;
             _amazonApiGatewayConfig = amazonApiGatewayConfig;
+            _amazonEc2Config.RegionEndpoint = RegionEndpoint.GetBySystemName(_awsContext.AwsSettings?.Region);
+            _amazonApiGatewayConfig.RegionEndpoint = _amazonEc2Config.RegionEndpoint;
             TTL = 60 * 60;
         }
 

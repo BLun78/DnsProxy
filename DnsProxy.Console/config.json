@@ -28,6 +28,7 @@
     "BypassAddresses": ""
   },
   "AwsSettings": {
+    "Region": "eu-central-1",
     "UserAccounts": [
       {
         "UserAccountId": "5xxxxxxxxxxxx7",
@@ -42,7 +43,7 @@
             "AwsAccountId": "6xxxxxxxxxxxx",
             "Role": "engineer",
             "DoScan": true,
-            "ScanVpcIds": ["vpc-0xxxxxxxxxxxxxx6"]
+            "ScanVpcIds": [ "vpc-0xxxxxxxxxxxxxx6" ]
           },
           {
             "AwsAccountLabel": "blublu",
@@ -54,8 +55,5 @@
         ]
       }
     ]
-  },
-  "Aws": {
-    "Region": "eu-central-1"
   }
 }

@@ -25,6 +25,7 @@ namespace DnsProxy.Models.Aws
     {
         public AwsSettingsExtended(AwsSettings awsSettings)
         {
+            Region = awsSettings.Region;
             UserAccounts = awsSettings.UserAccounts.Select(x => new UserAccountExtended(x)).ToList();
         }
 
