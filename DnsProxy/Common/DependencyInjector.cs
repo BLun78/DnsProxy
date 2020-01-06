@@ -157,14 +157,12 @@ namespace DnsProxy.Common
             var httpProxyConfig = provider.GetService<IOptions<HttpProxyConfig>>().Value;
 
             var handler = new HttpClientHandler();
-            if (string.IsNullOrWhiteSpace(httpProxyConfig.Uri))
+
+            var webProxy = provider.GetService<IWebProxy>();
+            if (webProxy != null)
             {
-                var webProxy = provider.GetService<IWebProxy>();
-                if (webProxy != null)
-                {
-                    handler.Proxy = webProxy;
-                    handler.UseDefaultCredentials = true;
-                }
+                handler.Proxy = webProxy;
+                handler.UseDefaultCredentials = true;
             }
 
             handler.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
@@ -177,14 +175,13 @@ namespace DnsProxy.Common
         {
             var httpProxyConfig = provider.GetService<IOptions<HttpProxyConfig>>().Value;
 
-            if (string.IsNullOrWhiteSpace(httpProxyConfig.Uri))
+            if (string.IsNullOrWhiteSpace(httpProxyConfig.Address))
             {
                 return null;
             }
 
-            var proxy = new WebProxy
+            var proxy = new WebProxy(httpProxyConfig.Address, httpProxyConfig.Port ?? 8080)
             {
-                Address = new Uri(httpProxyConfig.Uri),
                 UseDefaultCredentials = false,
                 BypassList = httpProxyConfig.BypassAddressesArray
             };
@@ -212,16 +209,13 @@ namespace DnsProxy.Common
         private TConfig CreateAmazonConfig<TConfig>(IServiceProvider provider)
             where TConfig : class, IClientConfig, new()
         {
-            IClientConfig config = new TConfig() as ClientConfig;
+            IClientConfig config = new TConfig();
             var httpProxyConfig = provider.GetService<IOptions<HttpProxyConfig>>().Value;
 
-            if (!string.IsNullOrWhiteSpace(httpProxyConfig.Uri))
+            var webProxy = provider.GetService<IWebProxy>();
+            if (webProxy != null)
             {
-                var webProxy = provider.GetService<IWebProxy>();
-                if (webProxy != null)
-                {
-                    ((ClientConfig) config)?.SetWebProxy(webProxy);
-                }
+                ((ClientConfig)config)?.SetWebProxy(webProxy);
             }
 
             return config as TConfig;

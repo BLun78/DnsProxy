@@ -20,8 +20,8 @@
   },
   "HttpProxyConfig": {
     "AuthenticationType": "None",
-    "Uri": "",
-    //"Uri": "http://127.0.0.1:8866",
+    "Address": "127.0.0.1",
+    "Port": 8866,
     "User": "",
     "Password": "",
     "Domain": "",
