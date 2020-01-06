@@ -85,9 +85,10 @@ namespace DnsProxy.Console
         private static void CreateHeader()
         {
             Title = ApplicationInformation.DefaultTitle;
+            System.Console.WriteLine("==================================================================================");
             ApplicationInformation.LogAssemblyInformation();
             System.Console.WriteLine("==================================================================================");
-            System.Console.WriteLine("Copyright 2019 - 2020 Bjoern Lundstroem");
+            System.Console.WriteLine("Copyright 2019 - 2020 Bjoern Lundstroem - (https://github.com/BLun78)");
             System.Console.WriteLine("");
             System.Console.WriteLine("Licensed under the Apache License, Version 2.0(the \"License\");");
             System.Console.WriteLine("you may not use this file except in compliance with the License.");
@@ -105,12 +106,14 @@ namespace DnsProxy.Console
             System.Console.ForegroundColor = ConsoleColor.DarkYellow;
             System.Console.WriteLine("\t[strg]+[x] or [strg]+[q] = exit Application");
             System.Console.WriteLine("\t[strg]+[r] = reload AWS-VPC's with new mfa");
+            System.Console.WriteLine("\t[strg]+[h] = show this help / information");
             System.Console.ForegroundColor = color;
             System.Console.WriteLine("==================================================================================");
-            System.Console.WriteLine("A DNS-Proxy with routing for DNS-Request for development with hybrid clouds!");
-            System.Console.WriteLine("config.json, rules.json and hosts,json are used for configure.");
+            System.Console.WriteLine("Description:");
+            System.Console.WriteLine("\tA DNS-Proxy with routing for DNS-Request for development with hybrid clouds!");
+            System.Console.WriteLine("\tconfig.json, rules.json and hosts,json are used for configure.");
             System.Console.WriteLine("==================================================================================");
-            System.Console.WriteLine(@"starts up " + ApplicationInformation.DefaultTitle);
+            System.Console.WriteLine("starts up " + ApplicationInformation.DefaultTitle + " ...");
             System.Console.WriteLine("==================================================================================");
         }
 
@@ -158,6 +161,9 @@ namespace DnsProxy.Console
                     var key = System.Console.ReadKey(true);
                     switch (key.Modifiers, key.Key)
                     {
+                        case (ConsoleModifiers.Control, ConsoleKey.H):
+                            CreateHeader();
+                            break;
                         case (ConsoleModifiers.Control, ConsoleKey.R):
                             RequestNewMfa = true;
                             break;
