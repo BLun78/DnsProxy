@@ -83,7 +83,7 @@ namespace DnsProxy.Common.Aws
             }
             catch (Exception e)
             {
-                _logger.LogCritical(e, e.Message);
+                _logger.LogError(e, e.Message);
             }
         }
 
@@ -261,9 +261,9 @@ namespace DnsProxy.Common.Aws
 
         private void StoreInCache(List<DnsRecordBase> data, string key)
         {
-            var cacheoptions = new MemoryCacheEntryOptions();
-            cacheoptions.SetPriority(CacheItemPriority.NeverRemove);
-            StoreInCache(data, key, cacheoptions);
+            var cacheOptions = new MemoryCacheEntryOptions();
+            cacheOptions.SetPriority(CacheItemPriority.NeverRemove);
+            StoreInCache(data, key, cacheOptions);
         }
 
         private void StoreInCache(List<DnsRecordBase> data, string key, MemoryCacheEntryOptions cacheEntryOptions)

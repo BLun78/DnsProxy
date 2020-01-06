@@ -30,11 +30,27 @@ namespace DnsProxy.Common.Aws
     {
         public Task<string> GetMfaAsync(UserAccountExtended userAccount, CancellationToken cancellationToken)
         {
-            return Task.Run(() =>
+            return Task.Run<string>(() =>
             {
                 Console.WriteLine("Login for AwsAccount [" + userAccount.UserName + "]:");
                 Console.Write("Enter the MFA code: ");
-                var mfaCode = Console.ReadLine();
+                string mfaCode = null;
+                bool mfaExpression = true;
+                while (mfaExpression)
+                {
+                    mfaCode = Console.ReadLine();
+                    mfaExpression = !(!string.IsNullOrWhiteSpace(mfaCode) 
+                                      && mfaCode.Length == 6 
+                                      && int.TryParse(mfaCode, out int temp2));
+                    if (!mfaExpression)
+                    {
+                        break;
+                    }
+
+                    Console.WriteLine("==================================================================================");
+                    Console.WriteLine("Login for AwsAccount [" + userAccount.UserName + "]:");
+                    Console.Write("Retry enter the MFA code [numeric(6)]: ");
+                }
                 return mfaCode;
             }, cancellationToken);
         }
