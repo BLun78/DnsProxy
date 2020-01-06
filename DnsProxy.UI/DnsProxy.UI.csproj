@@ -6,6 +6,9 @@
 
   <ItemGroup>
     <PackageReference Include="Blazor.Extensions.Logging" Version="1.0.0" />
+    <PackageReference Include="Blazor.Extensions.SignalR" Version="1.0.0" />
+    <PackageReference Include="BlazorVirtualScrolling" Version="1.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
   </ItemGroup>
 
   <ItemGroup>
