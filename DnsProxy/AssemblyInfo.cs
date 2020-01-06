@@ -4,4 +4,4 @@
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: InternalsVisibleTo("DnsProxy.Console", AllInternalsVisible = true)]
-[assembly: InternalsVisibleTo("DnsProxy.Gui", AllInternalsVisible = true)]
+[assembly: InternalsVisibleTo("DnsProxy.Ui", AllInternalsVisible = true)]

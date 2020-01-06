@@ -12,7 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DnsProxy.Console", "DnsProxy.Console\DnsProxy.Console.csproj", "{EAA4B4C0-C073-4128-84DF-0F2EA6338B6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DnsProxy.Console", "DnsProxy.Console\DnsProxy.Console.csproj", "{EAA4B4C0-C073-4128-84DF-0F2EA6338B6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DnsProxy.UI", "DnsProxy.UI\DnsProxy.UI.csproj", "{5C48504F-F02B-41CB-870E-1D9F8C85C82C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +34,10 @@ Global
 		{EAA4B4C0-C073-4128-84DF-0F2EA6338B6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EAA4B4C0-C073-4128-84DF-0F2EA6338B6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EAA4B4C0-C073-4128-84DF-0F2EA6338B6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C48504F-F02B-41CB-870E-1D9F8C85C82C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C48504F-F02B-41CB-870E-1D9F8C85C82C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C48504F-F02B-41CB-870E-1D9F8C85C82C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C48504F-F02B-41CB-870E-1D9F8C85C82C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

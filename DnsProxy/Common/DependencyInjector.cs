@@ -46,11 +46,13 @@ namespace DnsProxy.Common
     {
         private static DnsContextAccessor _dnsContextAccessor;
         public static AwsContext AwsContext;
+        private readonly IServiceCollection _services;
         private readonly CancellationTokenSource _cancellationTokenSource;
-        private readonly IConfigurationRoot _configuration;
+        private readonly IConfiguration _configuration;
 
         public DependencyInjector(IConfigurationRoot configuration, CancellationTokenSource cancellationTokenSource)
         {
+            _services = new ServiceCollection();
             _configuration = configuration;
             _cancellationTokenSource = cancellationTokenSource;
             _dnsContextAccessor = new DnsContextAccessor();
@@ -61,62 +63,89 @@ namespace DnsProxy.Common
             });
         }
 
+        public DependencyInjector(IConfiguration configuration, IServiceCollection services, CancellationTokenSource cancellationTokenSource)
+        {
+            _services = services;
+            _configuration = configuration;
+            _cancellationTokenSource = cancellationTokenSource;
+            _dnsContextAccessor = new DnsContextAccessor();
+        }
+
         public IServiceProvider ServiceProvider { get; }
 
-        private IServiceCollection ConfigureDependencyInjector()
+        public IServiceCollection ConfigureDependencyInjector(Func<ILoggingBuilder, ILoggingBuilder> loggingBuilder = null)
         {
-            var services = new ServiceCollection();
-
             // Program
-            services.AddSingleton(Assembly.GetExecutingAssembly());
-            services.AddSingleton<ApplicationInformation>();
-            services.AddSingleton<DnsServer>();
-            services.AddSingleton<DohClient>();
-            services.AddSingleton(_cancellationTokenSource);
+            _services.AddSingleton(Assembly.GetExecutingAssembly());
+            _services.AddSingleton<ApplicationInformation>();
+            _services.AddSingleton<DnsServer>();
+            _services.AddSingleton<DohClient>();
+            _services.AddSingleton(_cancellationTokenSource);
 
             // Dns Context
-            services.AddSingleton<IDnsContextAccessor>(_dnsContextAccessor);
-            services.AddSingleton<IWriteDnsContextAccessor>(_dnsContextAccessor);
-            services.AddTransient<IWriteDnsContext, DnsContext>();
+            _services.AddSingleton<IDnsContextAccessor>(_dnsContextAccessor);
+            _services.AddSingleton<IWriteDnsContextAccessor>(_dnsContextAccessor);
+            _services.AddTransient<IWriteDnsContext, DnsContext>();
 
             // Stratgies
-            services.AddSingleton<StrategyManager>();
-            services.AddTransient<IDnsResolverStrategy, DohResolverStrategy>();
-            services.AddTransient<IDnsResolverStrategy, DnsResolverStrategy>();
-            services.AddSingleton<IDnsResolverStrategy, InternalNameServerResolverStrategy>();
-            services.AddSingleton<IDnsResolverStrategy, HostsResolverStrategy>();
-            services.AddTransient<IDnsResolverStrategy, AwsApiGatewayResolverStrategy>();
-            services.AddTransient<IDnsResolverStrategy, AwsDocDbResolverStrategy>();
-            services.AddTransient<IDnsResolverStrategy, AwsElasticCacheResolverStrategy>();
-            services.AddTransient<DohResolverStrategy>();
-            services.AddTransient<DnsResolverStrategy>();
-            services.AddSingleton<InternalNameServerResolverStrategy>();
-            services.AddSingleton<HostsResolverStrategy>();
-            services.AddTransient<AwsApiGatewayResolverStrategy>();
-            services.AddTransient<AwsDocDbResolverStrategy>();
-            services.AddTransient<AwsElasticCacheResolverStrategy>();
+            _services.AddSingleton<StrategyManager>();
+            _services.AddTransient<IDnsResolverStrategy, DohResolverStrategy>();
+            _services.AddTransient<IDnsResolverStrategy, DnsResolverStrategy>();
+            _services.AddSingleton<IDnsResolverStrategy, InternalNameServerResolverStrategy>();
+            _services.AddSingleton<IDnsResolverStrategy, HostsResolverStrategy>();
+            _services.AddTransient<IDnsResolverStrategy, AwsApiGatewayResolverStrategy>();
+            _services.AddTransient<IDnsResolverStrategy, AwsDocDbResolverStrategy>();
+            _services.AddTransient<IDnsResolverStrategy, AwsElasticCacheResolverStrategy>();
+            _services.AddTransient<DohResolverStrategy>();
+            _services.AddTransient<DnsResolverStrategy>();
+            _services.AddSingleton<InternalNameServerResolverStrategy>();
+            _services.AddSingleton<HostsResolverStrategy>();
+            _services.AddTransient<AwsApiGatewayResolverStrategy>();
+            _services.AddTransient<AwsDocDbResolverStrategy>();
+            _services.AddTransient<AwsElasticCacheResolverStrategy>();
 
             // common
-            services.AddSingleton<AwsDocDbResolverStrategy>();
-            services.AddSingleton<AwsVpcManager>();
-            services.AddSingleton(CreateHttpProxyConfig);
-            services.AddSingleton(CreateAmazonConfig<AmazonEC2Config>);
-            services.AddSingleton(CreateAmazonConfig<AmazonDocDBConfig>);
-            services.AddSingleton(CreateAmazonConfig<AmazonAPIGatewayConfig>);
-            services.AddSingleton(CreateAmazonConfig<AmazonElastiCacheConfig>);
-            services.AddTransient(CreateAwsContext);
+            _services.AddSingleton<AwsDocDbResolverStrategy>();
+            _services.AddSingleton<AwsVpcManager>();
+            _services.AddSingleton(CreateHttpProxyConfig);
+            _services.AddSingleton(CreateAmazonConfig<AmazonEC2Config>);
+            _services.AddSingleton(CreateAmazonConfig<AmazonDocDBConfig>);
+            _services.AddSingleton(CreateAmazonConfig<AmazonAPIGatewayConfig>);
+            _services.AddSingleton(CreateAmazonConfig<AmazonElastiCacheConfig>);
+            _services.AddTransient(CreateAwsContext);
 
             // .net core frameworks
-            services.AddOptions();
-            services.Configure<HostsConfig>(_configuration.GetSection(nameof(HostsConfig)));
-            services.Configure<DnsHostConfig>(_configuration.GetSection(nameof(DnsHostConfig)));
-            services.Configure<RulesConfig>(_configuration.GetSection(nameof(RulesConfig)));
-            services.Configure<DnsDefaultServer>(_configuration.GetSection(nameof(DnsDefaultServer)));
-            services.Configure<HttpProxyConfig>(_configuration.GetSection(nameof(HttpProxyConfig)));
-            services.Configure<InternalNameServerConfig>(_configuration.GetSection(nameof(InternalNameServerConfig)));
-            services.Configure<AwsSettings>(_configuration.GetSection(nameof(AwsSettings)));
+            _services.AddOptions();
+            _services.Configure<HostsConfig>(_configuration.GetSection(nameof(HostsConfig)));
+            _services.Configure<DnsHostConfig>(_configuration.GetSection(nameof(DnsHostConfig)));
+            _services.Configure<RulesConfig>(_configuration.GetSection(nameof(RulesConfig)));
+            _services.Configure<DnsDefaultServer>(_configuration.GetSection(nameof(DnsDefaultServer)));
+            _services.Configure<HttpProxyConfig>(_configuration.GetSection(nameof(HttpProxyConfig)));
+            _services.Configure<InternalNameServerConfig>(_configuration.GetSection(nameof(InternalNameServerConfig)));
+            _services.Configure<AwsSettings>(_configuration.GetSection(nameof(AwsSettings)));
 
-            services.AddLogging(builder =>
+            AddLogging(loggingBuilder);
+
+            _services.AddMemoryCache();
+            // https://github.com/aspnet/Extensions/tree/master/src/HttpClientFactory
+            // https://docs.microsoft.com/de-de/dotnet/standard/microservices-architecture/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests
+            _services.AddHttpClient("httpClient", c => { })
+                .ConfigurePrimaryHttpMessageHandler(ConfigureHandler)
+                .AddTypedClient((client, provider) =>
+                {
+                    var dohClient = new DohClient
+                    {
+                        HttpClient = client
+                    };
+                    return dohClient;
+                });
+
+            return _services;
+        }
+
+        private void AddLogging(Func<ILoggingBuilder, ILoggingBuilder> loggingBuilder = null)
+        {
+            _services.AddLogging(builder =>
             {
                 builder
                     .SetMinimumLevel(LogLevel.Trace)
@@ -134,22 +163,8 @@ namespace DnsProxy.Common
                         options.DisableColors = false;
                         options.TimestampFormat = "[dd.MM.yyyy hh:mm:ss]";
                     });
+                loggingBuilder?.Invoke(builder);
             });
-            services.AddMemoryCache();
-            // https://github.com/aspnet/Extensions/tree/master/src/HttpClientFactory
-            // https://docs.microsoft.com/de-de/dotnet/standard/microservices-architecture/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests
-            services.AddHttpClient("httpClient", c => { })
-                .ConfigurePrimaryHttpMessageHandler(ConfigureHandler)
-                .AddTypedClient((client, provider) =>
-                {
-                    var dohClient = new DohClient
-                    {
-                        HttpClient = client
-                    };
-                    return dohClient;
-                });
-
-            return services;
         }
 
         private HttpMessageHandler ConfigureHandler(IServiceProvider provider)
@@ -220,7 +235,7 @@ namespace DnsProxy.Common
                 var webProxy = provider.GetService<IWebProxy>();
                 if (webProxy != null)
                 {
-                    ((ClientConfig) config)?.SetWebProxy(webProxy);
+                    ((ClientConfig)config)?.SetWebProxy(webProxy);
                 }
             }
 
