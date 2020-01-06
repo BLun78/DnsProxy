@@ -17,12 +17,12 @@
 #endregion
 
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DnsProxy.Common;
 using DnsProxy.Common.Aws;
 using DnsProxy.Dns;
-using DnsProxy.Models;
 using DnsProxy.Models.Aws;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -37,7 +37,7 @@ namespace DnsProxy.Console
         private static string _title;
 
         private static IOptionsMonitor<AwsSettings> AwsSettingsOptionsMonitor;
-        private static IDisposable AwsSettingsOptionsMonitorListner;
+        private static IDisposable AwsSettingsOptionsMonitorListener;
         internal static ApplicationInformation ApplicationInformation { get; private set; }
 
         internal static CancellationTokenSource CancellationTokenSource { get; private set; }
@@ -60,17 +60,12 @@ namespace DnsProxy.Console
             try
             {
                 Setup(args);
-                Title = ApplicationInformation.DefaultTitle;
-                ApplicationInformation.LogAssemblyInformation();
-                Logger.LogInformation("starts up {DefaultTitle}", ApplicationInformation.DefaultTitle);
 
                 using (var dnsServer = ServiceProvider.GetService<DnsServer>())
                 {
-                    await CheckForAwsMfaAsync().ConfigureAwait(true);
-                    var aws = ServiceProvider.GetService<AwsVpcManager>();
-                    await aws.StartReadingVpcAsync(CancellationTokenSource.Token).ConfigureAwait(true);
+                    await CheckAwsVpc().ConfigureAwait(true);
 
-                    return await WaitForEndAsync(dnsServer).ConfigureAwait(true);
+                    return await WaitForEndAsync().ConfigureAwait(true);
                 }
             }
 #pragma warning disable CA1031 // Do not catch general exception types
@@ -87,6 +82,52 @@ namespace DnsProxy.Console
             }
         }
 
+        private static void CreateHeader()
+        {
+            Title = ApplicationInformation.DefaultTitle;
+            ApplicationInformation.LogAssemblyInformation();
+            System.Console.WriteLine("==================================================================================");
+            System.Console.WriteLine("Copyright 2019 - 2020 Bjoern Lundstroem");
+            System.Console.WriteLine("");
+            System.Console.WriteLine("Licensed under the Apache License, Version 2.0(the \"License\");");
+            System.Console.WriteLine("you may not use this file except in compliance with the License.");
+            System.Console.WriteLine("You may obtain a copy of the License at");
+            System.Console.WriteLine("");
+            System.Console.WriteLine("\thttp://www.apache.org/licenses/LICENSE-2.0");
+            System.Console.WriteLine("");
+            System.Console.WriteLine("Unless required by applicable law or agreed to in writing, software");
+            System.Console.WriteLine("distributed under the License is distributed on an \"AS IS\" BASIS,");
+            System.Console.WriteLine("WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.");
+            System.Console.WriteLine("See the License for the specific language governing permissions and");
+            System.Console.WriteLine("limitations under the License.");
+            System.Console.WriteLine("==================================================================================");
+            var color = System.Console.ForegroundColor;
+            System.Console.ForegroundColor = ConsoleColor.DarkYellow;
+            System.Console.WriteLine("\t[strg]+[x] or [strg]+[q] = exit Application");
+            System.Console.WriteLine("\t[strg]+[r] = reload AWS-VPC's with new mfa");
+            System.Console.ForegroundColor = color;
+            System.Console.WriteLine("==================================================================================");
+            System.Console.WriteLine("A DNS-Proxy with routing for DNS-Request for development with hybrid clouds!");
+            System.Console.WriteLine("config.json, rules.json and hosts,json are used for configure.");
+            System.Console.WriteLine("==================================================================================");
+            System.Console.WriteLine(@"starts up " + ApplicationInformation.DefaultTitle);
+            System.Console.WriteLine("==================================================================================");
+        }
+
+        private static async Task CheckAwsVpc()
+        {
+            try
+            {
+                await CheckForAwsMfaAsync().ConfigureAwait(true);
+                var aws = ServiceProvider.GetService<AwsVpcManager>();
+                await aws.StartReadingVpcAsync(CancellationTokenSource.Token).ConfigureAwait(true);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, e.Message);
+            }
+        }
+
         private static void Setup(string[] args)
         {
             CancellationTokenSource = new CancellationTokenSource();
@@ -96,10 +137,12 @@ namespace DnsProxy.Console
             Logger = DependencyInjector.ServiceProvider.GetService<ILogger<Program>>();
             ApplicationInformation = DependencyInjector.ServiceProvider.GetService<ApplicationInformation>();
             AwsSettingsOptionsMonitor = ServiceProvider.GetService<IOptionsMonitor<AwsSettings>>();
-            AwsSettingsOptionsMonitorListner = AwsSettingsOptionsMonitor.OnChange(settings => RequestNewMfa = true);
+            AwsSettingsOptionsMonitorListener = AwsSettingsOptionsMonitor.OnChange(settings => RequestNewMfa = true);
+
+            CreateHeader();
         }
 
-        private static async Task<int> WaitForEndAsync(DnsServer dnsServer)
+        private static async Task<int> WaitForEndAsync()
         {
             return await Task.Run(async () =>
             {
@@ -108,13 +151,16 @@ namespace DnsProxy.Console
                 {
                     if (RequestNewMfa)
                     {
-                        await CheckForAwsMfaAsync().ConfigureAwait(true);
+                        await CheckAwsVpc().ConfigureAwait(true);
                         RequestNewMfa = false;
                     }
 
                     var key = System.Console.ReadKey(true);
                     switch (key.Modifiers, key.Key)
                     {
+                        case (ConsoleModifiers.Control, ConsoleKey.R):
+                            RequestNewMfa = true;
+                            break;
                         case (ConsoleModifiers.Control, ConsoleKey.Q):
                         case (ConsoleModifiers.Control, ConsoleKey.X):
                             exit = true;
@@ -124,7 +170,7 @@ namespace DnsProxy.Console
 
                 CancellationTokenSource?.Cancel();
                 CancellationTokenSource?.Dispose();
-                AwsSettingsOptionsMonitorListner?.Dispose();
+                AwsSettingsOptionsMonitorListener?.Dispose();
                 return 0;
             }).ConfigureAwait(true);
         }
@@ -134,10 +180,7 @@ namespace DnsProxy.Console
             try
             {
                 var awsSettings = AwsSettingsOptionsMonitor.CurrentValue;
-                var rules = ServiceProvider.GetService<IOptionsMonitor<RulesConfig>>().CurrentValue;
-                //var aws = rules.Rules.FirstOrDefault(x => x.IsEnabled == false && x.Strategy == Models.Strategies.Aws);
-
-                //if (aws == null) return;
+                if (!awsSettings.UserAccounts.Any()) return;
 
                 var awsContext = new AwsContext(awsSettings);
                 var mfa = new AwsMfa();

@@ -39,7 +39,9 @@ namespace DnsProxy.Common
             var version = _assembly.GetName().Version;
             var buildTime = new DateTime(1900, 1, 1);
             var title = DefaultTitle;
-            _logger.LogInformation(@"Title: '{title}' Version: '{version}' Builddate: '{buildTime}'", title, version,
+            //_logger.LogTrace(@"Title: '{title}' Version: '{version}' Builddate: '{buildTime}'", title, version,
+            //    buildTime);
+            System.Console.WriteLine(@"Title: '{0}' Version: '{1}' Builddate: '{2}'", title, version,
                 buildTime);
         }
     }

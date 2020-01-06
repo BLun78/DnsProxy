@@ -129,7 +129,7 @@ namespace DnsProxy.Common
                     .AddConsole(options =>
                     {
                         options.IncludeScopes = true;
-                        options.Format = ConsoleLoggerFormat.Default;
+                        options.Format = ConsoleLoggerFormat.Systemd;
                         options.LogToStandardErrorThreshold = LogLevel.Warning;
                         options.DisableColors = false;
                         options.TimestampFormat = "[dd.MM.yyyy hh:mm:ss]";
