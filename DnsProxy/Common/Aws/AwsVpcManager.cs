@@ -61,22 +61,29 @@ namespace DnsProxy.Common.Aws
 
         public async Task StartReadingVpcAsync(CancellationToken cancellationToken)
         {
-            foreach (var awsSettingsUserAccount in _awsContext.AwsSettings.UserAccounts)
+            try
             {
-                if (awsSettingsUserAccount.DoScan)
+                foreach (var awsSettingsUserAccount in _awsContext.AwsSettings.UserAccounts)
                 {
-                    await ReadVpcAsync(awsSettingsUserAccount.AwsCredentials, awsSettingsUserAccount, cancellationToken)
-                        .ConfigureAwait(true);
-                }
-
-                foreach (var userRoleExtended in awsSettingsUserAccount.Roles)
-                {
-                    if (userRoleExtended.DoScan)
+                    if (awsSettingsUserAccount.DoScan)
                     {
-                        await ReadVpcAsync(userRoleExtended.AwsCredentials, userRoleExtended, cancellationToken)
+                        await ReadVpcAsync(awsSettingsUserAccount.AwsCredentials, awsSettingsUserAccount, cancellationToken)
                             .ConfigureAwait(true);
                     }
+
+                    foreach (var userRoleExtended in awsSettingsUserAccount.Roles)
+                    {
+                        if (userRoleExtended.DoScan)
+                        {
+                            await ReadVpcAsync(userRoleExtended.AwsCredentials, userRoleExtended, cancellationToken)
+                                .ConfigureAwait(true);
+                        }
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                _logger.LogCritical(e, e.Message);
             }
         }
 
@@ -100,10 +107,10 @@ namespace DnsProxy.Common.Aws
                 }
 
                 var groupedResult = (from record in result
-                    group record by record.Name.ToString()
+                                     group record by record.Name.ToString()
                     into newRecords
-                    orderby newRecords.Key
-                    select newRecords).ToList();
+                                     orderby newRecords.Key
+                                     select newRecords).ToList();
                 foreach (var dnsRecordBases in groupedResult)
                 {
                     StoreInCache(dnsRecordBases.ToList(), dnsRecordBases.Key);
