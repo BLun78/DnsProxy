@@ -69,7 +69,7 @@ namespace DnsProxy.Strategies
                 }
             }
 
-            if (result != null && result.Any())
+            if (result.Any())
             {
                 LogDnsQuestionAndResultFromCache(dnsQuestion, result);
             }
