@@ -161,12 +161,12 @@ namespace DnsProxy.Strategies
                                 continue;
                             }
 
-                            await DoStrategyAsync(dnsWriteContext.InternalNameServerResolverStrategy, dnsQuestion,
-                                dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
-                            if (dnsWriteContext.Response.AnswerRecords.Any())
-                            {
-                                continue;
-                            }
+                            //await DoStrategyAsync(dnsWriteContext.InternalNameServerResolverStrategy, dnsQuestion,
+                            //    dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
+                            //if (dnsWriteContext.Response.AnswerRecords.Any())
+                            //{
+                            //    continue;
+                            //}
 
                             await DoStrategyAsync(dnsWriteContext.DefaultDnsStrategy, dnsQuestion, dnsWriteContext,
                                 joinedGlobalCts.Token).ConfigureAwait(false);
@@ -247,10 +247,10 @@ namespace DnsProxy.Strategies
                 ? CreateStrategy(_hostsConfigOptionsMonitor.CurrentValue.Rule, scope)
                 : null;
 
-            dnsWriteContext.InternalNameServerResolverStrategy =
-                _internalNameServerConfigOptionsMonitor.CurrentValue.Rule.IsEnabled
-                    ? CreateStrategy(_internalNameServerConfigOptionsMonitor.CurrentValue.Rule, scope)
-                    : null;
+            //dnsWriteContext.InternalNameServerResolverStrategy =
+            //    _internalNameServerConfigOptionsMonitor.CurrentValue.Rule.IsEnabled
+            //        ? CreateStrategy(_internalNameServerConfigOptionsMonitor.CurrentValue.Rule, scope)
+            //        : null;
 
             var strategies = new List<Models.Strategies>
                 {Models.Strategies.Hosts, Models.Strategies.InternalNameServer};
