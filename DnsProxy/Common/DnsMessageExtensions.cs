@@ -73,16 +73,16 @@ namespace DnsProxy.Common
         {
             string tempIpAddress;
             string reverseIpAddress = string.Empty;
-            string[] newIpAdress = ipAddress.ToString().Split('.');
-            for (int i = newIpAdress.Length - 1; i >= 0; i--)
+            string[] newIpAddress = ipAddress.ToString().Split('.');
+            for (int i = newIpAddress.Length - 1; i >= 0; i--)
             {
                 if (string.IsNullOrWhiteSpace(reverseIpAddress))
                 {
-                    reverseIpAddress = newIpAdress[i];
+                    reverseIpAddress = newIpAddress[i];
                 }
                 else
                 {
-                    reverseIpAddress += '.' + newIpAdress[i];
+                    reverseIpAddress += '.' + newIpAddress[i];
                 }
             }
             switch (ipAddress.AddressFamily)
