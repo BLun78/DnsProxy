@@ -83,7 +83,7 @@ namespace DnsProxy.Strategies
                 AwsClient = (TClient) Activator.CreateInstance(typeof(TClient), awsDoScan.AwsCredentials,
                     AwsClientConfig);
                 var userAccountResult = await AwsResolveAsync(dnsQuestion, awsDoScan.ScanVpcIds, cancellationToken)
-                    .ConfigureAwait(true);
+                    .ConfigureAwait(false);
                 result.AddRange(userAccountResult);
             }
         }

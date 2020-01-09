@@ -23,8 +23,8 @@
   },
   "HttpProxyConfig": {
     "AuthenticationType": "None",
-    "Address": "127.0.0.1",
-    "Port": 8866,
+    "Address": "",
+    "Port": null,
     "User": "",
     "Password": "",
     "Domain": "",

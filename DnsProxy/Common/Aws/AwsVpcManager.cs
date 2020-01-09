@@ -69,7 +69,7 @@ namespace DnsProxy.Common.Aws
                     if (awsSettingsUserAccount.DoScan)
                     {
                         await ReadVpcAsync(awsSettingsUserAccount.AwsCredentials, awsSettingsUserAccount, cancellationToken)
-                            .ConfigureAwait(true);
+                            .ConfigureAwait(false);
                     }
 
                     foreach (var userRoleExtended in awsSettingsUserAccount.Roles)
@@ -77,7 +77,7 @@ namespace DnsProxy.Common.Aws
                         if (userRoleExtended.DoScan)
                         {
                             await ReadVpcAsync(userRoleExtended.AwsCredentials, userRoleExtended, cancellationToken)
-                                .ConfigureAwait(true);
+                                .ConfigureAwait(false);
                         }
                     }
                 }
@@ -98,10 +98,10 @@ namespace DnsProxy.Common.Aws
                 using (var amazonEc2Client = new AmazonEC2Client(awsCredentials, _amazonEc2Config))
                 {
                     var endpoints = await ReadVpcEndpointAsync(amazonEc2Client, awsDoScan, cancellationToken)
-                        .ConfigureAwait(true);
+                        .ConfigureAwait(false);
 
                     var readApiGateway = await ReadApiGatewayAsync(awsCredentials, endpoints, cancellationToken)
-                        .ConfigureAwait(true);
+                        .ConfigureAwait(false);
                     result.AddRange(readApiGateway);
 
                     var readEndpoints = ReadEndpoints(endpoints);
@@ -169,7 +169,7 @@ namespace DnsProxy.Common.Aws
                     endpoints.Where(x =>
                         x.VpcEndpoint.ServiceName.Contains(".execute-api", StringComparison.InvariantCulture)).ToList();
                 var apis = await amazonApiGatewayClient.GetRestApisAsync(new GetRestApisRequest(), cancellationToken)
-                    .ConfigureAwait(true);
+                    .ConfigureAwait(false);
                 var orderedApis = apis.Items.Where(x =>
                     x.EndpointConfiguration.Types.Single(x => "PRIVATE".Equals(x, StringComparison.InvariantCulture)) !=
                     null).ToArray();
@@ -225,11 +225,11 @@ namespace DnsProxy.Common.Aws
             CancellationToken cancellationToken)
         {
             var vpc = await amazonEc2Client.DescribeVpcsAsync(CreateDescribeVpcsRequest(awsDoScan), cancellationToken)
-                .ConfigureAwait(true);
+                .ConfigureAwait(false);
             var vpcIds = vpc.Vpcs.Select(x => x.VpcId).ToList();
             var vpcEndpointList = await amazonEc2Client
                 .DescribeVpcEndpointsAsync(new DescribeVpcEndpointsRequest(), cancellationToken)
-                .ConfigureAwait(true);
+                .ConfigureAwait(false);
             var result = vpcEndpointList.VpcEndpoints.Where(x => vpcIds.Contains(x.VpcId)).Select(x => new Endpoint(x))
                 .ToList();
             foreach (var endpoint in result)
@@ -238,7 +238,7 @@ namespace DnsProxy.Common.Aws
                     new DescribeNetworkInterfacesRequest
                     {
                         NetworkInterfaceIds = endpoint.VpcEndpoint.NetworkInterfaceIds
-                    }).ConfigureAwait(true);
+                    }).ConfigureAwait(false);
                 endpoint.NetworkInterfaces = describeNetworkInterfacesResponse.NetworkInterfaces;
             }
 

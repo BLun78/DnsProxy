@@ -52,7 +52,7 @@ namespace DnsProxy.Strategies
             List<string> ScanVpcIds, CancellationToken cancellationToken)
         {
             var vpc = await AwsClient.GetRestApisAsync(new GetRestApisRequest(), cancellationToken)
-                .ConfigureAwait(true);
+                .ConfigureAwait(false);
 
             return null;
         }

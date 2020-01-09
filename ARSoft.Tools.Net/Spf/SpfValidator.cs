@@ -30,7 +30,7 @@ namespace ARSoft.Tools.Net.Spf
     {
         protected override async Task<LoadRecordResult> LoadRecordsAsync(DomainName domain, CancellationToken token)
         {
-            DnsResolveResult<TxtRecord> dnsResult = await ResolveDnsAsync<TxtRecord>(domain, RecordType.Txt, token).ConfigureAwait(true);
+            DnsResolveResult<TxtRecord> dnsResult = await ResolveDnsAsync<TxtRecord>(domain, RecordType.Txt, token).ConfigureAwait(false);
             if ((dnsResult == null) || ((dnsResult.ReturnCode != ReturnCode.NoError) && (dnsResult.ReturnCode != ReturnCode.NxDomain)))
             {
                 return new LoadRecordResult() { CouldBeLoaded = false, ErrorResult = SpfQualifier.TempError };

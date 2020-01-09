@@ -45,22 +45,22 @@ namespace ARSoft.Tools.Net.Dns
 
             if (rrSigRecords.Count == 0)
             {
-                return await ValidateOptOut(name, recordClass, state, token).ConfigureAwait(true) ? DnsSecValidationResult.Unsigned : DnsSecValidationResult.Bogus;
+                return await ValidateOptOut(name, recordClass, state, token).ConfigureAwait(false) ? DnsSecValidationResult.Unsigned : DnsSecValidationResult.Bogus;
             }
 
             DomainName zoneApex = rrSigRecords.OrderByDescending(x => x.Labels).First().SignersName;
 
             if (resultRecords.Count != 0)
-                return await ValidateRrSigAsync(name, recordType, recordClass, resultRecords, rrSigRecords, zoneApex, msg, state, token).ConfigureAwait(true);
+                return await ValidateRrSigAsync(name, recordType, recordClass, resultRecords, rrSigRecords, zoneApex, msg, state, token).ConfigureAwait(false);
 
-            return await ValidateNonExistenceAsync(name, recordType, recordClass, rrSigRecords, DomainName.Asterisk + zoneApex, zoneApex, msg, state, token).ConfigureAwait(true);
+            return await ValidateNonExistenceAsync(name, recordType, recordClass, rrSigRecords, DomainName.Asterisk + zoneApex, zoneApex, msg, state, token).ConfigureAwait(false);
         }
 
         private async Task<bool> ValidateOptOut(DomainName name, RecordClass recordClass, TState state, CancellationToken token)
         {
             while (name != DomainName.Root)
             {
-                DnsMessage msg = await _resolver.ResolveMessageAsync(name, RecordType.Ds, recordClass, state, token).ConfigureAwait(true);
+                DnsMessage msg = await _resolver.ResolveMessageAsync(name, RecordType.Ds, recordClass, state, token).ConfigureAwait(false);
 
                 if ((msg == null) || ((msg.ReturnCode != ReturnCode.NoError) && (msg.ReturnCode != ReturnCode.NxDomain)))
                 {
@@ -76,7 +76,7 @@ namespace ARSoft.Tools.Net.Dns
                 {
                     DomainName zoneApex = rrSigRecords.OrderByDescending(x => x.Labels).First().SignersName;
 
-                    var nonExistenceValidation = await ValidateNonExistenceAsync(name, RecordType.Ds, recordClass, rrSigRecords, name, zoneApex, msg, state, token).ConfigureAwait(true);
+                    var nonExistenceValidation = await ValidateNonExistenceAsync(name, RecordType.Ds, recordClass, rrSigRecords, name, zoneApex, msg, state, token).ConfigureAwait(false);
                     if ((nonExistenceValidation != DnsSecValidationResult.Bogus) && (nonExistenceValidation != DnsSecValidationResult.Indeterminate))
                         return true;
                 }
@@ -88,11 +88,11 @@ namespace ARSoft.Tools.Net.Dns
 
         private async Task<DnsSecValidationResult> ValidateNonExistenceAsync(DomainName name, RecordType recordType, RecordClass recordClass, List<RrSigRecord> rrSigRecords, DomainName stop, DomainName zoneApex, DnsMessageBase msg, TState state, CancellationToken token)
         {
-            var nsecRes = await ValidateNSecAsync(name, recordType, recordClass, rrSigRecords, stop, zoneApex, msg, state, token).ConfigureAwait(true);
+            var nsecRes = await ValidateNSecAsync(name, recordType, recordClass, rrSigRecords, stop, zoneApex, msg, state, token).ConfigureAwait(false);
             if (nsecRes == DnsSecValidationResult.Signed)
                 return nsecRes;
 
-            var nsec3Res = await ValidateNSec3Async(name, recordType, recordClass, rrSigRecords, stop == DomainName.Asterisk + zoneApex, zoneApex, msg, state, token).ConfigureAwait(true);
+            var nsec3Res = await ValidateNSec3Async(name, recordType, recordClass, rrSigRecords, stop == DomainName.Asterisk + zoneApex, zoneApex, msg, state, token).ConfigureAwait(false);
             if (nsec3Res == DnsSecValidationResult.Signed)
                 return nsec3Res;
 
@@ -114,7 +114,7 @@ namespace ARSoft.Tools.Net.Dns
 
             foreach (var nsecGroup in nsecRecords.GroupBy(x => x.Name))
             {
-                DnsSecValidationResult validationResult = await ValidateRrSigAsync(nsecGroup.Key, RecordType.NSec, recordClass, nsecGroup.ToList(), rrSigRecords, zoneApex, msg, state, token).ConfigureAwait(true);
+                DnsSecValidationResult validationResult = await ValidateRrSigAsync(nsecGroup.Key, RecordType.NSec, recordClass, nsecGroup.ToList(), rrSigRecords, zoneApex, msg, state, token).ConfigureAwait(false);
 
                 if (validationResult != DnsSecValidationResult.Signed)
                     return validationResult;
@@ -154,7 +154,7 @@ namespace ARSoft.Tools.Net.Dns
 
             foreach (var nsecGroup in nsecRecords.GroupBy(x => x.Name))
             {
-                DnsSecValidationResult validationResult = await ValidateRrSigAsync(nsecGroup.Key, RecordType.NSec3, recordClass, nsecGroup.ToList(), rrSigRecords, zoneApex, msg, state, token).ConfigureAwait(true);
+                DnsSecValidationResult validationResult = await ValidateRrSigAsync(nsecGroup.Key, RecordType.NSec3, recordClass, nsecGroup.ToList(), rrSigRecords, zoneApex, msg, state, token).ConfigureAwait(false);
 
                 if (validationResult != DnsSecValidationResult.Signed)
                     return validationResult;
@@ -217,14 +217,14 @@ namespace ARSoft.Tools.Net.Dns
 
             foreach (var record in rrSigRecords.Where(x => x.Name.Equals(name) && (x.TypeCovered == recordType)))
             {
-                res = await VerifyAsync(record, resultRecords, recordClass, state, token).ConfigureAwait(true);
+                res = await VerifyAsync(record, resultRecords, recordClass, state, token).ConfigureAwait(false);
                 if (res == DnsSecValidationResult.Signed)
                 {
                     if ((record.Labels == name.LabelCount)
                         || ((name.Labels[0] == "*") && (record.Labels == name.LabelCount - 1)))
                         return DnsSecValidationResult.Signed;
 
-                    if (await ValidateNonExistenceAsync(name, recordType, recordClass, rrSigRecords, DomainName.Asterisk + record.Name.GetParentName(record.Name.LabelCount - record.Labels), zoneApex, msg, state, token).ConfigureAwait(true) == DnsSecValidationResult.Signed)
+                    if (await ValidateNonExistenceAsync(name, recordType, recordClass, rrSigRecords, DomainName.Asterisk + record.Name.GetParentName(record.Name.LabelCount - record.Labels), zoneApex, msg, state, token).ConfigureAwait(false) == DnsSecValidationResult.Signed)
                         return DnsSecValidationResult.Signed;
                 }
             }
@@ -245,7 +245,7 @@ namespace ARSoft.Tools.Net.Dns
                 }
                 else
                 {
-                    var dsRecordResults = await _resolver.ResolveSecureAsync<DsRecord>(rrSigRecord.SignersName, RecordType.Ds, recordClass, state, token).ConfigureAwait(true);
+                    var dsRecordResults = await _resolver.ResolveSecureAsync<DsRecord>(rrSigRecord.SignersName, RecordType.Ds, recordClass, state, token).ConfigureAwait(false);
 
                     if ((dsRecordResults.ValidationResult == DnsSecValidationResult.Bogus) || (dsRecordResults.ValidationResult == DnsSecValidationResult.Indeterminate))
                         throw new DnsSecValidationException("DS records could not be retrieved");
@@ -260,7 +260,7 @@ namespace ARSoft.Tools.Net.Dns
             }
             else
             {
-                var dnsKeyRecordResults = await _resolver.ResolveSecureAsync<DnsKeyRecord>(rrSigRecord.SignersName, RecordType.DnsKey, recordClass, state, token).ConfigureAwait(true);
+                var dnsKeyRecordResults = await _resolver.ResolveSecureAsync<DnsKeyRecord>(rrSigRecord.SignersName, RecordType.DnsKey, recordClass, state, token).ConfigureAwait(false);
 
                 if ((dnsKeyRecordResults.ValidationResult == DnsSecValidationResult.Bogus) || (dnsKeyRecordResults.ValidationResult == DnsSecValidationResult.Indeterminate))
                     throw new DnsSecValidationException("DNSKEY records could not be retrieved");

@@ -63,17 +63,17 @@ namespace DnsProxy.Console
 
                 using (var dnsServer = ServiceProvider.GetService<DnsServer>())
                 {
-                    await CheckAwsVpc().ConfigureAwait(true);
+                    await CheckAwsVpc().ConfigureAwait(false);
 
-                    return await WaitForEndAsync().ConfigureAwait(true);
+                    return await WaitForEndAsync().ConfigureAwait(false);
                 }
             }
 #pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception e)
             {
                 Logger.LogError(e, e.Message);
-                await Task.Delay(100).ConfigureAwait(true);
-                return await Task.FromResult(1).ConfigureAwait(true);
+                await Task.Delay(100).ConfigureAwait(false);
+                return await Task.FromResult(1).ConfigureAwait(false);
             }
 #pragma warning restore CA1031 // Do not catch general exception types
             finally
@@ -121,9 +121,9 @@ namespace DnsProxy.Console
         {
             try
             {
-                await CheckForAwsMfaAsync().ConfigureAwait(true);
+                await CheckForAwsMfaAsync().ConfigureAwait(false);
                 var aws = ServiceProvider.GetService<AwsVpcManager>();
-                await aws.StartReadingVpcAsync(CancellationTokenSource.Token).ConfigureAwait(true);
+                await aws.StartReadingVpcAsync(CancellationTokenSource.Token).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -154,7 +154,7 @@ namespace DnsProxy.Console
                 {
                     if (RequestNewMfa)
                     {
-                        await CheckAwsVpc().ConfigureAwait(true);
+                        await CheckAwsVpc().ConfigureAwait(false);
                         RequestNewMfa = false;
                     }
 
@@ -178,7 +178,7 @@ namespace DnsProxy.Console
                 CancellationTokenSource?.Dispose();
                 AwsSettingsOptionsMonitorListener?.Dispose();
                 return 0;
-            }).ConfigureAwait(true);
+            }).ConfigureAwait(false);
         }
 
         private static async Task CheckForAwsMfaAsync()
@@ -194,15 +194,15 @@ namespace DnsProxy.Console
                 foreach (var userAccount in awsContext.AwsSettings.UserAccounts)
                 {
                     var mfsToken = await mfa.GetMfaAsync(userAccount, CancellationTokenSource.Token)
-                        .ConfigureAwait(true);
+                        .ConfigureAwait(false);
 
                     await mfa.CreateAwsCredentialsAsync(userAccount, mfsToken, CancellationTokenSource.Token)
-                        .ConfigureAwait(true);
+                        .ConfigureAwait(false);
 
                     foreach (var role in userAccount.Roles)
                     {
                         await mfa.AssumeRoleAsync(userAccount, role, CancellationTokenSource.Token)
-                            .ConfigureAwait(true);
+                            .ConfigureAwait(false);
                     }
                 }
 

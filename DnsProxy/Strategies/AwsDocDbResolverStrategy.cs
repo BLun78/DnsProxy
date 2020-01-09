@@ -52,7 +52,7 @@ namespace DnsProxy.Strategies
             List<string> ScanVpcIds, CancellationToken cancellationToken)
         {
             var clusters = await AwsClient.DescribeDBClustersAsync(new DescribeDBClustersRequest(), cancellationToken)
-                .ConfigureAwait(true);
+                .ConfigureAwait(false);
 
 
             return null;

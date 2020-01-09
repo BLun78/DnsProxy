@@ -118,7 +118,7 @@ namespace DnsProxy.Common
             services.AddLogging(builder =>
             {
                 builder
-                    .SetMinimumLevel(LogLevel.Trace)
+                    .SetMinimumLevel(LogLevel.Debug)
                     .AddFilter("Microsoft", LogLevel.Warning)
                     .AddFilter("System", LogLevel.Warning)
                     //.AddFilter("DnsProxy.Program", LogLevel.Trace)
