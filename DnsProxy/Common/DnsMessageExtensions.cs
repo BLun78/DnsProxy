@@ -72,13 +72,26 @@ namespace DnsProxy.Common
         public static string CreatePtrIpAddressName(this IPAddress ipAddress)
         {
             string tempIpAddress;
+            string reverseIpAddress = string.Empty;
+            string[] newIpAdress = ipAddress.ToString().Split('.');
+            for (int i = newIpAdress.Length - 1; i >= 0; i--)
+            {
+                if (string.IsNullOrWhiteSpace(reverseIpAddress))
+                {
+                    reverseIpAddress = newIpAdress[i];
+                }
+                else
+                {
+                    reverseIpAddress += '.' + newIpAdress[i];
+                }
+            }
             switch (ipAddress.AddressFamily)
             {
                 case AddressFamily.InterNetwork:
-                    tempIpAddress = $"{ipAddress}.in-addr.arpa";
+                    tempIpAddress = $"{reverseIpAddress}.in-addr.arpa";
                     break;
                 case AddressFamily.InterNetworkV6:
-                    tempIpAddress = $"{ipAddress}.ip6.arpa";
+                    tempIpAddress = $"{reverseIpAddress}.ip6.arpa";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(ipAddress.AddressFamily), ipAddress.AddressFamily,
