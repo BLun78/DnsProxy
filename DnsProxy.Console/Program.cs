@@ -121,9 +121,21 @@ namespace DnsProxy.Console
         {
             try
             {
-                await CheckForAwsMfaAsync().ConfigureAwait(false);
-                var aws = ServiceProvider.GetService<AwsVpcManager>();
-                await aws.StartReadingVpcAsync(CancellationTokenSource.Token).ConfigureAwait(false);
+                var awsSettings = ServiceProvider.GetService<IOptions<AwsSettings>>();
+                if (awsSettings?.Value != null
+                    && !string.IsNullOrWhiteSpace(awsSettings.Value.Region)
+                    && awsSettings.Value.UserAccounts != null
+                    && awsSettings.Value.UserAccounts.Any())
+                {
+                    await CheckForAwsMfaAsync().ConfigureAwait(false);
+                    var aws = ServiceProvider.GetService<AwsVpcManager>();
+                    await aws.StartReadingVpcAsync(CancellationTokenSource.Token).ConfigureAwait(false);
+                }
+                else
+                {
+                    Logger.LogInformation("No AWS config found!");
+                }
+
             }
             catch (Exception e)
             {
