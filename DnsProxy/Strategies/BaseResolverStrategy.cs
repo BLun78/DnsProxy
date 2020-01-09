@@ -58,7 +58,7 @@ namespace DnsProxy.Strategies
 
         void IDnsResolverStrategy.SetRule(IRule rule)
         {
-            Rule = (TRule) rule;
+            Rule = (TRule)rule;
         }
 
         public void SetRule(TRule rule)
@@ -96,7 +96,7 @@ namespace DnsProxy.Strategies
         protected void LogDnsCanncelQuestion(DnsQuestion dnsQuestion, OperationCanceledException operationCanceledException)
         {
             var dnsContext = DnsContextAccessor.DnsContext;
-            Logger.LogDebug("Timeout for ClientIpAddress: {0} requested {1} (#{2}, {3}).", dnsContext?.IpEndPoint, dnsQuestion.Name,
+            Logger.LogDebug(operationCanceledException, "Timeout for ClientIpAddress: {0} requested {1} (#{2}, {3}).", dnsContext?.IpEndPoint, dnsQuestion.Name,
                 dnsContext?.Request?.TransactionID.ToString(), dnsQuestion.RecordType);
         }
 
