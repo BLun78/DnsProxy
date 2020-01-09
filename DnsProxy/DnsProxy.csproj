@@ -57,11 +57,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.APIGateway" Version="3.3.103.43" />
-    <PackageReference Include="AWSSDK.DocDB" Version="3.3.102.38" />
-    <PackageReference Include="AWSSDK.EC2" Version="3.3.147.3" />
-    <PackageReference Include="AWSSDK.ElastiCache" Version="3.3.107.27" />
-    <PackageReference Include="AWSSDK.SecurityToken" Version="3.3.104.16" />
+    <PackageReference Include="AWSSDK.APIGateway" Version="3.3.103.45" />
+    <PackageReference Include="AWSSDK.DocDB" Version="3.3.102.40" />
+    <PackageReference Include="AWSSDK.EC2" Version="3.3.148.1" />
+    <PackageReference Include="AWSSDK.ElastiCache" Version="3.3.107.29" />
+    <PackageReference Include="AWSSDK.SecurityToken" Version="3.3.104.18" />
     <PackageReference Include="Makaretu.Dns" Version="2.0.1" />
     <PackageReference Include="Makaretu.Dns.Unicast" Version="0.11.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
