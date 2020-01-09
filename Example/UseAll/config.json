@@ -1,0 +1,59 @@
+{
+  "DnsHostConfig": {
+    "ListenerPort": 53,
+    "NetworkWhitelist": [
+      "127.0.0.1/32"
+    ],
+    "DefaultQueryTimeout": 50000
+  },
+  "DnsDefaultServer": {
+    "Servers": {
+      "NameServer": [
+        "1.1.1.1",
+        "9.9.9.9",
+        "8.8.8.8"
+      ],
+      "Strategy": "Dns",
+      "CompressionMutation": true,
+      "QueryTimeout": 5000
+    }
+  },
+  "HttpProxyConfig": {
+    "AuthenticationType": "None",
+    "Address": "127.0.0.1",
+    "Port": 8888,
+    "User": "",
+    "Password": "",
+    "Domain": "",
+    "BypassAddresses": ""
+  },
+  "AwsSettings": {
+    "Region": "eu-central-1",
+    "UserAccounts": [
+      {
+        "UserAccountId": "5xxxxxxxxxxxx7",
+        "UserName": "xxxxxxxx",
+        "UserAccessKey": "Axxxxxxxxxxxxxxxxxxx6",
+        "UserSecretKey": "mxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxQ",
+        "DoScan": false,
+        "ScanVpcIds": [],
+        "Roles": [
+          {
+            "AwsAccountLabel": "blabla",
+            "AwsAccountId": "6xxxxxxxxxxxx",
+            "Role": "engineer",
+            "DoScan": true,
+            "ScanVpcIds": [ "vpc-0xxxxxxxxxxxxxx6" ]
+          },
+          {
+            "AwsAccountLabel": "blublu",
+            "AwsAccountId": "3xxxxxxxxxx4",
+            "Role": "developer",
+            "DoScan": false,
+            "ScanVpcIds": []
+          }
+        ]
+      }
+    ]
+  }
+}

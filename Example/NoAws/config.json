@@ -1,0 +1,32 @@
+{
+  "DnsHostConfig": {
+    "ListenerPort": 53,
+    "NetworkWhitelist": [
+      "127.0.0.1/32"
+    ],
+    "DefaultQueryTimeout": 50000
+  },
+  "DnsDefaultServer": {
+    "Servers": {
+      "NameServer": [
+        "1.1.1.1",
+        "9.9.9.9",
+        "8.8.8.8"
+      ],
+      "Strategy": "Dns",
+      "CompressionMutation": true,
+      "QueryTimeout": 5000
+    }
+  },
+  "HttpProxyConfig": {
+    "AuthenticationType": "None",
+    "Address": "",
+    "Port": null,
+    "User": "",
+    "Password": "",
+    "Domain": "",
+    "BypassAddresses": ""
+  },
+  "AwsSettings": {
+  }
+}

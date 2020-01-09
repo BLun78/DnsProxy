@@ -93,6 +93,13 @@ namespace DnsProxy.Strategies
                 dnsContext?.Request?.TransactionID.ToString(), dnsQuestion.RecordType);
         }
 
+        protected void LogDnsCanncelQuestion(DnsQuestion dnsQuestion, OperationCanceledException operationCanceledException)
+        {
+            var dnsContext = DnsContextAccessor.DnsContext;
+            Logger.LogDebug("Timeout for ClientIpAddress: {0} requested {1} (#{2}, {3}).", dnsContext?.IpEndPoint, dnsQuestion.Name,
+                dnsContext?.Request?.TransactionID.ToString(), dnsQuestion.RecordType);
+        }
+
         protected void LogDnsQuestionAndResult(DnsQuestion dnsQuestion, List<DnsRecordBase> answers)
         {
             var dnsContext = DnsContextAccessor.DnsContext;

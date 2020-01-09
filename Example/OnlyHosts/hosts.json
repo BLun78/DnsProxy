@@ -1,0 +1,53 @@
+{
+  "HostsConfig": {
+    "Rule": {
+      "IsEnabled": true
+    },
+    "Hosts": [
+      {
+        "IpAddresses": [
+          "104.16.249.249",
+          "104.16.248.249"
+        ],
+        "DomainNames": [
+          "cloudflare-dns.com"
+        ]
+      },
+      {
+        "IpAddresses": [
+          "8.8.4.4",
+          "8.8.8.8"
+        ],
+        "DomainNames": [
+          "dns.google"
+        ]
+      },
+      {
+        "IpAddresses": [
+          "185.95.218.43",
+          "185.95.218.42"
+        ],
+        "DomainNames": [
+          "dns.digitale-gesellschaft.ch"
+        ]
+      },
+      {
+        "IpAddresses": [
+          "146.112.41.2"
+        ],
+        "DomainNames": [
+          "doh.opendns.com"
+        ]
+      },
+      {
+        "IpAddresses": [
+          "149.112.112.112",
+          "9.9.9.9"
+        ],
+        "DomainNames": [
+          "dns.quad9.net"
+        ]
+      }
+    ]
+  }
+}

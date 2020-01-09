@@ -69,8 +69,6 @@ namespace DnsProxy.Strategies
                     Class = dnsQuestion.RecordClass.ToDnsClass()
                 };
 
-                //var requestMessage = new Message();
-                //requestMessage.Questions.Add(question);
                 try
                 {
                     var responseMessage =
@@ -86,6 +84,10 @@ namespace DnsProxy.Strategies
                 {
                     HandelIoException(ioe, nameServerUri);
                 }
+                catch (OperationCanceledException operationCanceledException)
+                {
+                    LogDnsCanncelQuestion(dnsQuestion, operationCanceledException);
+                }
                 catch (Exception e)
                 {
                     Logger.LogError(e, "DoH [{0}]: unexpectet error [{1}]", nameServerUri, e.Message);
@@ -99,8 +101,13 @@ namespace DnsProxy.Strategies
 
             if (result.Any())
             {
+                var ttl = result.First().TimeToLive;
+                if (ttl <= 0)
+                {
+                    ttl = 10;
+                }
                 StoreInCache(result, dnsQuestion.Name.ToString(),
-                    new MemoryCacheEntryOptions().SetAbsoluteExpiration(new TimeSpan(0, 0, result.First().TimeToLive)));
+                    new MemoryCacheEntryOptions().SetAbsoluteExpiration(new TimeSpan(0, 0, ttl)));
             }
 
             LogDnsQuestionAndResult(dnsQuestion, result);

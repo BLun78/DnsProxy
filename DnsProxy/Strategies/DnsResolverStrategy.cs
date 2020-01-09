@@ -46,16 +46,33 @@ namespace DnsProxy.Strategies
             var result = new List<DnsRecordBase>();
             var dnsClient = new DnsClient(Rule.NameServerIpAddresses, Rule.QueryTimeout);
 
-            var response = await dnsClient.ResolveAsync(dnsQuestion.Name, dnsQuestion.RecordType,
-                    dnsQuestion.RecordClass, null, cancellationToken)
-                .ConfigureAwait(false);
+            try
+            {
+                var response = await dnsClient.ResolveAsync(dnsQuestion.Name, dnsQuestion.RecordType,
+                        dnsQuestion.RecordClass, null, cancellationToken)
+                    .ConfigureAwait(false);
 
-            result.AddRange(response.AnswerRecords);
+                result.AddRange(response?.AnswerRecords ?? new List<DnsRecordBase>());
+            }
+            catch (OperationCanceledException operationCanceledException)
+            {
+                LogDnsCanncelQuestion(dnsQuestion, operationCanceledException);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, e.Message);
+                throw;
+            }
 
             if (result.Any())
             {
+                var ttl = result.First().TimeToLive;
+                if (ttl <= 0)
+                {
+                    ttl = 10;
+                }
                 StoreInCache(result, dnsQuestion.Name.ToString(),
-                    new MemoryCacheEntryOptions().SetAbsoluteExpiration(new TimeSpan(0, 0, result.First().TimeToLive)));
+                    new MemoryCacheEntryOptions().SetAbsoluteExpiration(new TimeSpan(0, 0, ttl)));
             }
 
             LogDnsQuestionAndResult(dnsQuestion, result);

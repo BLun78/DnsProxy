@@ -30,6 +30,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Strategies
 {
+    [Obsolete]
     internal class AwsElasticCacheResolverStrategy :
         AwsBaseResolverStrategy<AwsElasticCacheRule, AmazonElastiCacheClient>, IDnsResolverStrategy<AwsElasticCacheRule>
     {

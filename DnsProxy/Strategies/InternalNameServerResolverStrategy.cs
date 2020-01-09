@@ -30,6 +30,7 @@ using Microsoft.Extensions.Options;
 
 namespace DnsProxy.Strategies
 {
+    [Obsolete]
     internal class InternalNameServerResolverStrategy : BaseResolverStrategy<InternalNameServerRule>,
         IDnsResolverStrategy<InternalNameServerRule>
     {

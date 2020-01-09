@@ -31,6 +31,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Strategies
 {
+    [Obsolete]
     internal class AwsApiGatewayResolverStrategy : AwsBaseResolverStrategy<AwsApiGatewayRule, AmazonAPIGatewayClient>,
         IDnsResolverStrategy<AwsApiGatewayRule>
     {

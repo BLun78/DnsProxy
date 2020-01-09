@@ -123,7 +123,7 @@ Für [DNS over HTTPS (DoH)](https://en.wikipedia.org/wiki/DNS_over_HTTPS) wird d
         "Strategy": "Dns",
         "IsEnabled": true,
         "CompressionMutation": true,
-        "QueryTimeout": 30000
+        "QueryTimeout": 10000
       },
       {
         "DomainNamePattern": "(.*)\\.amazonaws.com.",
@@ -136,7 +136,7 @@ Für [DNS over HTTPS (DoH)](https://en.wikipedia.org/wiki/DNS_over_HTTPS) wird d
           "https://dns.quad9.net/dns-query"
         ],
         "IsEnabled": true,
-        "QueryTimeout": 30000
+        "QueryTimeout": 10000
       },
       {
         "DomainNamePattern": "(.*)\\.docdb.amazonaws.com.",
@@ -149,7 +149,7 @@ Für [DNS over HTTPS (DoH)](https://en.wikipedia.org/wiki/DNS_over_HTTPS) wird d
           "https://dns.quad9.net/dns-query"
         ],
         "IsEnabled": true,
-        "QueryTimeout": 30000
+        "QueryTimeout": 10000
       },
       {
         "DomainNamePattern": "(.*)\\.cache.amazonaws.com.",
@@ -162,7 +162,7 @@ Für [DNS over HTTPS (DoH)](https://en.wikipedia.org/wiki/DNS_over_HTTPS) wird d
           "https://dns.quad9.net/dns-query"
         ],
         "IsEnabled": true,
-        "QueryTimeout": 30000
+        "QueryTimeout": 10000
       },
       {
         "DomainNamePattern": "(.*)\\.execute-api.eu-central-1.amazonaws.com.",
@@ -175,7 +175,7 @@ Für [DNS over HTTPS (DoH)](https://en.wikipedia.org/wiki/DNS_over_HTTPS) wird d
           "https://dns.quad9.net/dns-query"
         ],
         "IsEnabled": true,
-        "QueryTimeout": 30000
+        "QueryTimeout": 10000
       },
       {
         "DomainNamePattern": "(.*)\\.blun.de.",
@@ -188,7 +188,7 @@ Für [DNS over HTTPS (DoH)](https://en.wikipedia.org/wiki/DNS_over_HTTPS) wird d
           "https://dns.quad9.net/dns-query"
         ],
         "IsEnabled": true,
-        "QueryTimeout": 30000
+        "QueryTimeout": 10000
       },
       {
         "DomainName": "blun.de.",
@@ -201,7 +201,7 @@ Für [DNS over HTTPS (DoH)](https://en.wikipedia.org/wiki/DNS_over_HTTPS) wird d
           "https://dns.quad9.net/dns-query"
         ],
         "IsEnabled": true,
-        "QueryTimeout": 30000
+        "QueryTimeout": 10000
       },
       {
         "DomainName": "www.google.de",
@@ -212,7 +212,7 @@ Für [DNS over HTTPS (DoH)](https://en.wikipedia.org/wiki/DNS_over_HTTPS) wird d
         "Strategy": "Dns",
         "IsEnabled": true,
         "CompressionMutation": true,
-        "QueryTimeout": 30000
+        "QueryTimeout": 10000
       }
       //,{
       //  "DomainNamePattern": "",
@@ -224,7 +224,7 @@ Für [DNS over HTTPS (DoH)](https://en.wikipedia.org/wiki/DNS_over_HTTPS) wird d
       //  "Strategy": "", // Dns, DoH
       //  "IsEnabled": false,
       //  "CompressionMutation": false,
-      //  "QueryTimeout": 30000
+      //  "QueryTimeout": 10000
       //}
     ]
   }

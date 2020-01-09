@@ -174,6 +174,7 @@ namespace DnsProxy.Strategies
                                 joinedGlobalCts.Token).ConfigureAwait(false);
                             if (dnsWriteContext.Response.AnswerRecords.Any())
                             {
+                                continue;
                             }
                         }
                         catch (Exception e)
