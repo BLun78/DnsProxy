@@ -1,5 +1,4 @@
 ﻿#region Apache License-2.0
-
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +12,6 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
-
 #endregion
 
 using System;
@@ -28,6 +26,7 @@ using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace DnsProxy.Strategies
 {
@@ -38,14 +37,17 @@ namespace DnsProxy.Strategies
         protected readonly IDnsContextAccessor DnsContextAccessor;
         protected readonly ILogger<BaseResolverStrategy<TRule>> Logger;
         protected readonly IMemoryCache MemoryCache;
+        protected readonly IOptionsMonitor<CacheConfig> CacheConfigOptionsMonitor;
 
         protected BaseResolverStrategy(ILogger<BaseResolverStrategy<TRule>> logger,
             IDnsContextAccessor dnsContextAccessor,
-            IMemoryCache memoryCache)
+            IMemoryCache memoryCache,
+            IOptionsMonitor<CacheConfig> cacheConfigOptionsMonitor)
         {
             Logger = logger;
             DnsContextAccessor = dnsContextAccessor;
             MemoryCache = memoryCache;
+            CacheConfigOptionsMonitor = cacheConfigOptionsMonitor;
         }
 
         public TRule Rule { get; protected set; }
@@ -109,9 +111,9 @@ namespace DnsProxy.Strategies
         }
 
 
-        protected void StoreInCache(List<DnsRecordBase> data, string key, MemoryCacheEntryOptions cacheEntryOptions)
+        protected void StoreInCache(RecordType recordType, List<DnsRecordBase> data, string key, MemoryCacheEntryOptions cacheEntryOptions)
         {
-            var cacheItem = new CacheItem(data);
+            var cacheItem = new CacheItem(recordType, data);
             var lastChar = key.Substring(key.Length - 1, 1);
             MemoryCache.Set(lastChar == "."
                 ? key

@@ -1,5 +1,4 @@
 ﻿#region Apache License-2.0
-
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +12,6 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
-
 #endregion
 
 using System;
@@ -43,7 +41,9 @@ namespace DnsProxy.Strategies
             ILogger<HostsResolverStrategy> logger,
             IMemoryCache memoryCache,
             IOptionsMonitor<HostsConfig> hostConfigOptionsMonitor,
-            IDnsContextAccessor dnsContextAccessor) : base(logger, dnsContextAccessor, memoryCache)
+            IOptionsMonitor<CacheConfig> cacheConfigOptionsMonitor,
+            IDnsContextAccessor dnsContextAccessor) 
+            : base(logger, dnsContextAccessor, memoryCache, cacheConfigOptionsMonitor)
         {
             CacheCancellationToken = new CancellationToken();
             _hostConfigOptionsMonitor = hostConfigOptionsMonitor;
@@ -60,14 +60,13 @@ namespace DnsProxy.Strategies
             LogDnsQuestion(dnsQuestion);
             var result = new List<DnsRecordBase>();
 
-            switch (dnsQuestion.RecordType)
+            var cacheItem = MemoryCache.Get<CacheItem>(dnsQuestion.Name.ToString());
+            if (cacheItem != null && cacheItem.DnsRecordBases.Any())
             {
-                case RecordType.Ptr:
-                case RecordType.A:
-                case RecordType.Aaaa:
-                    var cacheItem = MemoryCache.Get<CacheItem>(dnsQuestion.Name.ToString());
-                    if (cacheItem != null && cacheItem.DnsRecordBases.Any()) result.AddRange(cacheItem.DnsRecordBases);
-                    break;
+                if (cacheItem.RecordType == dnsQuestion.RecordType)
+                {
+                    result.AddRange(cacheItem.DnsRecordBases);
+                }
             }
 
             LogDnsQuestionAndResultFromCache(dnsQuestion, result);
@@ -117,7 +116,7 @@ namespace DnsProxy.Strategies
                     }
                 }
 
-            _hostConfigCache = (HostsConfig) hostConfig.Clone();
+            _hostConfigCache = (HostsConfig)hostConfig.Clone();
 
             if (_hostConfigCache != null)
                 foreach (var host in _hostConfigCache.Hosts)
@@ -125,13 +124,14 @@ namespace DnsProxy.Strategies
                     foreach (var ipAddress in host.IpAddresses)
                     {
                         var tempHost = host.ToPtrRecords(ipAddress);
-                        StoreInCache(tempHost.Item2.Cast<DnsRecordBase>().ToList(), tempHost.Item1);
+                        StoreInCache(RecordType.Ptr, tempHost.Item2.Cast<DnsRecordBase>().ToList(), tempHost.Item1);
                     }
 
                     foreach (var domainName in host.DomainNames)
                     {
+                        // TODO: Better group by ARecord and AaaaRecord
                         var tempHost = host.ToAddressRecord(domainName);
-                        StoreInCache(tempHost.Cast<DnsRecordBase>().ToList(), domainName);
+                        StoreInCache(tempHost.First().RecordType, tempHost.Cast<DnsRecordBase>().ToList(), domainName);
                     }
                 }
         }
@@ -144,11 +144,11 @@ namespace DnsProxy.Strategies
                 : $"{key}.");
         }
 
-        private void StoreInCache(List<DnsRecordBase> data, string key)
+        private void StoreInCache(RecordType recordType, List<DnsRecordBase> data, string key)
         {
             var cacheoptions = new MemoryCacheEntryOptions();
             cacheoptions.SetPriority(CacheItemPriority.NeverRemove);
-            StoreInCache(data, key, cacheoptions);
+            StoreInCache(recordType, data, key, cacheoptions);
         }
     }
 }

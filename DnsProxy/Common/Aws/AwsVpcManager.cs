@@ -1,5 +1,4 @@
 ﻿#region Apache License-2.0
-
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +12,6 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
-
 #endregion
 
 using System;
@@ -117,7 +115,7 @@ namespace DnsProxy.Common.Aws
                                      select newRecords).ToList();
                 foreach (var dnsRecordBases in groupedResult)
                 {
-                    StoreInCache(dnsRecordBases.ToList(), dnsRecordBases.Key);
+                    StoreInCache(RecordType.A, dnsRecordBases.ToList(), dnsRecordBases.Key);
                 }
             }
             catch (AmazonEC2Exception aee)
@@ -263,16 +261,16 @@ namespace DnsProxy.Common.Aws
             return new DescribeVpcsRequest();
         }
 
-        private void StoreInCache(List<DnsRecordBase> data, string key)
+        private void StoreInCache(RecordType recordType, List<DnsRecordBase> data, string key)
         {
             var cacheOptions = new MemoryCacheEntryOptions();
             cacheOptions.SetPriority(CacheItemPriority.NeverRemove);
-            StoreInCache(data, key, cacheOptions);
+            StoreInCache(recordType, data, key, cacheOptions);
         }
 
-        private void StoreInCache(List<DnsRecordBase> data, string key, MemoryCacheEntryOptions cacheEntryOptions)
+        private void StoreInCache(RecordType recordType, List<DnsRecordBase> data, string key, MemoryCacheEntryOptions cacheEntryOptions)
         {
-            var cacheItem = new CacheItem(data);
+            var cacheItem = new CacheItem(recordType, data);
             var lastChar = key.Substring(key.Length - 1, 1);
             _memoryCache.Set(lastChar == "."
                 ? key

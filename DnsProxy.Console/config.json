@@ -18,6 +18,9 @@
       "QueryTimeout": 10000
     }
   },
+  "CacheConfig": {
+    "MinimalTimeToLiveInSeconds": 30
+  },
   "HttpProxyConfig": {
     "AuthenticationType": "None",
     "Address": "127.0.0.1",

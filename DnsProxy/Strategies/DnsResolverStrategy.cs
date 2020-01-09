@@ -1,5 +1,4 @@
 ﻿#region Apache License-2.0
-
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +12,6 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
-
 #endregion
 
 using System;
@@ -22,10 +20,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
+using DnsProxy.Models;
 using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace DnsProxy.Strategies
 {
@@ -34,7 +34,9 @@ namespace DnsProxy.Strategies
         public DnsResolverStrategy(
             ILogger<DnsResolverStrategy> logger,
             IDnsContextAccessor dnsContextAccessor,
-            IMemoryCache memoryCache) : base(logger, dnsContextAccessor, memoryCache)
+            IMemoryCache memoryCache,
+            IOptionsMonitor<CacheConfig> cacheConfigOptionsMonitor) 
+            : base(logger, dnsContextAccessor, memoryCache, cacheConfigOptionsMonitor)
         {
             Order = 2000;
         }
@@ -67,11 +69,11 @@ namespace DnsProxy.Strategies
             if (result.Any())
             {
                 var ttl = result.First().TimeToLive;
-                if (ttl <= 0)
+                if (ttl <= CacheConfigOptionsMonitor.CurrentValue.MinimalTimeToLiveInSeconds)
                 {
-                    ttl = 10;
+                    ttl = CacheConfigOptionsMonitor.CurrentValue.MinimalTimeToLiveInSeconds;
                 }
-                StoreInCache(result, dnsQuestion.Name.ToString(),
+                StoreInCache(dnsQuestion.RecordType, result, dnsQuestion.Name.ToString(),
                     new MemoryCacheEntryOptions().SetAbsoluteExpiration(new TimeSpan(0, 0, ttl)));
             }
 

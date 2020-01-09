@@ -1,5 +1,4 @@
 ﻿#region Apache License-2.0
-
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +12,6 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
-
 #endregion
 
 using System;
@@ -115,6 +113,7 @@ namespace DnsProxy.Common
             services.Configure<HttpProxyConfig>(_configuration.GetSection(nameof(HttpProxyConfig)));
             services.Configure<InternalNameServerConfig>(_configuration.GetSection(nameof(InternalNameServerConfig)));
             services.Configure<AwsSettings>(_configuration.GetSection(nameof(AwsSettings)));
+            services.Configure<CacheConfig>(_configuration.GetSection(nameof(CacheConfig)));
 
             services.AddLogging(builder =>
             {
@@ -154,8 +153,6 @@ namespace DnsProxy.Common
 
         private HttpMessageHandler ConfigureHandler(IServiceProvider provider)
         {
-            var httpProxyConfig = provider.GetService<IOptions<HttpProxyConfig>>().Value;
-
             var handler = new HttpClientHandler();
 
             var webProxy = provider.GetService<IWebProxy>();
@@ -163,8 +160,10 @@ namespace DnsProxy.Common
             {
                 handler.Proxy = webProxy;
                 handler.UseDefaultCredentials = true;
+                handler.PreAuthenticate = true;
+                handler.UseProxy = true;
             }
-
+            
             handler.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
             handler.SslProtocols = SslProtocols.Tls12; //| SslProtocols.Tls13;
 

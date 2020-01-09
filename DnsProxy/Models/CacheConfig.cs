@@ -14,20 +14,14 @@
 //    limitations under the License.
 #endregion
 
+using System;
 using System.Collections.Generic;
-using ARSoft.Tools.Net.Dns;
+using System.Text;
 
 namespace DnsProxy.Models
 {
-    internal class CacheItem
+    internal class CacheConfig
     {
-        public CacheItem(RecordType recordType, List<DnsRecordBase> dnsRecordBases)
-        {
-            DnsRecordBases = dnsRecordBases;
-            RecordType = recordType;
-        }
-
-        public List<DnsRecordBase> DnsRecordBases { get; }
-        public RecordType RecordType { get; set; }
+        public int MinimalTimeToLiveInSeconds { get; set; }
     }
 }

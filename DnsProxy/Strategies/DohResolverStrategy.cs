@@ -1,5 +1,4 @@
 ﻿#region Apache License-2.0
-
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +12,6 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
-
 #endregion
 
 using System;
@@ -24,12 +22,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common;
+using DnsProxy.Models;
 using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Makaretu.Dns;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace DnsProxy.Strategies
 {
@@ -42,8 +42,9 @@ namespace DnsProxy.Strategies
             ILogger<DohResolverStrategy> logger,
             IMemoryCache memoryCache,
             IServiceProvider serviceProvider,
-            IDnsContextAccessor dnsContextAccessor)
-            : base(logger, dnsContextAccessor, memoryCache)
+            IDnsContextAccessor dnsContextAccessor,
+            IOptionsMonitor<CacheConfig> cacheConfigOptionsMonitor)
+            : base(logger, dnsContextAccessor, memoryCache, cacheConfigOptionsMonitor)
         {
             _serviceProvider = serviceProvider;
             Order = 1000;
@@ -90,7 +91,7 @@ namespace DnsProxy.Strategies
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError(e, "DoH [{0}]: unexpectet error [{1}]", nameServerUri, e.Message);
+                    Logger.LogError(e, "DoH [{0}]: unexpected error [{1}]", nameServerUri, e.Message);
                 }
 
                 if (result.Any())
@@ -102,11 +103,11 @@ namespace DnsProxy.Strategies
             if (result.Any())
             {
                 var ttl = result.First().TimeToLive;
-                if (ttl <= 0)
+                if (ttl <= CacheConfigOptionsMonitor.CurrentValue.MinimalTimeToLiveInSeconds)
                 {
-                    ttl = 10;
+                    ttl = CacheConfigOptionsMonitor.CurrentValue.MinimalTimeToLiveInSeconds;
                 }
-                StoreInCache(result, dnsQuestion.Name.ToString(),
+                StoreInCache(dnsQuestion.RecordType, result, dnsQuestion.Name.ToString(),
                     new MemoryCacheEntryOptions().SetAbsoluteExpiration(new TimeSpan(0, 0, ttl)));
             }
 
