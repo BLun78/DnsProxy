@@ -163,7 +163,8 @@ namespace DnsProxy.Common
                 handler.PreAuthenticate = true;
                 handler.UseProxy = true;
             }
-            
+
+            handler.MaxConnectionsPerServer = 1000;
             handler.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
             handler.SslProtocols = SslProtocols.Tls12; //| SslProtocols.Tls13;
 
