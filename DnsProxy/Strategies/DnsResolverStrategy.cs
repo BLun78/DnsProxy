@@ -22,6 +22,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Models;
+using System.Net;
 using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Microsoft.Extensions.Caching.Memory;
@@ -48,10 +49,11 @@ namespace DnsProxy.Strategies
             var stopwatch = new Stopwatch();
             LogDnsQuestion(dnsQuestion, stopwatch);
             var result = new List<DnsRecordBase>();
-            var dnsClient = new DnsClient(Rule.NameServerIpAddresses, Rule.QueryTimeout);
 
             try
             {
+                var dnsClient = new DnsClient(Rule.NameServerIpAddresses, Rule.QueryTimeout);
+
                 var response = await dnsClient.ResolveAsync(dnsQuestion.Name, dnsQuestion.RecordType,
                         dnsQuestion.RecordClass, null, cancellationToken)
                     .ConfigureAwait(false);

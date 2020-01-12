@@ -1,0 +1,486 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Makaretu.Dns.Unicast</name>
+    </assembly>
+    <members>
+        <member name="T:Makaretu.Dns.DnsClient">
+            <summary>
+              Client to a unicast DNS server.
+            </summary>
+            <remarks>
+              Sends and receives DNS queries and answers to unicast DNS servers.
+            </remarks>
+        </member>
+        <member name="P:Makaretu.Dns.DnsClient.TimeoutUdp">
+            <summary>
+              Time to wait for a DNS UDP response.
+            </summary>
+            <value>
+              The default is 4 seconds.
+            </value>
+        </member>
+        <member name="P:Makaretu.Dns.DnsClient.TimeoutTcp">
+            <summary>
+              Time to wait for a DNS TCP response.
+            </summary>
+            <value>
+              The default is 4 seconds.
+            </value>
+        </member>
+        <member name="P:Makaretu.Dns.DnsClient.Servers">
+            <summary>
+              The DNS servers to communication with.
+            </summary>
+            <value>
+              A sequence of IP addresses.  When <b>null</b> <see cref="M:Makaretu.Dns.DnsClient.GetServers"/>
+              is used. The default is <b>null</b>.
+            </value>
+        </member>
+        <member name="M:Makaretu.Dns.DnsClient.AvailableServers">
+            <summary>
+              Get the DNS servers that can be communicated with.
+            </summary>
+            <returns>
+              A sequence of IP addresses for the DNS servers.
+            </returns>
+            <remarks>
+              Only servers with an <see cref="T:System.Net.Sockets.AddressFamily"/> supported by
+              the OS is returned.
+            </remarks>
+        </member>
+        <member name="M:Makaretu.Dns.DnsClient.GetServers">
+            <summary>
+              Get the DNS servers.
+            </summary>
+            <returns>
+              A sequence of IP addresses for the DNS servers.
+            </returns>
+        </member>
+        <member name="M:Makaretu.Dns.DnsClient.QueryAsync(Makaretu.Dns.Message,System.Threading.CancellationToken)">
+            <summary>
+              Send a DNS query with the specified message.
+            </summary>
+            <param name="request">
+              A <see cref="T:Makaretu.Dns.Message"/> containing a <see cref="T:Makaretu.Dns.Question"/>.
+            </param>
+            <param name="cancel">
+              Is used to stop the task.  When cancelled, the <see cref="T:System.Threading.Tasks.TaskCanceledException"/> is raised.
+            </param>
+            <returns>
+              A task that represents the asynchronous operation. The task's value
+              contains the response <see cref="T:Makaretu.Dns.Message"/>.
+            </returns>
+            <exception cref="T:System.IO.IOException">
+              When the DNS server returns error status or no response.
+            </exception>
+            <remarks>
+              The <paramref name="request"/> is sent with UDP.  If no response is
+              received (or is truncated) in <see cref="P:Makaretu.Dns.DnsClient.TimeoutUdp"/>, then it is resent via TCP.
+              <para>
+              Some home routers have issues with IPv6, so IPv4 servers are tried first.
+              </para>
+            </remarks>
+        </member>
+        <member name="T:Makaretu.Dns.DnsClientBase">
+            <summary>
+              Base class for a DNS client.
+            </summary>
+            <remarks>
+              Sends and receives DNS queries and answers to unicast DNS servers.
+            </remarks>
+        </member>
+        <member name="P:Makaretu.Dns.DnsClientBase.ThrowResponseError">
+            <inheritdoc />
+        </member>
+        <member name="M:Makaretu.Dns.DnsClientBase.NextQueryId">
+            <inheritdoc />
+        </member>
+        <member name="M:Makaretu.Dns.DnsClientBase.ResolveAsync(Makaretu.Dns.DomainName,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Makaretu.Dns.DnsClientBase.QueryAsync(Makaretu.Dns.DomainName,Makaretu.Dns.DnsType,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Makaretu.Dns.DnsClientBase.SecureQueryAsync(Makaretu.Dns.DomainName,Makaretu.Dns.DnsType,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Makaretu.Dns.DnsClientBase.ResolveAsync(System.Net.IPAddress,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Makaretu.Dns.DnsClientBase.QueryAsync(Makaretu.Dns.Message,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Makaretu.Dns.DnsClientBase.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:Makaretu.Dns.DnsClientBase.Dispose(System.Boolean)">
+            <summary>
+              Dispose the client.
+            </summary>
+            <param name="disposing">
+              <b>true</b> if managed resources should be disposed.
+            </param>
+        </member>
+        <member name="M:Makaretu.Dns.DnsClientBase.ResolveAsync(Makaretu.Dns.Message,System.Threading.CancellationToken)">
+            <summary>
+              Another name for <see cref="M:Makaretu.Dns.DnsClientBase.QueryAsync(Makaretu.Dns.Message,System.Threading.CancellationToken)"/>.
+            </summary>
+        </member>
+        <member name="T:Makaretu.Dns.DohClient">
+            <summary>
+              Client to a DNS server over HTTPS.
+            </summary>
+            <remarks>
+              DNS over HTTPS (DoH) is an experimental protocol for performing remote 
+              Domain Name System (DNS) resolution via the HTTPS protocol. The goal
+              is to increase user privacy and security by preventing eavesdropping and 
+              manipulation of DNS data by man-in-the-middle attacks.
+              <para>
+              The <b>DohClient</b> uses the HTTP POST method to hide as much
+              information as is possible.  Also, it tends to generate smaller
+              requests.
+              </para>
+            </remarks>
+            <seealso href="https://en.wikipedia.org/wiki/DNS_over_HTTPS"/>
+        </member>
+        <member name="F:Makaretu.Dns.DohClient.DnsWireFormat">
+            <summary>
+              The MIME type for a DNS message encoded in UPD wire format.
+            </summary>
+            <remarks>
+              Previous drafts defined this as "application/dns-udpwireformat".
+            </remarks>
+        </member>
+        <member name="F:Makaretu.Dns.DohClient.DnsJsonFormat">
+            <summary>
+              The MIME type for a DNS message encoded in JSON.
+            </summary>
+        </member>
+        <member name="P:Makaretu.Dns.DohClient.Timeout">
+            <summary>
+              Time to wait for a DNS response.
+            </summary>
+            <value>
+              The default is 4 seconds.
+            </value>
+        </member>
+        <member name="P:Makaretu.Dns.DohClient.ServerUrl">
+            <summary>
+              The DNS server to communication with.
+            </summary>
+            <value>
+              Defaults to "https://cloudflare-dns.com/dns-query".
+            </value>
+        </member>
+        <member name="P:Makaretu.Dns.DohClient.HttpClient">
+            <summary>
+              The client that sends HTTP requests and receives HTTP responses.
+            </summary>
+            <remarks>
+              It is best practice to use only one <see cref="P:Makaretu.Dns.DohClient.HttpClient"/> in an
+              application.
+            </remarks>
+        </member>
+        <member name="M:Makaretu.Dns.DohClient.QueryAsync(Makaretu.Dns.Message,System.Threading.CancellationToken)">
+            <summary>
+              Send a DNS query with the specified message.
+            </summary>
+            <param name="request">
+              A <see cref="T:Makaretu.Dns.Message"/> containing a <see cref="T:Makaretu.Dns.Question"/>.
+            </param>
+            <param name="cancel">
+              Is used to stop the task.  When cancelled, the <see cref="T:System.Threading.Tasks.TaskCanceledException"/> is raised.
+            </param>
+            <returns>
+              A task that represents the asynchronous operation. The task's value
+              contains the response <see cref="T:Makaretu.Dns.Message"/>.
+            </returns>
+            <exception cref="T:System.IO.IOException">
+              When the DNS server returns error status or no response.
+            </exception>
+        </member>
+        <member name="T:Makaretu.Dns.DotClient">
+            <summary>
+              Client to a DNS server over TLS.
+            </summary>
+            <remarks>
+              DNS over TLS is a security protocol for encrypting and wrapping 
+              DNS queries and answers via the Transport Layer Security (TLS) protocol. The goal 
+              is to increase user privacy and security by preventing eavesdropping and 
+              manipulation of DNS data via man-in-the-middle attacks.
+              <para>
+              All queries are padded to the closest multiple of <see cref="P:Makaretu.Dns.DotClient.BlockLength"/> octets.
+              </para>
+            </remarks>
+            <seealso href="https://tools.ietf.org/html/rfc7858"/>
+            <seealso href="https://tools.ietf.org/html/rfc8310"/>
+        </member>
+        <member name="F:Makaretu.Dns.DotClient.DefaultPort">
+            <summary>
+              The default port of a DOT server.
+            </summary>
+        </member>
+        <member name="F:Makaretu.Dns.DotClient.PublicServers">
+            <summary>
+              Known servers that support DNS over TLS.
+            </summary>
+            <value>
+              Sequence of known servers.
+            </value>
+            <remarks>
+              This is the default list that <see cref="P:Makaretu.Dns.DotClient.Servers"/> uses.
+            </remarks>
+        </member>
+        <member name="P:Makaretu.Dns.DotClient.BlockLength">
+            <summary>
+              The number of octets for padding.
+            </summary>
+            <value>
+              Defaults to 128.
+            </value>
+            <remarks>
+              All queries are padded to the closest multiple of <see cref="P:Makaretu.Dns.DotClient.BlockLength"/> octets.
+            </remarks>
+            <seealso href="https://tools.ietf.org/html/rfc8467#section-4.1"/>
+        </member>
+        <member name="P:Makaretu.Dns.DotClient.Timeout">
+            <summary>
+              Time to wait for a DNS response.
+            </summary>
+            <value>
+              The default is 4 seconds.
+            </value>
+        </member>
+        <member name="P:Makaretu.Dns.DotClient.Servers">
+            <summary>
+              The DNS over TLS servers to communication with.
+            </summary>
+            <value>
+              A sequence of DOT endpoints.  The default is the <see cref="F:Makaretu.Dns.DotClient.PublicServers"/>.
+            </value>
+        </member>
+        <member name="F:Makaretu.Dns.DotClient.OutstandingRequests">
+            <summary>
+              Outstanding requests.
+            </summary>
+            <value>
+              Key is the request's <see cref="P:Makaretu.Dns.Message.Id"/>.
+            </value>
+            <remarks>
+              Contains the requests that are waiting for a response.
+            </remarks>
+        </member>
+        <member name="M:Makaretu.Dns.DotClient.Dispose(System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Makaretu.Dns.DotClient.QueryAsync(Makaretu.Dns.Message,System.Threading.CancellationToken)">
+            <summary>
+              Send a DNS query with the specified message.
+            </summary>
+            <param name="request">
+              A <see cref="T:Makaretu.Dns.Message"/> containing a <see cref="T:Makaretu.Dns.Question"/>.
+            </param>
+            <param name="cancel">
+              Is used to stop the task.  When cancelled, the <see cref="T:System.Threading.Tasks.TaskCanceledException"/> is raised.
+            </param>
+            <returns>
+              A task that represents the asynchronous operation. The task's value
+              contains the response <see cref="T:Makaretu.Dns.Message"/>.
+            </returns>
+            <exception cref="T:System.IO.IOException">
+              When the DNS server returns error status or no response.
+            </exception>
+            <remarks>
+              Sends the <paramref name="request"/> and waits for
+              the matching response.
+            </remarks>
+        </member>
+        <member name="M:Makaretu.Dns.DotClient.GetDnsServerAsync">
+            <summary>
+              Get the stream to a DNS server.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Makaretu.Dns.DotEndPoint">
+            <summary>
+              Provides the information to make a secure connection to a
+              DNS over TLS server.
+            </summary>
+        </member>
+        <member name="F:Makaretu.Dns.DotEndPoint.Address">
+            <summary>
+              The IP address.
+            </summary>
+            <value>
+              Can be IPv4 and IPv6.
+            </value>
+        </member>
+        <member name="F:Makaretu.Dns.DotEndPoint.Hostname">
+            <summary>
+              The name of the host.
+            </summary>
+            <remarks>
+               Used to verify the TLS handshake.  Also known as Server Name Indication (SNI).
+            </remarks>
+        </member>
+        <member name="F:Makaretu.Dns.DotEndPoint.Pins">
+            <summary>
+              The SPKI Fingerprint of a valid certificate.
+            </summary>
+            <value>
+              The base-64 encoding of the SPKI Fingerprint.
+            </value>
+            <remarks>
+              The fingerprint is the SHA-256 hash of the DER-encoded
+              ASN.1 representation of the SPKI of an X.509 certificate.
+              <note>
+              Checking of PINS is not implemented, see <see href="https://github.com/richardschneider/net-udns/issues/5"/>.
+              </note>
+            </remarks>
+        </member>
+        <member name="F:Makaretu.Dns.DotEndPoint.Port">
+            <summary>
+              The TCP port.
+            </summary>
+            <value>
+              Defaults to 853.
+            </value>
+        </member>
+        <member name="T:Makaretu.Dns.IDnsClient">
+            <summary>
+              Client interface to a DNS server.
+            </summary>
+            <seealso cref="T:Makaretu.Dns.DnsClientBase"/>
+        </member>
+        <member name="P:Makaretu.Dns.IDnsClient.ThrowResponseError">
+            <summary>
+              Determines if an exception is thrown when a response contains
+              an error.
+            </summary>
+            <value>
+              Defaults to <b>true</b>.
+            </value>
+            <remarks>
+              When set, an exception is thrown if the response's <see cref="P:Makaretu.Dns.Message.Status"/>
+              is not <see cref="F:Makaretu.Dns.MessageStatus.NoError"/> or is considered invalid for the
+              request.
+            </remarks>
+        </member>
+        <member name="M:Makaretu.Dns.IDnsClient.NextQueryId">
+            <summary>
+              Get the next ID for a query message.
+            </summary>
+            <returns>
+              The next <see cref="P:Makaretu.Dns.Message.Id"/>
+            </returns>
+            <remarks>
+              This is thread safe.
+            </remarks>
+        </member>
+        <member name="M:Makaretu.Dns.IDnsClient.ResolveAsync(Makaretu.Dns.DomainName,System.Threading.CancellationToken)">
+            <summary>
+              Get the IP addresses for the specified name.
+            </summary>
+            <param name="name">
+              A domain name to resolve.
+            </param>
+            <param name="cancel">
+              Is used to stop the task.  When cancelled, the <see cref="T:System.Threading.Tasks.TaskCanceledException"/> is raised.
+            </param>
+            <returns>
+              A task that represents the asynchronous operation. The task's value
+              contains the <see cref="T:System.Net.IPAddress"/> sequence for the <paramref name="name"/>.
+            </returns>
+        </member>
+        <member name="M:Makaretu.Dns.IDnsClient.QueryAsync(Makaretu.Dns.DomainName,Makaretu.Dns.DnsType,System.Threading.CancellationToken)">
+            <summary>
+              Send a DNS query with the specified name and resource record type.
+            </summary>
+            <param name="name">
+              A domain name.
+            </param>
+            <param name="rtype">
+              A resource record type.
+            </param>
+            <param name="cancel">
+              Is used to stop the task.  When cancelled, the <see cref="T:System.Threading.Tasks.TaskCanceledException"/> is raised.
+            </param>
+            <returns>
+              A task that represents the asynchronous operation. The task's value
+              contains the response <see cref="T:Makaretu.Dns.Message"/>.
+            </returns>
+            <remarks>
+              Creates a query <see cref="T:Makaretu.Dns.Message"/> and then calls <see cref="M:Makaretu.Dns.IDnsClient.QueryAsync(Makaretu.Dns.Message,System.Threading.CancellationToken)"/>.
+            </remarks>
+        </member>
+        <member name="M:Makaretu.Dns.IDnsClient.SecureQueryAsync(Makaretu.Dns.DomainName,Makaretu.Dns.DnsType,System.Threading.CancellationToken)">
+            <summary>
+              Send a DNSSEC query with the specified name and resource record type.
+            </summary>
+            <param name="name">
+              A domain name.
+            </param>
+            <param name="rtype">
+              A resource record type.
+            </param>
+            <param name="cancel">
+              Is used to stop the task.  When cancelled, the <see cref="T:System.Threading.Tasks.TaskCanceledException"/> is raised.
+            </param>
+            <returns>
+              A task that represents the asynchronous operation. The task's value
+              contains the response <see cref="T:Makaretu.Dns.Message"/>.
+            </returns>
+            <remarks>
+              Creates a secure query <see cref="T:Makaretu.Dns.Message"/> and then calls <see cref="M:Makaretu.Dns.IDnsClient.QueryAsync(Makaretu.Dns.Message,System.Threading.CancellationToken)"/>.
+            </remarks>
+            <seealso cref="M:Makaretu.Dns.Message.UseDnsSecurity"/>
+        </member>
+        <member name="M:Makaretu.Dns.IDnsClient.ResolveAsync(System.Net.IPAddress,System.Threading.CancellationToken)">
+            <summary>
+              Reverse query for an IP address.
+            </summary>
+            <param name="address">
+              An IP address with an <see cref="P:System.Net.IPAddress.AddressFamily"/> of
+              <see cref="F:System.Net.Sockets.AddressFamily.InterNetwork"/> or
+              <see cref="F:System.Net.Sockets.AddressFamily.InterNetworkV6"/>.
+            </param>
+            <param name="cancel">
+              Is used to stop the task.  When cancelled, the <see cref="T:System.Threading.Tasks.TaskCanceledException"/> is raised.
+            </param>
+            <returns>
+              A task that represents the asynchronous operation. The task's value
+              is the domain name of <paramref name="address"/>.
+            </returns>
+            <remarks>
+              Performs a reverse lookup with a <see cref="F:Makaretu.Dns.DnsType.PTR"/>.  The
+              response contains the name(s) of the <paramref name="address"/>.
+            </remarks>
+        </member>
+        <member name="M:Makaretu.Dns.IDnsClient.QueryAsync(Makaretu.Dns.Message,System.Threading.CancellationToken)">
+            <summary>
+              Send a DNS query with the specified message.
+            </summary>
+            <param name="request">
+              A <see cref="T:Makaretu.Dns.Message"/> containing a <see cref="T:Makaretu.Dns.Question"/>.
+            </param>
+            <param name="cancel">
+              Is used to stop the task.  When cancelled, the <see cref="T:System.Threading.Tasks.TaskCanceledException"/> is raised.
+            </param>
+            <returns>
+              A task that represents the asynchronous operation. The task's value
+              contains the response <see cref="T:Makaretu.Dns.Message"/>.
+            </returns>
+            <exception cref="T:System.IO.IOException">
+              When the DNS server returns error status or no response.
+            </exception>
+            <remarks>
+              The <paramref name="request"/> is sent with UDP.  If no response is
+              received (or is truncated) in <see cref="T:System.Threading.Timeout"/>, then it is resent via TCP.
+              <para>
+              Some home routers have issues with IPv6, so IPv4 servers are tried first.
+              </para>
+            </remarks>
+        </member>
+    </members>
+</doc>
