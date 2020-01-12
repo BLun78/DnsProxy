@@ -22,6 +22,7 @@ namespace DnsProxy.Models
     {
         [EnumMember(Value = nameof(None))] None = 0,
         [EnumMember(Value = nameof(Basic))] Basic = 1,
-        [EnumMember(Value = nameof(Windows))] Windows = 2
+        [EnumMember(Value = nameof(WindowsDomain))] WindowsDomain = 2,
+        [EnumMember(Value = nameof(WindowsUser))] WindowsUser = 3
     }
 }

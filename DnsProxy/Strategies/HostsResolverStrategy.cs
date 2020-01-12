@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -57,7 +58,8 @@ namespace DnsProxy.Strategies
         public override Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
             CancellationToken cancellationToken)
         {
-            LogDnsQuestion(dnsQuestion);
+            var stopwatch = new Stopwatch();
+            LogDnsQuestion(dnsQuestion, stopwatch);
             var result = new List<DnsRecordBase>();
 
             var cacheItem = MemoryCache.Get<CacheItem>(dnsQuestion.Name.ToString());
@@ -69,10 +71,12 @@ namespace DnsProxy.Strategies
                 }
             }
 
+            stopwatch.Stop();
             if (result.Any())
             {
-                LogDnsQuestionAndResultFromCache(dnsQuestion, result);
+                LogDnsQuestionAndResultFromCache(dnsQuestion, result, stopwatch);
             }
+            
             return Task.FromResult(result);
         }
 
@@ -86,12 +90,12 @@ namespace DnsProxy.Strategies
             return true;
         }
 
-        protected void LogDnsQuestionAndResultFromCache(DnsQuestion dnsQuestion, List<DnsRecordBase> answers)
+        protected void LogDnsQuestionAndResultFromCache(DnsQuestion dnsQuestion, List<DnsRecordBase> answers, Stopwatch stopwatch)
         {
             var dnsContext = DnsContextAccessor.DnsContext;
-            Logger.LogDebug("Cache >> ClientIpAddress: {0} resolve by cache to {1} (#{2}, {3}).",
+            Logger.LogDebug("Cache >> ClientIpAddress: {0} resolve by cache to {1} (#{2}, {3}) after [{4} ms].",
                 dnsContext?.IpEndPoint, answers?.FirstOrDefault()?.ToString(),
-                dnsContext?.Request?.TransactionID.ToString(CultureInfo.InvariantCulture), dnsQuestion.RecordType);
+                dnsContext?.Request?.TransactionID.ToString(CultureInfo.InvariantCulture), dnsQuestion.RecordType, stopwatch.ElapsedMilliseconds);
         }
 
         protected override void Dispose(bool disposing)

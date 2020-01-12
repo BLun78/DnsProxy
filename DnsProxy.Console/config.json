@@ -11,18 +11,19 @@
     "Servers": {
       "NameServer": [
         "1.1.1.1",
-        "9.9.9.9"
+        "9.9.9.9",
+        "8.8.8.8"
       ],
       "Strategy": "Dns",
       "CompressionMutation": true,
-      "QueryTimeout": 10000
+      "QueryTimeout": 4000
     }
   },
   "CacheConfig": {
-    "MinimalTimeToLiveInSeconds": 30
+    "MinimalTimeToLiveInSeconds": 60
   },
   "HttpProxyConfig": {
-    "AuthenticationType": "None",
+    "AuthenticationType": "None", // None, Basic, WindowsDomain, WindowsUser
     "Address": "",
     "Port": null,
     "User": "",

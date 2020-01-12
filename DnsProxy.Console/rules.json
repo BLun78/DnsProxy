@@ -26,6 +26,8 @@
         "DomainName": "blun.de.",
         "Strategy": "DoH",
         "NameServer": [
+          "https://jp.tiarap.org/dns-query",
+          "https://doh.securedns.eu/dns-query",
           "https://doh.xfinity.com/dns-query",
           "https://dns.adguard.com/dns-query",
           "https://dns.digitale-gesellschaft.ch/dns-query",

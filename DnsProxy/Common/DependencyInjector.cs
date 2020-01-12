@@ -79,20 +79,13 @@ namespace DnsProxy.Common
 
             // Stratgies
             services.AddSingleton<StrategyManager>();
-            services.AddTransient<IDnsResolverStrategy, DohResolverStrategy>();
-            services.AddTransient<IDnsResolverStrategy, DnsResolverStrategy>();
-            services.AddSingleton<IDnsResolverStrategy, InternalNameServerResolverStrategy>();
-            services.AddSingleton<IDnsResolverStrategy, HostsResolverStrategy>();
-            services.AddTransient<IDnsResolverStrategy, AwsApiGatewayResolverStrategy>();
-            services.AddTransient<IDnsResolverStrategy, AwsDocDbResolverStrategy>();
-            services.AddTransient<IDnsResolverStrategy, AwsElasticCacheResolverStrategy>();
-            services.AddTransient<DohResolverStrategy>();
-            services.AddTransient<DnsResolverStrategy>();
+            //services.AddSingleton<DohResolverStrategy>();
+            services.AddSingleton<DnsResolverStrategy>();
             services.AddSingleton<InternalNameServerResolverStrategy>();
             services.AddSingleton<HostsResolverStrategy>();
-            services.AddTransient<AwsApiGatewayResolverStrategy>();
-            services.AddTransient<AwsDocDbResolverStrategy>();
-            services.AddTransient<AwsElasticCacheResolverStrategy>();
+            services.AddSingleton<AwsApiGatewayResolverStrategy>();
+            services.AddSingleton<AwsDocDbResolverStrategy>();
+            services.AddSingleton<AwsElasticCacheResolverStrategy>();
 
             // common
             services.AddSingleton<AwsDocDbResolverStrategy>();
@@ -137,17 +130,18 @@ namespace DnsProxy.Common
             services.AddMemoryCache();
             // https://github.com/aspnet/Extensions/tree/master/src/HttpClientFactory
             // https://docs.microsoft.com/de-de/dotnet/standard/microservices-architecture/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests
-            services.AddHttpClient("httpClient", c => { })
-                .ConfigurePrimaryHttpMessageHandler(ConfigureHandler)
-                .AddTypedClient((client, provider) =>
-                {
-                    var dohClient = new DohClient
-                    {
-                        HttpClient = client
-                    };
-                    return dohClient;
-                });
-
+            //services.AddHttpClient("httpClient", c => { })
+            //    .ConfigurePrimaryHttpMessageHandler(ConfigureHandler)
+            //    .AddTypedClient((client, provider) =>
+            //    {
+            //        var dohClient = new DohClient
+            //        {
+            //            HttpClient = client,
+            //            ThrowResponseError = false
+            //    };
+            //        return dohClient;
+            //    });
+            services.AddHttpClient<DohResolverStrategy>();
             return services;
         }
 
@@ -164,7 +158,7 @@ namespace DnsProxy.Common
                 handler.UseProxy = true;
             }
 
-            handler.MaxConnectionsPerServer = 1000;
+            handler.MaxConnectionsPerServer = 10000;
             handler.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
             handler.SslProtocols = SslProtocols.Tls12; //| SslProtocols.Tls13;
 
@@ -182,21 +176,25 @@ namespace DnsProxy.Common
 
             var proxy = new WebProxy(httpProxyConfig.Address, httpProxyConfig.Port ?? 8080)
             {
-                UseDefaultCredentials = false,
-                BypassList = httpProxyConfig.BypassAddressesArray
+                BypassList = httpProxyConfig.BypassAddressesArray,
+                BypassProxyOnLocal = true
             };
 
             switch (httpProxyConfig.AuthenticationType)
             {
                 case AuthenticationType.None:
+                    proxy.UseDefaultCredentials = false;
+                    break;
+                case AuthenticationType.WindowsUser:
+                    proxy.UseDefaultCredentials = true;
                     break;
                 case AuthenticationType.Basic:
-                    proxy.Credentials =
-                        new NetworkCredential(httpProxyConfig.User, httpProxyConfig.Password);
+                    proxy.UseDefaultCredentials = false;
+                    proxy.Credentials = new NetworkCredential(httpProxyConfig.User, httpProxyConfig.Password);
                     break;
-                case AuthenticationType.Windows:
-                    proxy.Credentials = new NetworkCredential(httpProxyConfig.User,
-                        httpProxyConfig.Password, httpProxyConfig.Domain);
+                case AuthenticationType.WindowsDomain:
+                    proxy.UseDefaultCredentials = false;
+                    proxy.Credentials = new NetworkCredential(httpProxyConfig.User, httpProxyConfig.Password, httpProxyConfig.Domain);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(httpProxyConfig.AuthenticationType),
@@ -210,7 +208,6 @@ namespace DnsProxy.Common
             where TConfig : class, IClientConfig, new()
         {
             IClientConfig config = new TConfig();
-            var httpProxyConfig = provider.GetService<IOptions<HttpProxyConfig>>().Value;
 
             var webProxy = provider.GetService<IWebProxy>();
             if (webProxy != null)

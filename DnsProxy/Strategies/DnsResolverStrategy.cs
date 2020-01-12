@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,7 +36,7 @@ namespace DnsProxy.Strategies
             ILogger<DnsResolverStrategy> logger,
             IDnsContextAccessor dnsContextAccessor,
             IMemoryCache memoryCache,
-            IOptionsMonitor<CacheConfig> cacheConfigOptionsMonitor) 
+            IOptionsMonitor<CacheConfig> cacheConfigOptionsMonitor)
             : base(logger, dnsContextAccessor, memoryCache, cacheConfigOptionsMonitor)
         {
             Order = 2000;
@@ -44,7 +45,8 @@ namespace DnsProxy.Strategies
         public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
             CancellationToken cancellationToken)
         {
-            LogDnsQuestion(dnsQuestion);
+            var stopwatch = new Stopwatch();
+            LogDnsQuestion(dnsQuestion, stopwatch);
             var result = new List<DnsRecordBase>();
             var dnsClient = new DnsClient(Rule.NameServerIpAddresses, Rule.QueryTimeout);
 
@@ -58,7 +60,7 @@ namespace DnsProxy.Strategies
             }
             catch (OperationCanceledException operationCanceledException)
             {
-                LogDnsCanncelQuestion(dnsQuestion, operationCanceledException);
+                LogDnsCanncelQuestion(dnsQuestion, operationCanceledException, stopwatch);
             }
             catch (Exception e)
             {
@@ -74,10 +76,10 @@ namespace DnsProxy.Strategies
                     ttl = CacheConfigOptionsMonitor.CurrentValue.MinimalTimeToLiveInSeconds;
                 }
                 StoreInCache(dnsQuestion.RecordType, result, dnsQuestion.Name.ToString(),
-                    new MemoryCacheEntryOptions().SetAbsoluteExpiration(new TimeSpan(0, 0, ttl)));
+                    new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(ttl)));
             }
 
-            LogDnsQuestionAndResult(dnsQuestion, result);
+            LogDnsQuestionAndResult(dnsQuestion, result, stopwatch);
             return result;
         }
 

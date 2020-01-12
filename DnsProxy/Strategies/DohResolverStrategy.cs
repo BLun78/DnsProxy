@@ -16,8 +16,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
@@ -27,7 +29,6 @@ using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Makaretu.Dns;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -35,33 +36,36 @@ namespace DnsProxy.Strategies
 {
     internal class DohResolverStrategy : BaseResolverStrategy<DohRule>, IDnsResolverStrategy<DohRule>
     {
-        private readonly IServiceProvider _serviceProvider;
-        private DohClient _dohClient;
+        private static DohClient _dohClient;
 
         public DohResolverStrategy(
             ILogger<DohResolverStrategy> logger,
             IMemoryCache memoryCache,
-            IServiceProvider serviceProvider,
+            HttpClient httpClient,
             IDnsContextAccessor dnsContextAccessor,
             IOptionsMonitor<CacheConfig> cacheConfigOptionsMonitor)
             : base(logger, dnsContextAccessor, memoryCache, cacheConfigOptionsMonitor)
         {
-            _serviceProvider = serviceProvider;
+            _dohClient = new DohClient
+            {
+                HttpClient = httpClient,
+                ThrowResponseError = false
+            };
             Order = 1000;
         }
 
         public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
             CancellationToken cancellationToken)
         {
-            LogDnsQuestion(dnsQuestion);
+            var stopwatch = new Stopwatch();
+            LogDnsQuestion(dnsQuestion, stopwatch);
             var result = new List<DnsRecordBase>();
 
             // https://github.com/curl/curl/wiki/DNS-over-HTTPS
             foreach (var nameServerUri in Rule.NameServerUri)
             {
-                _dohClient?.Dispose();
-                _dohClient = _serviceProvider.GetService<DohClient>();
                 _dohClient.ServerUrl = nameServerUri?.AbsoluteUri;
+                _dohClient.Timeout = TimeSpan.FromSeconds(Rule.QueryTimeout / 1000);
 
                 var question = new Question
                 {
@@ -87,7 +91,7 @@ namespace DnsProxy.Strategies
                 }
                 catch (OperationCanceledException operationCanceledException)
                 {
-                    LogDnsCanncelQuestion(dnsQuestion, operationCanceledException);
+                    LogDnsCanncelQuestion(dnsQuestion, operationCanceledException, stopwatch);
                 }
                 catch (Exception e)
                 {
@@ -108,16 +112,32 @@ namespace DnsProxy.Strategies
                     ttl = CacheConfigOptionsMonitor.CurrentValue.MinimalTimeToLiveInSeconds;
                 }
                 StoreInCache(dnsQuestion.RecordType, result, dnsQuestion.Name.ToString(),
-                    new MemoryCacheEntryOptions().SetAbsoluteExpiration(new TimeSpan(0, 0, ttl)));
+                    new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(ttl)));
             }
 
-            LogDnsQuestionAndResult(dnsQuestion, result);
+            LogDnsQuestionAndResult(dnsQuestion, result, stopwatch);
             return result;
         }
 
         public override Models.Strategies GetStrategy()
         {
             return Models.Strategies.DoH;
+        }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects).
+                    _dohClient?.HttpClient?.Dispose();
+                    _dohClient?.Dispose();
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+                // TODO: set large fields to null.
+            }
+            base.Dispose(disposing);
         }
 
         private void HandelIoException(IOException ioe, Uri nameServerUri)

@@ -20,6 +20,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Common.Logging;
 using DnsProxy.Common;
 using DnsProxy.Common.Aws;
 using DnsProxy.Dns;
