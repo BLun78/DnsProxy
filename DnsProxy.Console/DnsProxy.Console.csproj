@@ -49,7 +49,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove=".config.json" />
     <None Remove="config.json" />
     <None Remove="hosts.json" />
     <None Remove="nameserver.json" />
@@ -57,9 +56,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include=".config.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="config.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -111,6 +107,12 @@
 
   <ItemGroup>
     <EditorConfigFiles Update="Y:\c#\DnsProxy\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update=".config.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

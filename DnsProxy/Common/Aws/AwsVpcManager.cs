@@ -62,6 +62,7 @@ namespace DnsProxy.Common.Aws
 
         public async Task StartReadingVpcAsync(CancellationToken cancellationToken)
         {
+            if (_awsContext?.AwsSettings?.UserAccounts != null) return; 
             try
             {
                 foreach (var awsSettingsUserAccount in _awsContext.AwsSettings.UserAccounts)
