@@ -16,8 +16,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon;
@@ -39,30 +42,36 @@ namespace DnsProxy.Common.Aws
     {
         private readonly AmazonAPIGatewayConfig _amazonApiGatewayConfig;
         private readonly AmazonEC2Config _amazonEc2Config;
+        private readonly Assembly _assembly;
         private readonly AwsContext _awsContext;
         private readonly ILogger<AwsVpcManager> _logger;
         private readonly IMemoryCache _memoryCache;
         private readonly int TTL;
+        private readonly List<string> _proxyBypassList;
 
         public AwsVpcManager(ILogger<AwsVpcManager> logger,
             IMemoryCache memoryCache,
             AwsContext awsContext,
             AmazonEC2Config amazonEc2Config,
+            Assembly assembly,
             AmazonAPIGatewayConfig amazonApiGatewayConfig)
         {
             _logger = logger;
             _memoryCache = memoryCache;
             _awsContext = awsContext;
             _amazonEc2Config = amazonEc2Config;
+            _assembly = assembly;
             _amazonApiGatewayConfig = amazonApiGatewayConfig;
-            _amazonEc2Config.RegionEndpoint = RegionEndpoint.GetBySystemName(_awsContext.AwsSettings?.Region);
+            _amazonEc2Config.RegionEndpoint = RegionEndpoint.GetBySystemName(_awsContext?.AwsSettings?.Region);
             _amazonApiGatewayConfig.RegionEndpoint = _amazonEc2Config.RegionEndpoint;
             TTL = 60 * 60;
+            _proxyBypassList = new List<string>();
         }
 
         public async Task StartReadingVpcAsync(CancellationToken cancellationToken)
         {
-            if (_awsContext?.AwsSettings?.UserAccounts != null) return; 
+            if (_awsContext?.AwsSettings?.UserAccounts == null) return;
+            _proxyBypassList.Clear();
             try
             {
                 foreach (var awsSettingsUserAccount in _awsContext.AwsSettings.UserAccounts)
@@ -82,12 +91,25 @@ namespace DnsProxy.Common.Aws
                         }
                     }
                 }
+
+                var path = Path.Combine(Environment.CurrentDirectory, _awsContext.AwsSettings.OutputFileName);
+                _logger.LogInformation("AWS write ProxyBypassList in File: [{0}]", path);
+                await File.WriteAllTextAsync(path, CreateContentForProxyBypassFile(), Encoding.UTF8, cancellationToken).ConfigureAwait(false);
+
                 _logger.LogInformation("AWS import finished!");
             }
             catch (Exception e)
             {
                 _logger.LogError(e, e.Message);
             }
+        }
+
+        private string CreateContentForProxyBypassFile()
+        {
+            var fiddler = $"[Fiddler]{Environment.NewLine}{string.Join(Environment.NewLine, _proxyBypassList)}";
+            var browser = $"[Browser]{Environment.NewLine}{string.Join(@";", _proxyBypassList)}";
+            var fileContent = $"{browser}{Environment.NewLine}{Environment.NewLine}{fiddler}{Environment.NewLine}";
+            return fileContent;
         }
 
         private async Task ReadVpcAsync(AWSCredentials awsCredentials, IAwsDoScan awsDoScan,
@@ -147,6 +169,7 @@ namespace DnsProxy.Common.Aws
                 var net = endpoint.NetworkInterfaces.First();
                 var domainName = CreateDomainName(endpoint.VpcEndpoint.ServiceName);
 
+                _proxyBypassList.Add(domainName);
                 result.Add(new ARecord(
                     DomainName.Parse(domainName),
                     TTL,
@@ -183,6 +206,7 @@ namespace DnsProxy.Common.Aws
                         var net = endpoint.NetworkInterfaces.First();
                         var domainName = CreateDomainName(endpoint.VpcEndpoint.ServiceName, item.Id);
 
+                        _proxyBypassList.Add(domainName);
                         result.Add(new ARecord(
                             DomainName.Parse(domainName),
                             TTL,

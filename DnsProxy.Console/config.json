@@ -33,6 +33,7 @@
   },
   "AwsSettings": {
     "Region": "eu-central-1",
+    "OutputFileName": "ProxyBypassList.txt",
     "UserAccounts": [
       {
         "UserAccountId": "5xxxxxxxxxxxx7",

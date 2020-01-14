@@ -21,6 +21,7 @@ namespace DnsProxy.Models.Aws
     internal class AwsSettings
     {
         public string Region { get; set; }
+        public string OutputFileName { get; set; }
         public List<UserAccount> UserAccounts { get; set; }
     }
 }
