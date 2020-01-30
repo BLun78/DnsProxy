@@ -63,6 +63,7 @@ namespace DnsProxy.Dns
             StopServer();
             _dnsHostConfigListener?.Dispose();
             ((IDisposable) _server)?.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "<Pending>")]

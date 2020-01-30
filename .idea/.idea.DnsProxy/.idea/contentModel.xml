@@ -207,7 +207,7 @@
         <e p="UdpClientExtensions.cs" t="Include" />
       </e>
       <e p="DnsProxy" t="IncludeRecursive">
-        <e p=".config.json" t="Include" />
+        <e p="AssemblyInfo.cs" t="Include" />
         <e p="bin" t="ExcludeRecursive" />
         <e p="Common" t="Include">
           <e p="ApplicationInformation.cs" t="Include" />
@@ -222,12 +222,11 @@
           <e p="LoggerExctensions.cs" t="Include" />
           <e p="MapperExtensions.cs" t="Include" />
         </e>
-        <e p="config.json" t="Include" />
         <e p="Dns" t="Include">
           <e p="DnsServer.cs" t="Include" />
         </e>
         <e p="DnsProxy.csproj" t="IncludeRecursive" />
-        <e p="hosts.json" t="Include" />
+        <e p="DnsProxy.xml" t="Include" />
         <e p="Models" t="Include">
           <e p="AuthenticationType.cs" t="Include" />
           <e p="Aws" t="Include">
@@ -235,12 +234,13 @@
             <e p="AwsSettings.cs" t="Include" />
             <e p="AwsSettingsExtended.cs" t="Include" />
             <e p="Endpoint.cs" t="Include" />
-            <e p="IAwsDoScan.cs" t="Include" />
+            <e p="IAwsScanRules.cs" t="Include" />
             <e p="UserAccount.cs" t="Include" />
             <e p="UserAccountExtended.cs" t="Include" />
             <e p="UserRole.cs" t="Include" />
             <e p="UserRoleExtended.cs" t="Include" />
           </e>
+          <e p="CacheConfig.cs" t="Include" />
           <e p="CacheItem.cs" t="Include" />
           <e p="Context" t="Include">
             <e p="DnsContext.cs" t="Include" />
@@ -270,23 +270,13 @@
           <e p="RulesConfig.cs" t="Include" />
           <e p="Strategies.cs" t="Include" />
         </e>
-        <e p="nameserver.json" t="Include" />
         <e p="obj" t="ExcludeRecursive">
           <e p="Debug" t="Include">
-            <e p="netcoreapp3.1" t="Include">
+            <e p="netstandard2.1" t="Include">
               <e p="DnsProxy.AssemblyInfo.cs" t="Include" />
             </e>
           </e>
         </e>
-        <e p="Program.cs" t="Include" />
-        <e p="Properties" t="Include">
-          <e p="PublishProfiles" t="Include">
-            <e p="Linux64.pubxml" t="Include" />
-            <e p="MacOs64.pubxml" t="Include" />
-            <e p="Win64.pubxml" t="Include" />
-          </e>
-        </e>
-        <e p="rules.json" t="Include" />
         <e p="Strategies" t="Include">
           <e p="AwsApiGatewayResolverStrategy.cs" t="Include" />
           <e p="AwsBaseResolverStrategy.cs" t="Include" />
@@ -301,8 +291,46 @@
           <e p="StrategyManager.cs" t="Include" />
         </e>
       </e>
+      <e p="DnsProxy.Console" t="IncludeRecursive">
+        <e p=".config.json" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="config.json" t="Include" />
+        <e p="DnsProxy.Console.csproj" t="IncludeRecursive" />
+        <e p="hosts.json" t="Include" />
+        <e p="nameserver.json" t="Include" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp3.1" t="Include">
+              <e p="DnsProxy.Console.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Program.cs" t="Include" />
+        <e p="Properties" t="Include">
+          <e p="PublishProfiles" t="Include">
+            <e p="Linux64.pubxml" t="Include" />
+            <e p="MacOs64.pubxml" t="Include" />
+            <e p="Win64.pubxml" t="Include" />
+          </e>
+        </e>
+        <e p="rules.json" t="Include" />
+      </e>
       <e p="DnsProxy.sln" t="IncludeFlat" />
       <e p="LICENSE" t="Include" />
+      <e p="net-udns/src" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="DnsClientBase.cs" t="Include" />
+        <e p="DohClient.cs" t="Include" />
+        <e p="IDnsClient.cs" t="Include" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netstandard2.1" t="Include">
+              <e p="Udns.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Udns.csproj" t="IncludeRecursive" />
+      </e>
       <e p="packages" t="ExcludeRecursive" />
       <e p="Solution Items" t="Include" />
     </e>
@@ -310,8 +338,5 @@
     <e p="$USER_HOME$/Library/Caches/Rider2019.3/resharper-host/local/Transient/ReSharperHost/v193/SolutionCaches/_DnsProxy.-1149752334.00" t="ExcludeRecursive" />
     <e p="$APPLICATION_CONFIG_DIR$/consoles/db" t="IncludeRecursive" />
     <e p="$APPLICATION_CONFIG_DIR$/extensions" t="IncludeRecursive" />
-    <e p="Y:\c#\DnsProxy\ARSoft.Tools.Net" t="Include">
-      <e p="ARSoft.Tools.Net.xml" t="Include" />
-    </e>
   </component>
 </project>

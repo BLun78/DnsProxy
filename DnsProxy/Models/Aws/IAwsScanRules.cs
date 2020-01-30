@@ -19,7 +19,7 @@ using Amazon.Runtime;
 
 namespace DnsProxy.Models.Aws
 {
-    internal interface IAwsDoScan
+    internal interface IAwsScanRules
     {
         bool DoScan { get; set; }
         List<string> ScanVpcIds { get; set; }

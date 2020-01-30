@@ -20,7 +20,7 @@ using Amazon.Runtime;
 
 namespace DnsProxy.Models.Aws
 {
-    internal class UserAccountExtended : UserAccount, IAwsDoScan
+    internal class UserAccountExtended : UserAccount, IAwsScanRules
     {
         public UserAccountExtended(UserAccount userAccount)
         {

@@ -65,7 +65,7 @@ namespace DnsProxy.Strategies
             foreach (var nameServerUri in Rule.NameServerUri)
             {
                 _dohClient.ServerUrl = nameServerUri?.AbsoluteUri;
-                _dohClient.Timeout = TimeSpan.FromSeconds(Rule.QueryTimeout / 1000);
+                _dohClient.Timeout = TimeSpan.FromSeconds(value: Rule.QueryTimeout / 1000);
 
                 var question = new Question
                 {
@@ -123,14 +123,14 @@ namespace DnsProxy.Strategies
         {
             return Models.Strategies.DoH;
         }
-        protected virtual void Dispose(bool disposing)
+        
+        protected override void Dispose(bool disposing)
         {
             if (!disposedValue)
             {
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects).
-                    _dohClient?.HttpClient?.Dispose();
                     _dohClient?.Dispose();
                 }
 

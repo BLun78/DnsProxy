@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +13,7 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
 using System;
@@ -46,8 +48,8 @@ namespace DnsProxy.Common.Aws
         private readonly AwsContext _awsContext;
         private readonly ILogger<AwsVpcManager> _logger;
         private readonly IMemoryCache _memoryCache;
-        private readonly int TTL;
         private readonly List<string> _proxyBypassList;
+        private readonly int _ttl;
 
         public AwsVpcManager(ILogger<AwsVpcManager> logger,
             IMemoryCache memoryCache,
@@ -64,7 +66,7 @@ namespace DnsProxy.Common.Aws
             _amazonApiGatewayConfig = amazonApiGatewayConfig;
             _amazonEc2Config.RegionEndpoint = RegionEndpoint.GetBySystemName(_awsContext?.AwsSettings?.Region);
             _amazonApiGatewayConfig.RegionEndpoint = _amazonEc2Config.RegionEndpoint;
-            TTL = 60 * 60;
+            _ttl = 60 * 60;
             _proxyBypassList = new List<string>();
         }
 
@@ -77,24 +79,21 @@ namespace DnsProxy.Common.Aws
                 foreach (var awsSettingsUserAccount in _awsContext.AwsSettings.UserAccounts)
                 {
                     if (awsSettingsUserAccount.DoScan)
-                    {
-                        await ReadVpcAsync(awsSettingsUserAccount.AwsCredentials, awsSettingsUserAccount, cancellationToken)
+                        await ReadVpcAsync(awsSettingsUserAccount.AwsCredentials, awsSettingsUserAccount,
+                                cancellationToken)
                             .ConfigureAwait(false);
-                    }
 
                     foreach (var userRoleExtended in awsSettingsUserAccount.Roles)
-                    {
                         if (userRoleExtended.DoScan)
-                        {
                             await ReadVpcAsync(userRoleExtended.AwsCredentials, userRoleExtended, cancellationToken)
                                 .ConfigureAwait(false);
-                        }
-                    }
                 }
 
                 var path = Path.Combine(Environment.CurrentDirectory, _awsContext.AwsSettings.OutputFileName);
                 _logger.LogInformation("AWS write ProxyBypassList in File: [{0}]", path);
-                await File.WriteAllTextAsync(path, CreateContentForProxyBypassFile(), Encoding.UTF8, cancellationToken).ConfigureAwait(false);
+
+                await File.WriteAllTextAsync(path, CreateContentForProxyBypassFile(), Encoding.UTF8, cancellationToken)
+                    .ConfigureAwait(false);
 
                 _logger.LogInformation("AWS import finished!");
             }
@@ -112,7 +111,15 @@ namespace DnsProxy.Common.Aws
             return fileContent;
         }
 
-        private async Task ReadVpcAsync(AWSCredentials awsCredentials, IAwsDoScan awsDoScan,
+        /// <summary>
+        ///     Reads the VPC for cacheing DNS-Records to overrides public IPAddresses
+        ///     like SQS.[zone].amazonaws.com to 10.10.10.10
+        /// </summary>
+        /// <param name="awsCredentials">AwsCredintials for read the VPC</param>
+        /// <param name="awsScanRules">Rules for Scaning</param>
+        /// <param name="cancellationToken">Task Cancellation Toke</param>
+        /// <returns>only a Task</returns>
+        private async Task ReadVpcAsync(AWSCredentials awsCredentials, IAwsScanRules awsScanRules,
             CancellationToken cancellationToken)
         {
             try
@@ -120,7 +127,7 @@ namespace DnsProxy.Common.Aws
                 var result = new List<DnsRecordBase>();
                 using (var amazonEc2Client = new AmazonEC2Client(awsCredentials, _amazonEc2Config))
                 {
-                    var endpoints = await ReadVpcEndpointAsync(amazonEc2Client, awsDoScan, cancellationToken)
+                    var endpoints = await ReadVpcEndpointAsync(amazonEc2Client, awsScanRules, cancellationToken)
                         .ConfigureAwait(false);
 
                     var readApiGateway = await ReadApiGatewayAsync(awsCredentials, endpoints, cancellationToken)
@@ -132,25 +139,19 @@ namespace DnsProxy.Common.Aws
                 }
 
                 var groupedResult = (from record in result
-                                     group record by record.Name.ToString()
+                    group record by record.Name.ToString()
                     into newRecords
-                                     orderby newRecords.Key
-                                     select newRecords).ToList();
+                    orderby newRecords.Key
+                    select newRecords).ToList();
                 foreach (var dnsRecordBases in groupedResult)
-                {
                     StoreInCache(RecordType.A, dnsRecordBases.ToList(), dnsRecordBases.Key);
-                }
             }
             catch (AmazonEC2Exception aee)
             {
                 if (aee.ErrorCode == "UnauthorizedOperation")
-                {
                     _logger.LogError(aee, "AWS ErrorCode=[{0}] ==> {1}", aee.ErrorCode, aee.Message);
-                }
                 else
-                {
                     throw;
-                }
             }
             catch (Exception e)
             {
@@ -159,6 +160,11 @@ namespace DnsProxy.Common.Aws
             }
         }
 
+        /// <summary>
+        /// Read the Endpoint Information and create DNS-Record
+        /// </summary>
+        /// <param name="endpoints">AWS Endpoints</param>
+        /// <returns>List of DNS-Reocrds</returns>
         private IEnumerable<DnsRecordBase> ReadEndpoints(IEnumerable<Endpoint> endpoints)
         {
             var result = new List<DnsRecordBase>();
@@ -172,17 +178,25 @@ namespace DnsProxy.Common.Aws
                 _proxyBypassList.Add(domainName);
                 result.Add(new ARecord(
                     DomainName.Parse(domainName),
-                    TTL,
+                    _ttl,
                     IPAddress.Parse(net.PrivateIpAddress)));
                 result.Add(new ARecord(
                     DomainName.Parse(net.PrivateDnsName),
-                    TTL,
+                    _ttl,
                     IPAddress.Parse(net.PrivateIpAddress)));
             }
 
             return result;
         }
 
+        /// <summary>
+        /// Read the Apt-Gateway VpcEndpoint and map all ApiGateway Configurations/Urls to the IPAddress
+        /// Create DNs-Records
+        /// </summary>
+        /// <param name="awsCredentials">AwsCredintials for read the VPC</param>
+        /// <param name="endpoints"></param>
+        /// <param name="cancellationToken">Task Cancellation Toke</param>
+        /// <returns>List of DNS-Reocrds</returns>
         private async Task<List<DnsRecordBase>> ReadApiGatewayAsync(AWSCredentials awsCredentials,
             IEnumerable<Endpoint> endpoints, CancellationToken cancellationToken)
         {
@@ -199,54 +213,60 @@ namespace DnsProxy.Common.Aws
                     null).ToArray();
 
                 foreach (var endpoint in apiGatewayNetworkInterfaces)
-                {
                     for (var i = orderedApis.Length - 1; i >= 0; i--)
                     {
                         var item = orderedApis[i];
                         var net = endpoint.NetworkInterfaces.First();
-                        var domainName = CreateDomainName(endpoint.VpcEndpoint.ServiceName, item.Id);
+                        var domainName = CreateApiGatewayDomainName(endpoint.VpcEndpoint.ServiceName, item.Id);
 
                         _proxyBypassList.Add(domainName);
                         result.Add(new ARecord(
                             DomainName.Parse(domainName),
-                            TTL,
+                            _ttl,
                             IPAddress.Parse(net.PrivateIpAddress)));
                         result.Add(new ARecord(
                             DomainName.Parse(net.PrivateDnsName),
-                            TTL,
+                            _ttl,
                             IPAddress.Parse(net.PrivateIpAddress)));
                     }
-                }
             }
 
             return result;
         }
 
-        private string CreateDomainName(string serviceName, string gatewayId)
+        /// <summary>
+        /// Transform the Servicename + GatewayId to a valid Domainname for DNS
+        /// example: from "com.amazonaws.[zone].execute-api.jk38dsk3hd0"  to "jk38dsk3hd0.execute-api.[zone].amazonaws.com"
+        /// </summary>
+        /// <param name="serviceName">Servicename (example: com.amazonaws.[zone].execute-api)</param>
+        /// <param name="gatewayId">ApiGatewayId like "jk38dsk3hd0"</param>
+        /// <returns>Domainname (example: jk38dsk3hd0.execute-api.[zone].amazonaws.com)</returns>
+        private string CreateApiGatewayDomainName(string serviceName, string gatewayId)
         {
             return CreateDomainName(serviceName + "." + gatewayId);
         }
 
+        /// <summary>
+        /// Transform the Servicename to a valid Domainname for DNS
+        /// example: from "com.amazonaws.[zone].sqs" to "sqs.[zone].amazonaws.com"
+        /// </summary>
+        /// <param name="serviceName">Servicename (example: com.amazonaws.[zone].sqs)</param>
+        /// <returns>Domainname (example: sqs.[zone].amazonaws.com)</returns>
         private string CreateDomainName(string serviceName)
         {
             var domainName = string.Empty;
             var arr = serviceName.Split('.');
             for (var i = arr.Length - 1; i >= 0; i--)
-            {
                 if (string.IsNullOrWhiteSpace(domainName))
-                {
                     domainName += arr[i];
-                }
                 else
-                {
                     domainName += "." + arr[i];
-                }
-            }
 
             return domainName;
         }
 
-        private async Task<List<Endpoint>> ReadVpcEndpointAsync(AmazonEC2Client amazonEc2Client, IAwsDoScan awsDoScan,
+        private async Task<List<Endpoint>> ReadVpcEndpointAsync(AmazonEC2Client amazonEc2Client,
+            IAwsScanRules awsDoScan,
             CancellationToken cancellationToken)
         {
             var vpc = await amazonEc2Client.DescribeVpcsAsync(CreateDescribeVpcsRequest(awsDoScan), cancellationToken)
@@ -270,7 +290,7 @@ namespace DnsProxy.Common.Aws
             return result;
         }
 
-        private DescribeVpcsRequest CreateDescribeVpcsRequest(IAwsDoScan awsDoScan)
+        private DescribeVpcsRequest CreateDescribeVpcsRequest(IAwsScanRules awsDoScan)
         {
             if (awsDoScan.ScanVpcIds != null && awsDoScan.ScanVpcIds.Any())
             {
@@ -293,7 +313,8 @@ namespace DnsProxy.Common.Aws
             StoreInCache(recordType, data, key, cacheOptions);
         }
 
-        private void StoreInCache(RecordType recordType, List<DnsRecordBase> data, string key, MemoryCacheEntryOptions cacheEntryOptions)
+        private void StoreInCache(RecordType recordType, List<DnsRecordBase> data, string key,
+            MemoryCacheEntryOptions cacheEntryOptions)
         {
             var cacheItem = new CacheItem(recordType, data);
             var lastChar = key.Substring(key.Length - 1, 1);

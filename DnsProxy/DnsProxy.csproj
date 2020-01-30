@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
-    <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
+    <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
+    <TieredCompilation>true</TieredCompilation>
 
     <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -36,13 +36,18 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>DEBUG</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <NoWarn>1701;1702</NoWarn>
-    <DocumentationFile>DnsProxy.xml</DocumentationFile>
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <NoWarn>1701;1702</NoWarn>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
 
   <ItemGroup>
@@ -57,27 +62,27 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.APIGateway" Version="3.3.103.46" />
-    <PackageReference Include="AWSSDK.DocDB" Version="3.3.102.41" />
-    <PackageReference Include="AWSSDK.EC2" Version="3.3.149" />
-    <PackageReference Include="AWSSDK.ElastiCache" Version="3.3.107.30" />
-    <PackageReference Include="AWSSDK.SecurityToken" Version="3.3.104.20" />
+    <PackageReference Include="AWSSDK.APIGateway" Version="3.3.103.52" />
+    <PackageReference Include="AWSSDK.DocDB" Version="3.3.102.47" />
+    <PackageReference Include="AWSSDK.EC2" Version="3.3.154.2" />
+    <PackageReference Include="AWSSDK.ElastiCache" Version="3.3.107.36" />
+    <PackageReference Include="AWSSDK.SecurityToken" Version="3.3.104.26" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.1" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

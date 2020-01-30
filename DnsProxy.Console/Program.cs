@@ -37,13 +37,12 @@ namespace DnsProxy.Console
         private static string _title;
 
         private static IOptionsMonitor<AwsSettings> AwsSettingsOptionsMonitor;
-        private static IDisposable AwsSettingsOptionsMonitorListener;
-        internal static ApplicationInformation ApplicationInformation { get; private set; }
-
-        internal static CancellationTokenSource CancellationTokenSource { get; private set; }
-        internal static Configuration Configuration { get; private set; }
-        internal static DependencyInjector DependencyInjector { get; private set; }
-        internal static IServiceProvider ServiceProvider => DependencyInjector.ServiceProvider;
+        private static IDisposable _awsSettingsOptionsMonitorListener;
+        private static ApplicationInformation ApplicationInformation { get; set; }
+        private static CancellationTokenSource CancellationTokenSource { get; set; }
+        private static Configuration Configuration { get; set; }
+        private static DependencyInjector DependencyInjector { get; set; }
+        private static IServiceProvider ServiceProvider => DependencyInjector.ServiceProvider;
 
         internal static string Title
         {
@@ -85,9 +84,11 @@ namespace DnsProxy.Console
         private static void CreateHeader()
         {
             Title = ApplicationInformation.DefaultTitle;
-            System.Console.WriteLine("==================================================================================");
+            System.Console.WriteLine(
+                "==================================================================================");
             ApplicationInformation.LogAssemblyInformation();
-            System.Console.WriteLine("==================================================================================");
+            System.Console.WriteLine(
+                "==================================================================================");
             System.Console.WriteLine("Copyright 2019 - 2020 Bjoern Lundstroem - (https://github.com/BLun78)");
             System.Console.WriteLine("");
             System.Console.WriteLine("Licensed under the Apache License, Version 2.0(the \"License\");");
@@ -101,20 +102,24 @@ namespace DnsProxy.Console
             System.Console.WriteLine("WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.");
             System.Console.WriteLine("See the License for the specific language governing permissions and");
             System.Console.WriteLine("limitations under the License.");
-            System.Console.WriteLine("==================================================================================");
+            System.Console.WriteLine(
+                "==================================================================================");
             var color = System.Console.ForegroundColor;
             System.Console.ForegroundColor = ConsoleColor.DarkYellow;
             System.Console.WriteLine("\t[strg]+[x] or [strg]+[q] = exit Application");
             System.Console.WriteLine("\t[strg]+[r] = reload AWS-VPC's with new mfa");
             System.Console.WriteLine("\t[strg]+[h] = show this help / information");
             System.Console.ForegroundColor = color;
-            System.Console.WriteLine("==================================================================================");
+            System.Console.WriteLine(
+                "==================================================================================");
             System.Console.WriteLine("Description:");
             System.Console.WriteLine("\tA DNS-Proxy with routing for DNS-Request for development with hybrid clouds!");
             System.Console.WriteLine("\tconfig.json, rules.json and hosts,json are used for configure.");
-            System.Console.WriteLine("==================================================================================");
+            System.Console.WriteLine(
+                "==================================================================================");
             System.Console.WriteLine("starts up " + ApplicationInformation.DefaultTitle + " ...");
-            System.Console.WriteLine("==================================================================================");
+            System.Console.WriteLine(
+                "==================================================================================");
         }
 
         private static async Task CheckAwsVpc()
@@ -135,7 +140,6 @@ namespace DnsProxy.Console
                 {
                     Logger.LogInformation("No AWS config found!");
                 }
-
             }
             catch (Exception e)
             {
@@ -152,7 +156,7 @@ namespace DnsProxy.Console
             Logger = DependencyInjector.ServiceProvider.GetService<ILogger<Program>>();
             ApplicationInformation = DependencyInjector.ServiceProvider.GetService<ApplicationInformation>();
             AwsSettingsOptionsMonitor = ServiceProvider.GetService<IOptionsMonitor<AwsSettings>>();
-            AwsSettingsOptionsMonitorListener = AwsSettingsOptionsMonitor.OnChange(settings => RequestNewMfa = true);
+            _awsSettingsOptionsMonitorListener = AwsSettingsOptionsMonitor.OnChange(settings => RequestNewMfa = true);
 
             CreateHeader();
         }
@@ -188,7 +192,7 @@ namespace DnsProxy.Console
 
                 CancellationTokenSource?.Cancel();
                 CancellationTokenSource?.Dispose();
-                AwsSettingsOptionsMonitorListener?.Dispose();
+                _awsSettingsOptionsMonitorListener?.Dispose();
                 return 0;
             }).ConfigureAwait(false);
         }
@@ -212,10 +216,8 @@ namespace DnsProxy.Console
                         .ConfigureAwait(false);
 
                     foreach (var role in userAccount.Roles)
-                    {
                         await mfa.AssumeRoleAsync(userAccount, role, CancellationTokenSource.Token)
                             .ConfigureAwait(false);
-                    }
                 }
 
                 DependencyInjector.AwsContext = awsContext;

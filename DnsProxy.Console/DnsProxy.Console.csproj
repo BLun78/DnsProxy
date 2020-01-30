@@ -1,13 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk" SDK="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <PublishTrimmed>false</PublishTrimmed>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <PublishReadyToRun>false</PublishReadyToRun>
+    <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
+    <TieredCompilation>true</TieredCompilation>
     <PublishSingleFile>false</PublishSingleFile>
-    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
-    <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
 
     <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -40,16 +39,31 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
+
+  <PropertyGroup Condition="'$(OS))'=='osx-x64'">
+    <PublishReadyToRun>true</PublishReadyToRun>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(OS)'=='linux-x64'">
+    <PublishReadyToRun>true</PublishReadyToRun>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(OS)'=='win-x64'">
+    <PublishReadyToRun>true</PublishReadyToRun>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>DEBUG</DefineConstants>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <NoWarn>1701;1702</NoWarn>
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <NoWarn>1701;1702</NoWarn>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
 
   <ItemGroup>
@@ -86,18 +100,18 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.1" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

@@ -101,8 +101,8 @@ namespace DnsProxy.Strategies
         {
             stopwatch.Stop();
             var dnsContext = DnsContextAccessor.DnsContext;
-            Logger.LogDebug(operationCanceledException, "Timeout for ClientIpAddress: {0} requested {1} (#{2}, {3}) after [{4} ms].", dnsContext?.IpEndPoint, dnsQuestion.Name,
-                dnsContext?.Request?.TransactionID.ToString(), dnsQuestion.RecordType, stopwatch.ElapsedMilliseconds);
+            Logger.LogDebug(operationCanceledException, @"Timeout for ClientIpAddress: {0} requested {1} (#{2}, {3}) after [{4} ms].", dnsContext?.IpEndPoint, dnsQuestion.Name,
+                dnsContext?.Request?.TransactionID.ToString("0000"), dnsQuestion.RecordType, stopwatch.ElapsedMilliseconds);
         }
 
         protected void LogDnsQuestionAndResult(DnsQuestion dnsQuestion, List<DnsRecordBase> answers, Stopwatch stopwatch)
@@ -158,7 +158,7 @@ namespace DnsProxy.Strategies
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
             // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
+            GC.SuppressFinalize(this);
         }
 
         #endregion

@@ -2,20 +2,25 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
+    <TieredCompilation>true</TieredCompilation>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>ARSoft.Tools.Net.xml</DocumentationFile>
-    <NoWarn>1701;1702</NoWarn>
     <DefineConstants>DEBUG</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <NoWarn>1701;1702</NoWarn>
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <NoWarn>1701;1702</NoWarn>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
 
   <ItemGroup>

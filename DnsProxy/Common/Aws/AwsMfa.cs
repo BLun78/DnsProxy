@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +13,7 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
 using System;
@@ -28,27 +30,29 @@ namespace DnsProxy.Common.Aws
     {
         public Task<string> GetMfaAsync(UserAccountExtended userAccount, CancellationToken cancellationToken)
         {
-            return Task.Run<string>(() =>
+            if (userAccount == null) throw new ArgumentNullException(nameof(userAccount));
+            if (cancellationToken == null) throw new ArgumentNullException(nameof(cancellationToken));
+
+            return Task.Run(() =>
             {
                 Console.WriteLine("Login for AwsAccount [" + userAccount.UserName + "]:");
                 Console.Write("Enter the MFA code: ");
                 string mfaCode = null;
-                bool mfaExpression = true;
+                var mfaExpression = true;
                 while (mfaExpression)
                 {
                     mfaCode = Console.ReadLine();
-                    mfaExpression = !(!string.IsNullOrWhiteSpace(mfaCode) 
-                                      && mfaCode.Length == 6 
-                                      && int.TryParse(mfaCode, out int temp2));
-                    if (!mfaExpression)
-                    {
-                        break;
-                    }
+                    mfaExpression = !(!string.IsNullOrWhiteSpace(mfaCode)
+                                      && mfaCode.Length == 6
+                                      && int.TryParse(mfaCode, out var temp2));
+                    if (!mfaExpression) break;
 
-                    Console.WriteLine("==================================================================================");
+                    Console.WriteLine(
+                        "==================================================================================");
                     Console.WriteLine("Login for AwsAccount [" + userAccount.UserName + "]:");
                     Console.Write("Retry enter the MFA code [numeric(6)]: ");
                 }
+
                 return mfaCode;
             }, cancellationToken);
         }
@@ -61,6 +65,11 @@ namespace DnsProxy.Common.Aws
         public async Task CreateAwsCredentialsAsync(UserAccountExtended userAccount, string mfaToken,
             CancellationToken cancellationToken)
         {
+            if (userAccount == null) throw new ArgumentNullException(nameof(userAccount));
+            if (string.IsNullOrWhiteSpace(mfaToken))
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(mfaToken));
+            if (cancellationToken == null) throw new ArgumentNullException(nameof(cancellationToken));
+
             var basicAwsCredentials = new BasicAWSCredentials(userAccount.UserAccessKey, userAccount.UserSecretKey);
 
             using (var stsClient = new AmazonSecurityTokenServiceClient(basicAwsCredentials))
@@ -82,13 +91,20 @@ namespace DnsProxy.Common.Aws
         public async Task AssumeRoleAsync(UserAccountExtended userAccount, UserRoleExtended userRole,
             CancellationToken cancellationToken)
         {
+            if (userAccount == null) throw new ArgumentNullException(nameof(userAccount));
+            if (userRole == null) throw new ArgumentNullException(nameof(userRole));
+            if (cancellationToken == null) throw new ArgumentNullException(nameof(cancellationToken));
+
             using (var stsClient = new AmazonSecurityTokenServiceClient(userAccount.AwsCredentials))
             {
-                var role2 = await stsClient.AssumeRoleAsync(new AssumeRoleRequest
+                var request = new AssumeRoleRequest
                 {
                     RoleArn = Role(userRole.AwsAccountId, userRole.Role),
                     RoleSessionName = userRole.AwsAccountLabel
-                }, cancellationToken).ConfigureAwait(false);
+                };
+
+                var role2 = await stsClient.AssumeRoleAsync(request, cancellationToken)
+                    .ConfigureAwait(false);
 
                 var tempAccessKeyId = role2.Credentials.AccessKeyId;
                 var tempSessionToken = role2.Credentials.SessionToken;

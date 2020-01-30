@@ -18,7 +18,7 @@ using Amazon.Runtime;
 
 namespace DnsProxy.Models.Aws
 {
-    internal class UserRoleExtended : UserRole, IAwsDoScan
+    internal class UserRoleExtended : UserRole, IAwsScanRules
     {
         public UserRoleExtended(UserRole userRole)
         {

@@ -6,8 +6,8 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <DebugType>full</DebugType>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
-    <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
+    <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
+    <TieredCompilation>true</TieredCompilation>
     
     <!-- developer build is always 0.42 -->
     <AssemblyVersion>0.42</AssemblyVersion>
@@ -29,13 +29,18 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>DEBUG</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <NoWarn>1701;1702</NoWarn>
-    <DocumentationFile>DnsProxy.xml</DocumentationFile>
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <NoWarn>1701;1702</NoWarn>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
   
   <ItemGroup>

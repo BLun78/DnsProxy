@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +13,7 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
 using System;
@@ -127,70 +129,64 @@ namespace DnsProxy.Strategies
             {
                 var dnsWriteContext = GetWriteDnsContext(scope, dnsMessage, ipEndPoint, cancellationToken);
 
-                //using (var globalQueryTimeoutCts =
-                //    new CancellationTokenSource(_dnsDefaultServerOptionsMonitor.CurrentValue.Servers.QueryTimeout * 2))
-                //using (var joinedGlobalCts =
-                //    CancellationTokenSource.CreateLinkedTokenSource(globalQueryTimeoutCts.Token, cancellationToken))
-                //{
-                    foreach (var dnsQuestion in dnsWriteContext.Response.Questions)
+                foreach (var dnsQuestion in dnsWriteContext.Response.Questions)
+                {
+                    try
                     {
-                        try
+                        await DoStrategyAsync(dnsWriteContext.HostsResolverStrategy, dnsQuestion, dnsWriteContext,
+                            cancellationToken).ConfigureAwait(false);
+                        if (dnsWriteContext.Response.AnswerRecords.Any())
                         {
-                            await DoStrategyAsync(dnsWriteContext.HostsResolverStrategy, dnsQuestion, dnsWriteContext,
+                            continue;
+                        }
+
+                        var patternList = dnsWriteContext.DnsResolverStrategies
+                            .Where(dnsResolverStrategy => dnsResolverStrategy.MatchPattern(dnsQuestion)).ToList();
+
+                        foreach (var dnsResolverStrategy in patternList)
+                        {
+                            await DoStrategyAsync(dnsResolverStrategy, dnsQuestion, dnsWriteContext,
                                 cancellationToken).ConfigureAwait(false);
                             if (dnsWriteContext.Response.AnswerRecords.Any())
                             {
-                                continue;
-                            }
-
-                            var patternList = dnsWriteContext.DnsResolverStrategies
-                                .Where(dnsResolverStrategy => dnsResolverStrategy.MatchPattern(dnsQuestion)).ToList();
-
-                            foreach (var dnsResolverStrategy in patternList)
-                            {
-                                await DoStrategyAsync(dnsResolverStrategy, dnsQuestion, dnsWriteContext,
-                                    cancellationToken).ConfigureAwait(false);
-                                if (dnsWriteContext.Response.AnswerRecords.Any())
-                                {
-                                    break;
-                                }
-                            }
-
-                            if (dnsWriteContext.Response.AnswerRecords.Any())
-                            {
-                                continue;
-                            }
-
-                            //await DoStrategyAsync(dnsWriteContext.InternalNameServerResolverStrategy, dnsQuestion,
-                            //    dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
-                            //if (dnsWriteContext.Response.AnswerRecords.Any())
-                            //{
-                            //    continue;
-                            //}
-
-                            await DoStrategyAsync(dnsWriteContext.DefaultDnsStrategy, dnsQuestion, dnsWriteContext,
-                                cancellationToken).ConfigureAwait(false);
-                            if (dnsWriteContext.Response.AnswerRecords.Any())
-                            {
-                                continue;
+                                break;
                             }
                         }
-                        catch (Exception e)
+
+                        if (dnsWriteContext.Response.AnswerRecords.Any())
                         {
-                            _logger.LogError(e, "At the resolving process is an error raised: [{0}]", e.Message);
-                            throw;
+                            continue;
+                        }
+
+                        //await DoStrategyAsync(dnsWriteContext.InternalNameServerResolverStrategy, dnsQuestion,
+                        //    dnsWriteContext, joinedGlobalCts.Token).ConfigureAwait(false);
+                        //if (dnsWriteContext.Response.AnswerRecords.Any())
+                        //{
+                        //    continue;
+                        //}
+
+                        await DoStrategyAsync(dnsWriteContext.DefaultDnsStrategy, dnsQuestion, dnsWriteContext,
+                            cancellationToken).ConfigureAwait(false);
+                        if (dnsWriteContext.Response.AnswerRecords.Any())
+                        {
+                            continue;
                         }
                     }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "At the resolving process is an error raised: [{0}]", e.Message);
+                        throw;
+                    }
+                }
 
-                    dnsWriteContext.Response.ReturnCode = ReturnCode.NoError;
-                    dnsWriteContext.Response.IsQuery = false;
-                    dnsWriteContext.Response.IsRecursionAllowed = true;
-                    
-                    if (!dnsWriteContext.Response.AnswerRecords.Any())
-                        dnsWriteContext.Response.ReturnCode = ReturnCode.ServerFailure;
+                dnsWriteContext.Response.ReturnCode = ReturnCode.NoError;
+                dnsWriteContext.Response.IsQuery = false;
+                dnsWriteContext.Response.IsRecursionAllowed = true;
 
-                    return dnsWriteContext.Response;
-                //}
+                if (!dnsWriteContext.Response.AnswerRecords.Any())
+                    dnsWriteContext.Response.ReturnCode = ReturnCode.ServerFailure;
+
+                return dnsWriteContext.Response;
             }
         }
 
@@ -201,15 +197,18 @@ namespace DnsProxy.Strategies
             {
                 try
                 {
-                    using (var strategyQueryTimeoutCts =
-                        new CancellationTokenSource(dnsResolverStrategy.Rule.QueryTimeout * 2))
-                    using (var joinedStrategyCts =
-                        CancellationTokenSource.CreateLinkedTokenSource(strategyQueryTimeoutCts.Token, joinedGlobalCtx))
+                    if (dnsResolverStrategy.GetType() == typeof(DohResolverStrategy)
+                        || dnsResolverStrategy.GetType() == typeof(DnsResolverStrategy))
                     {
-                        var answer = await dnsResolverStrategy
-                            .ResolveAsync(dnsQuestion, joinedStrategyCts.Token)
-                            .ConfigureAwait(false);
-                        dnsWriteContext.Response.AnswerRecords.AddRange(answer);
+                        await DoResolveAsync(dnsResolverStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCtx).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        using (var strategyQueryTimeoutCts = new CancellationTokenSource(dnsResolverStrategy.Rule.QueryTimeout * 2))
+                        using (var joinedStrategyCts = CancellationTokenSource.CreateLinkedTokenSource(strategyQueryTimeoutCts.Token, joinedGlobalCtx))
+                        {
+                            await DoResolveAsync(dnsResolverStrategy, dnsQuestion, dnsWriteContext, joinedStrategyCts.Token).ConfigureAwait(false);
+                        }
                     }
                 }
                 catch (ArgumentOutOfRangeException aoore)
@@ -227,6 +226,15 @@ namespace DnsProxy.Strategies
             {
                 _logger.LogInformation("Query is found! {0}", dnsResolverStrategy?.GetType()?.ToString());
             }
+        }
+
+        private static async Task DoResolveAsync(IDnsResolverStrategy dnsResolverStrategy, DnsQuestion dnsQuestion,
+            IWriteDnsContext dnsWriteContext,  CancellationToken cancellationToken)
+        {
+            var answer = await dnsResolverStrategy
+                .ResolveAsync(dnsQuestion, cancellationToken)
+                .ConfigureAwait(false);
+            dnsWriteContext.Response.AnswerRecords.AddRange(answer);
         }
 
         private IWriteDnsContext GetWriteDnsContext(IServiceScope scope, DnsMessage dnsMessage, string ipEndPoint,
