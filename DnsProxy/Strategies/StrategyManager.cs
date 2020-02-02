@@ -125,6 +125,11 @@ namespace DnsProxy.Strategies
         public async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, string ipEndPoint,
             CancellationToken cancellationToken)
         {
+            if (dnsMessage == null) throw new ArgumentNullException(nameof(dnsMessage));
+            if (cancellationToken == null) throw new ArgumentNullException(nameof(cancellationToken));
+            if (string.IsNullOrWhiteSpace(ipEndPoint))
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(ipEndPoint));
+
             using (var scope = _serviceProvider.CreateScope())
             {
                 var dnsWriteContext = GetWriteDnsContext(scope, dnsMessage, ipEndPoint, cancellationToken);

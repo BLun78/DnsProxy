@@ -32,11 +32,11 @@ namespace DnsProxy.Console
 {
     public sealed class Program
     {
-        private static volatile bool RequestNewMfa;
-        private static ILogger<Program> Logger;
+        private static volatile bool _requestNewMfa;
+        private static ILogger<Program> _logger;
         private static string _title;
 
-        private static IOptionsMonitor<AwsSettings> AwsSettingsOptionsMonitor;
+        private static IOptionsMonitor<AwsSettings> _awsSettingsOptionsMonitor;
         private static IDisposable _awsSettingsOptionsMonitorListener;
         private static ApplicationInformation ApplicationInformation { get; set; }
         private static CancellationTokenSource CancellationTokenSource { get; set; }
@@ -70,14 +70,14 @@ namespace DnsProxy.Console
 #pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception e)
             {
-                Logger.LogError(e, e.Message);
+                _logger.LogError(e, e.Message);
                 await Task.Delay(100).ConfigureAwait(false);
                 return await Task.FromResult(1).ConfigureAwait(false);
             }
 #pragma warning restore CA1031 // Do not catch general exception types
             finally
             {
-                Logger.LogInformation("stop {DefaultTitle}", ApplicationInformation.DefaultTitle);
+                _logger.LogInformation("stop {DefaultTitle}", ApplicationInformation.DefaultTitle);
             }
         }
 
@@ -138,12 +138,12 @@ namespace DnsProxy.Console
                 }
                 else
                 {
-                    Logger.LogInformation("No AWS config found!");
+                    _logger.LogInformation("No AWS config found!");
                 }
             }
             catch (Exception e)
             {
-                Logger.LogError(e, e.Message);
+                _logger.LogError(e, e.Message);
             }
         }
 
@@ -153,10 +153,10 @@ namespace DnsProxy.Console
             Configuration = new Configuration(args);
             DependencyInjector = new DependencyInjector(Configuration.ConfigurationRoot, CancellationTokenSource);
 
-            Logger = DependencyInjector.ServiceProvider.GetService<ILogger<Program>>();
+            _logger = DependencyInjector.ServiceProvider.GetService<ILogger<Program>>();
             ApplicationInformation = DependencyInjector.ServiceProvider.GetService<ApplicationInformation>();
-            AwsSettingsOptionsMonitor = ServiceProvider.GetService<IOptionsMonitor<AwsSettings>>();
-            _awsSettingsOptionsMonitorListener = AwsSettingsOptionsMonitor.OnChange(settings => RequestNewMfa = true);
+            _awsSettingsOptionsMonitor = ServiceProvider.GetService<IOptionsMonitor<AwsSettings>>();
+            _awsSettingsOptionsMonitorListener = _awsSettingsOptionsMonitor.OnChange(settings => _requestNewMfa = true);
 
             CreateHeader();
         }
@@ -168,10 +168,10 @@ namespace DnsProxy.Console
                 var exit = false;
                 while (!exit)
                 {
-                    if (RequestNewMfa)
+                    if (_requestNewMfa)
                     {
                         await CheckAwsVpc().ConfigureAwait(false);
-                        RequestNewMfa = false;
+                        _requestNewMfa = false;
                     }
 
                     var key = System.Console.ReadKey(true);
@@ -181,7 +181,7 @@ namespace DnsProxy.Console
                             CreateHeader();
                             break;
                         case (ConsoleModifiers.Control, ConsoleKey.R):
-                            RequestNewMfa = true;
+                            _requestNewMfa = true;
                             break;
                         case (ConsoleModifiers.Control, ConsoleKey.Q):
                         case (ConsoleModifiers.Control, ConsoleKey.X):
@@ -201,7 +201,7 @@ namespace DnsProxy.Console
         {
             try
             {
-                var awsSettings = AwsSettingsOptionsMonitor.CurrentValue;
+                var awsSettings = _awsSettingsOptionsMonitor.CurrentValue;
                 if (!awsSettings.UserAccounts.Any()) return;
 
                 var awsContext = new AwsContext(awsSettings);
