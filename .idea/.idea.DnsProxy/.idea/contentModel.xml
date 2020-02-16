@@ -245,7 +245,9 @@
           <e p="Context" t="Include">
             <e p="DnsContext.cs" t="Include" />
             <e p="DnsContextAccessor.cs" t="Include" />
+            <e p="IDnsContext.cs" t="Include" />
             <e p="IDnsContextAccessor.cs" t="Include" />
+            <e p="IWriteDnsContext.cs" t="Include" />
             <e p="IWriteDnsContextAccessor.cs" t="Include" />
           </e>
           <e p="DnsDefaultServer.cs" t="Include" />
