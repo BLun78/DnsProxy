@@ -46,10 +46,12 @@ namespace DnsProxy.Common
         public static AwsContext AwsContext;
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly IConfigurationRoot _configuration;
+        private readonly Assembly _assembly;
 
-        public DependencyInjector(IConfigurationRoot configuration, CancellationTokenSource cancellationTokenSource)
+        public DependencyInjector(IConfigurationRoot configuration, Assembly assembly , CancellationTokenSource cancellationTokenSource)
         {
             _configuration = configuration;
+            _assembly = assembly;
             _cancellationTokenSource = cancellationTokenSource;
             _dnsContextAccessor = new DnsContextAccessor();
             ServiceProvider = ConfigureDependencyInjector().BuildServiceProvider(new ServiceProviderOptions
@@ -66,7 +68,7 @@ namespace DnsProxy.Common
             var services = new ServiceCollection();
 
             // Program
-            services.AddSingleton(Assembly.GetExecutingAssembly());
+            services.AddSingleton(_assembly);
             services.AddSingleton<ApplicationInformation>();
             services.AddSingleton<DnsServer>();
             services.AddSingleton<DohClient>();

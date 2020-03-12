@@ -151,7 +151,7 @@ namespace DnsProxy.Console
         {
             CancellationTokenSource = new CancellationTokenSource();
             Configuration = new Configuration(args);
-            DependencyInjector = new DependencyInjector(Configuration.ConfigurationRoot, CancellationTokenSource);
+            DependencyInjector = new DependencyInjector(Configuration.ConfigurationRoot, typeof(Program).Assembly, CancellationTokenSource);
 
             _logger = DependencyInjector.ServiceProvider.GetService<ILogger<Program>>();
             ApplicationInformation = DependencyInjector.ServiceProvider.GetService<ApplicationInformation>();
