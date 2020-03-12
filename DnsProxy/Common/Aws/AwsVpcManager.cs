@@ -208,8 +208,9 @@ namespace DnsProxy.Common.Aws
                         x.VpcEndpoint.ServiceName.Contains(".execute-api", StringComparison.InvariantCulture)).ToList();
                 var apis = await amazonApiGatewayClient.GetRestApisAsync(new GetRestApisRequest(), cancellationToken)
                     .ConfigureAwait(false);
+
                 var orderedApis = apis.Items.Where(x =>
-                    x.EndpointConfiguration.Types.Single(x => "PRIVATE".Equals(x, StringComparison.InvariantCulture)) !=
+                    x.EndpointConfiguration.Types.SingleOrDefault(x => "PRIVATE".Equals(x, StringComparison.InvariantCulture)) !=
                     null).ToArray();
 
                 foreach (var endpoint in apiGatewayNetworkInterfaces)
