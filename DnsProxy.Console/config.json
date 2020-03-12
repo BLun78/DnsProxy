@@ -20,7 +20,7 @@
     }
   },
   "CacheConfig": {
-    "MinimalTimeToLiveInSeconds": 30
+    "MinimalTimeToLiveInSeconds": 60
   },
   "HttpProxyConfig": {
     "AuthenticationType": "None", // None, Basic, WindowsDomain, WindowsUser
@@ -36,24 +36,24 @@
     "OutputFileName": "ProxyBypassList.txt",
     "UserAccounts": [
       {
-        "UserAccountId": "573699462807",
-        "UserName": "v912736",
-        "UserAccessKey": "AKIAYLEZHC2LWU7RZB5Q",
-        "UserSecretKey": "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",
+        "UserAccountId": "5xxxxxxxxxxxx7",
+        "UserName": "xxxxxxxx",
+        "UserAccessKey": "Axxxxxxxxxxxxxxxxxxx6",
+        "UserSecretKey": "mxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxQ",
         "DoScan": false,
         "ScanVpcIds": [],
         "Roles": [
           {
-            "AwsAccountLabel": "0235",
-            "AwsAccountId": "643797719257",
+            "AwsAccountLabel": "blabla",
+            "AwsAccountId": "6xxxxxxxxxxxx",
             "Role": "engineer",
             "DoScan": true,
-            "ScanVpcIds": [ "vpc-0e355e36f7f9152f6" ]
+            "ScanVpcIds": [ "vpc-0xxxxxxxxxxxxxx6" ]
           },
           {
-            "AwsAccountLabel": "0279",
-            "AwsAccountId": "313186067964",
-            "Role": "engineer",
+            "AwsAccountLabel": "blublu",
+            "AwsAccountId": "3xxxxxxxxxx4",
+            "Role": "developer",
             "DoScan": false,
             "ScanVpcIds": []
           }
