@@ -33,11 +33,10 @@ namespace DnsProxy.Strategies
     internal class DnsResolverStrategy : BaseResolverStrategy<DnsRule>, IDnsResolverStrategy<DnsRule>
     {
         public DnsResolverStrategy(
-            ILogger<DnsResolverStrategy> logger,
             IDnsContextAccessor dnsContextAccessor,
             IMemoryCache memoryCache,
             IOptionsMonitor<CacheConfig> cacheConfigOptionsMonitor)
-            : base(logger, dnsContextAccessor, memoryCache, cacheConfigOptionsMonitor)
+            : base(dnsContextAccessor, memoryCache, cacheConfigOptionsMonitor)
         {
             Order = 2000;
         }
@@ -45,43 +44,48 @@ namespace DnsProxy.Strategies
         public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
             CancellationToken cancellationToken)
         {
-            var stopwatch = new Stopwatch();
-            LogDnsQuestion(dnsQuestion, stopwatch);
-            var result = new List<DnsRecordBase>();
-
-            try
+            var logger = DnsContextAccessor.DnsContext.Logger;
+            using (logger.BeginScope(nameof(DnsResolverStrategy)))
             {
-                var dnsClient = new DnsClient(Rule.NameServerIpAddresses, Rule.QueryTimeout);
+                var stopwatch = new Stopwatch();
+                LogDnsQuestion(dnsQuestion, stopwatch);
+                var result = new List<DnsRecordBase>();
 
-                var response = await dnsClient.ResolveAsync(dnsQuestion.Name, dnsQuestion.RecordType,
-                        dnsQuestion.RecordClass, null, cancellationToken)
-                    .ConfigureAwait(false);
-
-                result.AddRange(response?.AnswerRecords ?? new List<DnsRecordBase>());
-            }
-            catch (OperationCanceledException operationCanceledException)
-            {
-                LogDnsCanncelQuestion(dnsQuestion, operationCanceledException, stopwatch);
-            }
-            catch (Exception e)
-            {
-                Logger.LogError(e, e.Message);
-                throw;
-            }
-
-            if (result.Any())
-            {
-                var ttl = result.First().TimeToLive;
-                if (ttl <= CacheConfigOptionsMonitor.CurrentValue.MinimalTimeToLiveInSeconds)
+                try
                 {
-                    ttl = CacheConfigOptionsMonitor.CurrentValue.MinimalTimeToLiveInSeconds;
-                }
-                StoreInCache(dnsQuestion.RecordType, result, dnsQuestion.Name.ToString(),
-                    new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(ttl)));
-            }
+                    var dnsClient = new DnsClient(Rule.NameServerIpAddresses, Rule.QueryTimeout);
 
-            LogDnsQuestionAndResult(dnsQuestion, result, stopwatch);
-            return result;
+                    var response = await dnsClient.ResolveAsync(dnsQuestion.Name, dnsQuestion.RecordType,
+                            dnsQuestion.RecordClass, null, cancellationToken)
+                        .ConfigureAwait(false);
+
+                    result.AddRange(response?.AnswerRecords ?? new List<DnsRecordBase>());
+                }
+                catch (OperationCanceledException operationCanceledException)
+                {
+                    LogDnsCanncelQuestion(dnsQuestion, operationCanceledException, stopwatch);
+                }
+                catch (Exception e)
+                {
+                    DnsContextAccessor.DnsContext.Logger.LogError(e, e.Message);
+                    throw;
+                }
+
+                if (result.Any())
+                {
+                    var ttl = result.First().TimeToLive;
+                    if (ttl <= CacheConfigOptionsMonitor.CurrentValue.MinimalTimeToLiveInSeconds)
+                    {
+                        ttl = CacheConfigOptionsMonitor.CurrentValue.MinimalTimeToLiveInSeconds;
+                    }
+
+                    StoreInCache(dnsQuestion.RecordType, result, dnsQuestion.Name.ToString(),
+                        new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(ttl)));
+                }
+
+                LogDnsQuestionAndResult(dnsQuestion, result, stopwatch);
+                return result;
+            }
         }
 
         public override Models.Strategies GetStrategy()

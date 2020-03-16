@@ -23,7 +23,6 @@ using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Makaretu.Dns.Resolving;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace DnsProxy.Strategies
@@ -37,10 +36,9 @@ namespace DnsProxy.Strategies
         private NameServer _resolver;
 
         public InternalNameServerResolverStrategy(
-            ILogger<InternalNameServerResolverStrategy> logger,
             IOptionsMonitor<NameServerOptions> nameServerOptions,
             IDnsContextAccessor dnsContextAccessor,
-            IMemoryCache memoryCache) : base(logger, dnsContextAccessor, memoryCache, null)
+            IMemoryCache memoryCache) : base( dnsContextAccessor, memoryCache, null)
         {
             _nameServerOptions = nameServerOptions;
             _nameServerOptionsListener = _nameServerOptions.OnChange(NameServerOptionsListener);

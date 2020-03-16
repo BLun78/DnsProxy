@@ -25,7 +25,6 @@ using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Strategies
 {
@@ -38,13 +37,13 @@ namespace DnsProxy.Strategies
         protected TClient AwsClient;
         protected AwsContext AwsContext;
 
-        protected AwsBaseResolverStrategy(ILogger<AwsBaseResolverStrategy<TRule, TClient>> logger,
+        protected AwsBaseResolverStrategy(
             IDnsContextAccessor dnsContextAccessor,
             IMemoryCache memoryCache,
             AwsContext awsContext,
             ClientConfig awsClientConfig,
             IServiceProvider serviceProvider)
-            : base(logger, dnsContextAccessor, memoryCache, null)
+            : base(dnsContextAccessor, memoryCache, null)
         {
             AwsContext = awsContext;
             AwsClientConfig = awsClientConfig;

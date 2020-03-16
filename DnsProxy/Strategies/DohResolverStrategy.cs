@@ -39,12 +39,11 @@ namespace DnsProxy.Strategies
         private static DohClient _dohClient;
 
         public DohResolverStrategy(
-            ILogger<DohResolverStrategy> logger,
             IMemoryCache memoryCache,
             HttpClient httpClient,
             IDnsContextAccessor dnsContextAccessor,
             IOptionsMonitor<CacheConfig> cacheConfigOptionsMonitor)
-            : base(logger, dnsContextAccessor, memoryCache, cacheConfigOptionsMonitor)
+            : base(dnsContextAccessor, memoryCache, cacheConfigOptionsMonitor)
         {
             _dohClient = new DohClient
             {
@@ -57,73 +56,77 @@ namespace DnsProxy.Strategies
         public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
             CancellationToken cancellationToken)
         {
-            var stopwatch = new Stopwatch();
-            LogDnsQuestion(dnsQuestion, stopwatch);
-            var result = new List<DnsRecordBase>();
-
-            // https://github.com/curl/curl/wiki/DNS-over-HTTPS
-            foreach (var nameServerUri in Rule.NameServerUri)
+            var logger = DnsContextAccessor.DnsContext.Logger;
+            using (logger.BeginScope(nameof(DohResolverStrategy)))
             {
-                _dohClient.ServerUrl = nameServerUri?.AbsoluteUri;
-                _dohClient.Timeout = TimeSpan.FromSeconds(value: Rule.QueryTimeout / 1000);
+                var stopwatch = new Stopwatch();
+                LogDnsQuestion(dnsQuestion, stopwatch);
+                var result = new List<DnsRecordBase>();
 
-                var question = new Question
+                // https://github.com/curl/curl/wiki/DNS-over-HTTPS
+                foreach (var nameServerUri in Rule.NameServerUri)
                 {
-                    Name = dnsQuestion.Name.ToDomainName(),
-                    Type = dnsQuestion.RecordType.ToDnsType(),
-                    Class = dnsQuestion.RecordClass.ToDnsClass()
-                };
+                    _dohClient.ServerUrl = nameServerUri?.AbsoluteUri;
+                    _dohClient.Timeout = TimeSpan.FromSeconds(value: Rule.QueryTimeout / 1000);
 
-                try
-                {
-                    var responseMessage =
-                        await _dohClient.SecureQueryAsync(question.Name, question.Type, cancellationToken).ConfigureAwait(false);
-
-                    foreach (var answer in responseMessage.Answers)
+                    var question = new Question
                     {
-                        var resultAnswer = answer.ToDnsRecord();
-                        result.Add(resultAnswer);
+                        Name = dnsQuestion.Name.ToDomainName(),
+                        Type = dnsQuestion.RecordType.ToDnsType(),
+                        Class = dnsQuestion.RecordClass.ToDnsClass()
+                    };
+
+                    try
+                    {
+                        var responseMessage =
+                            await _dohClient.SecureQueryAsync(question.Name, question.Type, cancellationToken).ConfigureAwait(false);
+
+                        foreach (var answer in responseMessage.Answers)
+                        {
+                            var resultAnswer = answer.ToDnsRecord();
+                            result.Add(resultAnswer);
+                        }
                     }
-                }
-                catch (IOException ioe)
-                {
-                    HandelIoException(ioe, nameServerUri);
-                }
-                catch (OperationCanceledException operationCanceledException)
-                {
-                    LogDnsCanncelQuestion(dnsQuestion, operationCanceledException, stopwatch);
-                }
-                catch (Exception e)
-                {
-                    Logger.LogError(e, "DoH [{0}]: unexpected error [{1}]", nameServerUri, e.Message);
+                    catch (IOException ioe)
+                    {
+                        HandelIoException(ioe, nameServerUri);
+                    }
+                    catch (OperationCanceledException operationCanceledException)
+                    {
+                        LogDnsCanncelQuestion(dnsQuestion, operationCanceledException, stopwatch);
+                    }
+                    catch (Exception e)
+                    {
+                        logger.LogError(e, "DoH [{0}]: unexpected error [{1}]", nameServerUri, e.Message);
+                    }
+
+                    if (result.Any())
+                    {
+                        break;
+                    }
                 }
 
                 if (result.Any())
                 {
-                    break;
+                    var ttl = result.First().TimeToLive;
+                    if (ttl <= CacheConfigOptionsMonitor.CurrentValue.MinimalTimeToLiveInSeconds)
+                    {
+                        ttl = CacheConfigOptionsMonitor.CurrentValue.MinimalTimeToLiveInSeconds;
+                    }
+                    StoreInCache(dnsQuestion.RecordType, result, dnsQuestion.Name.ToString(),
+                        new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(ttl)));
                 }
-            }
 
-            if (result.Any())
-            {
-                var ttl = result.First().TimeToLive;
-                if (ttl <= CacheConfigOptionsMonitor.CurrentValue.MinimalTimeToLiveInSeconds)
-                {
-                    ttl = CacheConfigOptionsMonitor.CurrentValue.MinimalTimeToLiveInSeconds;
-                }
-                StoreInCache(dnsQuestion.RecordType, result, dnsQuestion.Name.ToString(),
-                    new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(ttl)));
+                LogDnsQuestionAndResult(dnsQuestion, result, stopwatch);
+                return result;
             }
-
-            LogDnsQuestionAndResult(dnsQuestion, result, stopwatch);
-            return result;
         }
 
         public override Models.Strategies GetStrategy()
         {
             return Models.Strategies.DoH;
         }
-        
+
         protected override void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -142,6 +145,7 @@ namespace DnsProxy.Strategies
 
         private void HandelIoException(IOException ioe, Uri nameServerUri)
         {
+            var logger = DnsContextAccessor.DnsContext.Logger;
             var message = ioe.Message.Split("'");
             if (message.Length == 3)
             {
@@ -184,18 +188,18 @@ namespace DnsProxy.Strategies
                         case MessageStatus.BADALG:
                             break;
                         default:
-                            Logger.LogWarning(ioe, "DoH [{0}]: unexpectet IO-error [{1}]", nameServerUri, ioe.Message);
+                            logger.LogWarning(ioe, "DoH [{0}]: unexpectet IO-error [{1}]", nameServerUri, ioe.Message);
                             break;
                     }
                 }
                 else
                 {
-                    Logger.LogWarning(ioe, "DoH [{0}]: unexpectet IO-error [{1}]", nameServerUri, ioe.Message);
+                    logger.LogWarning(ioe, "DoH [{0}]: unexpectet IO-error [{1}]", nameServerUri, ioe.Message);
                 }
             }
             else
             {
-                Logger.LogWarning(ioe, "DoH [{0}]: unexpectet IO-error [{1}]", nameServerUri, ioe.Message);
+                logger.LogWarning(ioe, "DoH [{0}]: unexpectet IO-error [{1}]", nameServerUri, ioe.Message);
             }
         }
     }

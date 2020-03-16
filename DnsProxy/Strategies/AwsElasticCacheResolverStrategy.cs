@@ -32,12 +32,12 @@ namespace DnsProxy.Strategies
     internal class AwsElasticCacheResolverStrategy :
         AwsBaseResolverStrategy<AwsElasticCacheRule, AmazonElastiCacheClient>, IDnsResolverStrategy<AwsElasticCacheRule>
     {
-        public AwsElasticCacheResolverStrategy(ILogger<AwsElasticCacheResolverStrategy> logger,
+        public AwsElasticCacheResolverStrategy(
             IDnsContextAccessor dnsContextAccessor,
             IMemoryCache memoryCache,
             AwsContext awsContext,
             AmazonElastiCacheConfig amazonElastiCacheConfig,
-            IServiceProvider serviceProvider) : base(logger, dnsContextAccessor, memoryCache, awsContext,
+            IServiceProvider serviceProvider) : base(dnsContextAccessor, memoryCache, awsContext,
             amazonElastiCacheConfig, serviceProvider)
         {
         }

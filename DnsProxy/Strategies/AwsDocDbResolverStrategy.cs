@@ -25,7 +25,6 @@ using DnsProxy.Models.Aws;
 using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Strategies
 {
@@ -33,12 +32,12 @@ namespace DnsProxy.Strategies
     internal class AwsDocDbResolverStrategy : AwsBaseResolverStrategy<AwsDocDbRule, AmazonDocDBClient>,
         IDnsResolverStrategy<AwsDocDbRule>
     {
-        public AwsDocDbResolverStrategy(ILogger<AwsDocDbResolverStrategy> logger,
+        public AwsDocDbResolverStrategy(
             IDnsContextAccessor dnsContextAccessor,
             IMemoryCache memoryCache,
             AwsContext awsContext,
             AmazonDocDBConfig amazonDocDbConfig,
-            IServiceProvider serviceProvider) : base(logger, dnsContextAccessor, memoryCache, awsContext,
+            IServiceProvider serviceProvider) : base(dnsContextAccessor, memoryCache, awsContext,
             amazonDocDbConfig, serviceProvider)
         {
         }

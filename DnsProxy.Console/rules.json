@@ -2,53 +2,30 @@
   "RulesConfig": {
     "Rules": [
       {
-        "DomainNamePattern": "(.*)\\.box",
+        "DomainNamePattern": "(.*)\\.aws",
         "NameServer": [
-          "10.10.34.21"
+          "10.240.69.153",
+          "10.240.74.137"
         ],
         "Strategy": "Dns",
         "IsEnabled": true,
         "CompressionMutation": true,
-        "QueryTimeout": 10000
+        "QueryTimeout": 30000
       },
       {
         "DomainNamePattern": "(.*)\\.amazonaws.com.",
         "Strategy": "DoH",
         "NameServer": [
-          "https://cloudflare-dns.com/dns-query",
-          "https://dns.google/dns-query",
-          "https://dns.quad9.net/dns-query"
-        ],
-        "IsEnabled": true,
-        "QueryTimeout": 10000
-      },
-      {
-        "DomainName": "blun.de.",
-        "Strategy": "DoH",
-        "NameServer": [
-          "https://jp.tiarap.org/dns-query",
           "https://doh.securedns.eu/dns-query",
           "https://doh.xfinity.com/dns-query",
           "https://dns.adguard.com/dns-query",
           "https://dns.digitale-gesellschaft.ch/dns-query",
           "https://doh.opendns.com/dns-query",
-          "https://cloudflare-dns.com/dns-query",
           "https://dns.google/dns-query",
           "https://dns.quad9.net/dns-query"
         ],
         "IsEnabled": true,
-        "QueryTimeout": 10000
-      },
-      {
-        "DomainName": "www.google.de",
-        "NameServer": [
-          "8.8.8.8",
-          "8.8.4.4"
-        ],
-        "Strategy": "Dns",
-        "IsEnabled": true,
-        "CompressionMutation": true,
-        "QueryTimeout": 10000
+        "QueryTimeout": 30000
       }
       //,{
       //  "DomainNamePattern": "",
@@ -60,7 +37,7 @@
       //  "Strategy": "", // Dns, DoH
       //  "IsEnabled": false,
       //  "CompressionMutation": false,
-      //  "QueryTimeout": 10000
+      //  "QueryTimeout": 30000
       //}
     ]
   }

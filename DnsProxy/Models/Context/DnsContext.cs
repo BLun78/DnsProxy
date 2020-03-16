@@ -20,13 +20,18 @@ using System.Threading;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Models.Rules;
 using DnsProxy.Strategies;
+using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Models.Context
 {
     internal class DnsContext : IWriteDnsContext, IDnsContext, IDisposable
     {
+        private ILogger<IDnsContext> _logger;
+        private IDisposable _loggerScope;
+
         public void Dispose()
         {
+            _loggerScope?.Dispose();
         }
 
         public List<IRule> Rules { get; set; }
@@ -38,5 +43,19 @@ namespace DnsProxy.Models.Context
         public List<IDnsResolverStrategy> DnsResolverStrategies { get; set; }
         public CancellationToken RootCancellationToken { get; set; }
         public string IpEndPoint { get; set; }
+
+        public ILogger<IDnsContext> Logger
+        {
+            get => _logger;
+            set
+            {
+                _logger = value;
+                
+                if (!string.IsNullOrWhiteSpace(Request?.TransactionID.ToString()))
+                {
+                    _loggerScope = _logger.BeginScope(Request?.TransactionID.ToString());
+                }
+            }
+        }
     }
 }

@@ -42,13 +42,12 @@ namespace DnsProxy.Strategies
         private readonly IDisposable _internalNameServerConfigListener;
         private readonly IOptionsMonitor<InternalNameServerConfig> _internalNameServerConfigOptionsMonitor;
         private readonly object _lockObjectRules;
-        private readonly ILogger<StrategyManager> _logger;
-        private readonly IDisposable _rulesConfigListner;
+        private readonly IDisposable _rulesConfigListener;
         private readonly IOptionsMonitor<RulesConfig> _rulesConfigOptionsMonitor;
         private readonly IServiceProvider _serviceProvider;
         private readonly List<IRule> Rules;
 
-        public StrategyManager(ILogger<StrategyManager> logger,
+        public StrategyManager(
             IServiceProvider serviceProvider,
             IOptionsMonitor<RulesConfig> rulesConfigOptionsMonitor,
             IOptionsMonitor<DnsDefaultServer> dnsDefaultServerOptionsMonitor,
@@ -56,7 +55,6 @@ namespace DnsProxy.Strategies
             IOptionsMonitor<InternalNameServerConfig> internalNameServerConfigOptionsMonitor,
             IOptionsMonitor<DnsHostConfig> dnsHostConfigOptionsMonitor)
         {
-            _logger = logger;
             _serviceProvider = serviceProvider;
             _lockObjectRules = new object();
             Rules = new List<IRule>();
@@ -66,7 +64,7 @@ namespace DnsProxy.Strategies
             _hostsConfigOptionsMonitor = hostsConfigOptionsMonitor;
             _internalNameServerConfigOptionsMonitor = internalNameServerConfigOptionsMonitor;
             _dnsHostConfigOptionsMonitor = dnsHostConfigOptionsMonitor;
-            _rulesConfigListner = _rulesConfigOptionsMonitor.OnChange(RulesConfigListener);
+            _rulesConfigListener = _rulesConfigOptionsMonitor.OnChange(RulesConfigListener);
             _dnsDefaultServerListener = _dnsDefaultServerOptionsMonitor.OnChange(DnsDefaultServerListener);
             _hostsConfigListener = _hostsConfigOptionsMonitor.OnChange(HostsConfigListener);
             _internalNameServerConfigListener =
@@ -78,7 +76,7 @@ namespace DnsProxy.Strategies
 
         public void Dispose()
         {
-            _rulesConfigListner?.Dispose();
+            _rulesConfigListener?.Dispose();
             _dnsDefaultServerListener?.Dispose();
             _hostsConfigListener?.Dispose();
             _internalNameServerConfigListener?.Dispose();
@@ -117,7 +115,7 @@ namespace DnsProxy.Strategies
 
         private static IDnsResolverStrategy CreateStrategy(IRule rule, IServiceScope scope)
         {
-            var strategy = (IDnsResolverStrategy) scope.ServiceProvider.GetService(rule.GetStraegy());
+            var strategy = (IDnsResolverStrategy)scope.ServiceProvider.GetService(rule.GetStraegy());
             strategy.SetRule(rule);
             return strategy;
         }
@@ -179,7 +177,7 @@ namespace DnsProxy.Strategies
                     }
                     catch (Exception e)
                     {
-                        _logger.LogError(e, "At the resolving process is an error raised: [{0}]", e.Message);
+                        dnsWriteContext.Logger.LogError(e, "At the resolving process is an error raised: [{0}]", e.Message);
                         throw;
                     }
                 }
@@ -218,23 +216,23 @@ namespace DnsProxy.Strategies
                 }
                 catch (ArgumentOutOfRangeException aoore)
                 {
-                    _logger.LogWarning(aoore, "A mapping is not supportet [{0}] for that dns question! >> [{1}]",
+                    dnsWriteContext.Logger.LogWarning(aoore, "A mapping is not supportet [{0}] for that dns question! >> [{1}]",
                         aoore.ActualValue, aoore.Message);
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "A strategy error for the dns question {0} with the error message >> [{1}]",
+                    dnsWriteContext.Logger.LogError(e, "A strategy error for the dns question {0} with the error message >> [{1}]",
                         dnsQuestion?.Name?.ToString(), e.Message);
                 }
             }
             else
             {
-                _logger.LogInformation("Query is found! {0}", dnsResolverStrategy?.GetType()?.ToString());
+                dnsWriteContext.Logger.LogInformation("Query is found! {0}", dnsResolverStrategy?.GetType()?.ToString());
             }
         }
 
         private static async Task DoResolveAsync(IDnsResolverStrategy dnsResolverStrategy, DnsQuestion dnsQuestion,
-            IWriteDnsContext dnsWriteContext,  CancellationToken cancellationToken)
+            IWriteDnsContext dnsWriteContext, CancellationToken cancellationToken)
         {
             var answer = await dnsResolverStrategy
                 .ResolveAsync(dnsQuestion, cancellationToken)
@@ -259,6 +257,8 @@ namespace DnsProxy.Strategies
             dnsWriteContext.HostsResolverStrategy = _hostsConfigOptionsMonitor.CurrentValue.Rule.IsEnabled
                 ? CreateStrategy(_hostsConfigOptionsMonitor.CurrentValue.Rule, scope)
                 : null;
+
+            dnsWriteContext.Logger = _serviceProvider.GetService<ILogger<IDnsContext>>();
 
             //dnsWriteContext.InternalNameServerResolverStrategy =
             //    _internalNameServerConfigOptionsMonitor.CurrentValue.Rule.IsEnabled

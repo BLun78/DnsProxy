@@ -4,11 +4,13 @@ using System.Threading;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Models.Rules;
 using DnsProxy.Strategies;
+using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Models.Context
 {
     internal interface IDnsContext : IDisposable
     {
+        ILogger<IDnsContext> Logger { get; }
         List<IRule> Rules { get; }
         DnsMessage Request { get; }
         DnsMessage Response { get; }

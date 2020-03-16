@@ -25,7 +25,6 @@ using DnsProxy.Models.Aws;
 using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Strategies
 {
@@ -33,12 +32,12 @@ namespace DnsProxy.Strategies
     internal class AwsApiGatewayResolverStrategy : AwsBaseResolverStrategy<AwsApiGatewayRule, AmazonAPIGatewayClient>,
         IDnsResolverStrategy<AwsApiGatewayRule>
     {
-        public AwsApiGatewayResolverStrategy(ILogger<AwsApiGatewayResolverStrategy> logger,
+        public AwsApiGatewayResolverStrategy(
             IDnsContextAccessor dnsContextAccessor,
             IMemoryCache memoryCache,
             AwsContext awsContext,
             AmazonAPIGatewayConfig amazonApiGatewayConfig,
-            IServiceProvider serviceProvider) : base(logger, dnsContextAccessor, memoryCache, awsContext,
+            IServiceProvider serviceProvider) : base(dnsContextAccessor, memoryCache, awsContext,
             amazonApiGatewayConfig, serviceProvider)
         {
         }

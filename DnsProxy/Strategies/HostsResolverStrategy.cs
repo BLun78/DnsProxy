@@ -39,12 +39,11 @@ namespace DnsProxy.Strategies
         private HostsConfig _hostConfigCache;
 
         public HostsResolverStrategy(
-            ILogger<HostsResolverStrategy> logger,
             IMemoryCache memoryCache,
             IOptionsMonitor<HostsConfig> hostConfigOptionsMonitor,
             IOptionsMonitor<CacheConfig> cacheConfigOptionsMonitor,
-            IDnsContextAccessor dnsContextAccessor) 
-            : base(logger, dnsContextAccessor, memoryCache, cacheConfigOptionsMonitor)
+            IDnsContextAccessor dnsContextAccessor)
+            : base(dnsContextAccessor, memoryCache, cacheConfigOptionsMonitor)
         {
             CacheCancellationToken = new CancellationToken();
             _hostConfigOptionsMonitor = hostConfigOptionsMonitor;
@@ -55,29 +54,32 @@ namespace DnsProxy.Strategies
 
         internal static CancellationToken CacheCancellationToken { get; private set; }
 
-        public override Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
-            CancellationToken cancellationToken)
+        public override Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken)
         {
-            var stopwatch = new Stopwatch();
-            LogDnsQuestion(dnsQuestion, stopwatch);
-            var result = new List<DnsRecordBase>();
-
-            var cacheItem = MemoryCache.Get<CacheItem>(dnsQuestion.Name.ToString());
-            if (cacheItem != null && cacheItem.DnsRecordBases.Any())
+            var logger = DnsContextAccessor.DnsContext.Logger;
+            using (logger.BeginScope(nameof(HostsResolverStrategy)))
             {
-                if (cacheItem.RecordType == dnsQuestion.RecordType)
+                var stopwatch = new Stopwatch();
+                LogDnsQuestion(dnsQuestion, stopwatch);
+                var result = new List<DnsRecordBase>();
+
+                var cacheItem = MemoryCache.Get<CacheItem>(dnsQuestion.Name.ToString());
+                if (cacheItem != null && cacheItem.DnsRecordBases.Any())
                 {
-                    result.AddRange(cacheItem.DnsRecordBases);
+                    if (cacheItem.RecordType == dnsQuestion.RecordType)
+                    {
+                        result.AddRange(cacheItem.DnsRecordBases);
+                    }
                 }
-            }
 
-            stopwatch.Stop();
-            if (result.Any())
-            {
-                LogDnsQuestionAndResultFromCache(dnsQuestion, result, stopwatch);
+                stopwatch.Stop();
+                if (result.Any())
+                {
+                    LogDnsQuestionAndResultFromCache(dnsQuestion, result, stopwatch);
+                }
+
+                return Task.FromResult(result);
             }
-            
-            return Task.FromResult(result);
         }
 
         public override Models.Strategies GetStrategy()
@@ -93,7 +95,7 @@ namespace DnsProxy.Strategies
         protected void LogDnsQuestionAndResultFromCache(DnsQuestion dnsQuestion, List<DnsRecordBase> answers, Stopwatch stopwatch)
         {
             var dnsContext = DnsContextAccessor.DnsContext;
-            Logger.LogDebug("Cache >> ClientIpAddress: {0} resolve by cache to {1} (#{2}, {3}) after [{4} ms].",
+            DnsContextAccessor.DnsContext.Logger.LogDebug("Cache >> ClientIpAddress: {0} resolve by cache to {1} (#{2}, {3}) after [{4} ms].",
                 dnsContext?.IpEndPoint, answers?.FirstOrDefault()?.ToString(),
                 dnsContext?.Request?.TransactionID.ToString(CultureInfo.InvariantCulture), dnsQuestion.RecordType, stopwatch.ElapsedMilliseconds);
         }

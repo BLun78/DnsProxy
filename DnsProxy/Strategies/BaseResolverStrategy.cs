@@ -36,16 +36,14 @@ namespace DnsProxy.Strategies
         where TRule : IRule
     {
         protected readonly IDnsContextAccessor DnsContextAccessor;
-        protected readonly ILogger<BaseResolverStrategy<TRule>> Logger;
         protected readonly IMemoryCache MemoryCache;
         protected readonly IOptionsMonitor<CacheConfig> CacheConfigOptionsMonitor;
 
-        protected BaseResolverStrategy(ILogger<BaseResolverStrategy<TRule>> logger,
+        protected BaseResolverStrategy(
             IDnsContextAccessor dnsContextAccessor,
             IMemoryCache memoryCache,
             IOptionsMonitor<CacheConfig> cacheConfigOptionsMonitor)
         {
-            Logger = logger;
             DnsContextAccessor = dnsContextAccessor;
             MemoryCache = memoryCache;
             CacheConfigOptionsMonitor = cacheConfigOptionsMonitor;
@@ -82,7 +80,7 @@ namespace DnsProxy.Strategies
             }
 
             var match = Rule.GetDomainNameRegex().Match(dnsQuestion.Name.ToString());
-            Logger.LogTrace("--> Pattern: {pattern} --> Question {Question}  ->> IsMatch=={match}", pattern,
+            DnsContextAccessor.DnsContext.Logger.LogTrace("--> Pattern: {pattern} --> Question {Question}  ->> IsMatch=={match}", pattern,
                 dnsQuestion.Name.ToString(), match.Success);
             return match.Success;
         }
@@ -93,7 +91,7 @@ namespace DnsProxy.Strategies
         {
             stopwatch.Start();
             var dnsContext = DnsContextAccessor.DnsContext;
-            Logger.LogDebug("ClientIpAddress: {0} requested {1} (#{2}, {3}).", dnsContext?.IpEndPoint, dnsQuestion.Name,
+            DnsContextAccessor.DnsContext.Logger.LogDebug("ClientIpAddress: {0} requested {1} (#{2}, {3}).", dnsContext?.IpEndPoint, dnsQuestion.Name,
                 dnsContext?.Request?.TransactionID.ToString(), dnsQuestion.RecordType);
         }
 
@@ -101,17 +99,46 @@ namespace DnsProxy.Strategies
         {
             stopwatch.Stop();
             var dnsContext = DnsContextAccessor.DnsContext;
-            Logger.LogDebug(operationCanceledException, @"Timeout for ClientIpAddress: {0} requested {1} (#{2}, {3}) after [{4} ms].", dnsContext?.IpEndPoint, dnsQuestion.Name,
+            DnsContextAccessor.DnsContext.Logger.LogDebug(operationCanceledException, @"Timeout for ClientIpAddress: {0} requested {1} (#{2}, {3}) after [{4} ms].", dnsContext?.IpEndPoint, dnsQuestion.Name,
                 dnsContext?.Request?.TransactionID.ToString("0000"), dnsQuestion.RecordType, stopwatch.ElapsedMilliseconds);
         }
 
         protected void LogDnsQuestionAndResult(DnsQuestion dnsQuestion, List<DnsRecordBase> answers, Stopwatch stopwatch)
         {
             stopwatch.Stop();
+            var logger = DnsContextAccessor.DnsContext.Logger;
             var dnsContext = DnsContextAccessor.DnsContext;
-            Logger.LogDebug("ClientIpAddress: {0} resolve {1} (#{2}, {3}) after after [{4} ms].", dnsContext?.IpEndPoint,
-                answers?.FirstOrDefault()?.ToString(),
-                dnsContext?.Request?.TransactionID.ToString(), dnsQuestion.RecordType, stopwatch.ElapsedMilliseconds);
+            var i = 1;
+            var count = answers.Count(x => x != null);
+            var request = string.Empty;
+
+            foreach (DnsRecordBase dnsRecordBase in answers.Where(x => x != null))
+            {
+                if (i == 1)
+                {
+                    if (count == 1)
+                    {
+                        logger.LogDebug("ClientIpAddress: {0} resolve {1} (#{2}, {3}) after after [{4} ms].", dnsContext?.IpEndPoint,
+                            dnsRecordBase?.ToString(),
+                            dnsContext?.Request?.TransactionID.ToString(), dnsQuestion.RecordType, stopwatch.ElapsedMilliseconds);
+                    }
+                    else
+                    {
+                        request = dnsRecordBase?.Name.ToString();
+                        logger.LogDebug("ClientIpAddress: {0} resolve[{1}/{2}] {3} (#{4}, {5}) after after [{6} ms].", dnsContext?.IpEndPoint, i, count,
+                            dnsRecordBase?.ToString(),
+                            dnsContext?.Request?.TransactionID.ToString(), dnsQuestion.RecordType, stopwatch.ElapsedMilliseconds);
+                    }
+                }
+                else
+                {
+                    logger.LogDebug("ClientIpAddress: {0} resolve[{1}/{2}] {3} => {4} (#{4}, {5}) after after [{6} ms].", dnsContext?.IpEndPoint, i, count,
+                        request, dnsRecordBase?.ToString(),
+                        dnsContext?.Request?.TransactionID.ToString(), dnsQuestion.RecordType, stopwatch.ElapsedMilliseconds, i, count);
+                }
+                ++i;
+            }
+
         }
 
         protected void StoreInCache(RecordType recordType, List<DnsRecordBase> data, string key, MemoryCacheEntryOptions cacheEntryOptions)
