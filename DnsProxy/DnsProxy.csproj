@@ -64,11 +64,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.APIGateway" Version="3.3.103.65" />
-    <PackageReference Include="AWSSDK.DocDB" Version="3.3.102.61" />
-    <PackageReference Include="AWSSDK.EC2" Version="3.3.167" />
-    <PackageReference Include="AWSSDK.ElastiCache" Version="3.3.107.49" />
-    <PackageReference Include="AWSSDK.SecurityToken" Version="3.3.104.40" />
+    <PackageReference Include="AWSSDK.APIGateway" Version="3.3.103.66" />
+    <PackageReference Include="AWSSDK.DocDB" Version="3.3.102.62" />
+    <PackageReference Include="AWSSDK.EC2" Version="3.3.168" />
+    <PackageReference Include="AWSSDK.ElastiCache" Version="3.3.107.50" />
+    <PackageReference Include="AWSSDK.SecurityToken" Version="3.3.104.41" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
