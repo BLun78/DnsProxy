@@ -31,7 +31,7 @@ namespace DnsProxy.Models.Rules
 
         public override Type GetStraegy()
         {
-            return typeof(HostsResolverStrategy);
+            return typeof(CacheResolverStrategy);
         }
     }
 }

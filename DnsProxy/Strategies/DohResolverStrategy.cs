@@ -113,8 +113,7 @@ namespace DnsProxy.Strategies
                     {
                         ttl = CacheConfigOptionsMonitor.CurrentValue.MinimalTimeToLiveInSeconds;
                     }
-                    StoreInCache(dnsQuestion.RecordType, result, dnsQuestion.Name.ToString(),
-                        new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(ttl)));
+                    StoreInCache(dnsQuestion, result, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(ttl)));
                 }
 
                 LogDnsQuestionAndResult(dnsQuestion, result, stopwatch);

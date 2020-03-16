@@ -39,8 +39,8 @@ namespace DnsProxy.Strategies
         private readonly IOptionsMonitor<DnsHostConfig> _dnsHostConfigOptionsMonitor;
         private readonly IDisposable _hostsConfigListener;
         private readonly IOptionsMonitor<HostsConfig> _hostsConfigOptionsMonitor;
-        private readonly IDisposable _internalNameServerConfigListener;
-        private readonly IOptionsMonitor<InternalNameServerConfig> _internalNameServerConfigOptionsMonitor;
+        //private readonly IDisposable _internalNameServerConfigListener;
+        //private readonly IOptionsMonitor<InternalNameServerConfig> _internalNameServerConfigOptionsMonitor;
         private readonly object _lockObjectRules;
         private readonly IDisposable _rulesConfigListener;
         private readonly IOptionsMonitor<RulesConfig> _rulesConfigOptionsMonitor;
@@ -52,7 +52,7 @@ namespace DnsProxy.Strategies
             IOptionsMonitor<RulesConfig> rulesConfigOptionsMonitor,
             IOptionsMonitor<DnsDefaultServer> dnsDefaultServerOptionsMonitor,
             IOptionsMonitor<HostsConfig> hostsConfigOptionsMonitor,
-            IOptionsMonitor<InternalNameServerConfig> internalNameServerConfigOptionsMonitor,
+            //IOptionsMonitor<InternalNameServerConfig> internalNameServerConfigOptionsMonitor,
             IOptionsMonitor<DnsHostConfig> dnsHostConfigOptionsMonitor)
         {
             _serviceProvider = serviceProvider;
@@ -62,13 +62,12 @@ namespace DnsProxy.Strategies
             _rulesConfigOptionsMonitor = rulesConfigOptionsMonitor;
             _dnsDefaultServerOptionsMonitor = dnsDefaultServerOptionsMonitor;
             _hostsConfigOptionsMonitor = hostsConfigOptionsMonitor;
-            _internalNameServerConfigOptionsMonitor = internalNameServerConfigOptionsMonitor;
+            //_internalNameServerConfigOptionsMonitor = internalNameServerConfigOptionsMonitor;
             _dnsHostConfigOptionsMonitor = dnsHostConfigOptionsMonitor;
             _rulesConfigListener = _rulesConfigOptionsMonitor.OnChange(RulesConfigListener);
             _dnsDefaultServerListener = _dnsDefaultServerOptionsMonitor.OnChange(DnsDefaultServerListener);
             _hostsConfigListener = _hostsConfigOptionsMonitor.OnChange(HostsConfigListener);
-            _internalNameServerConfigListener =
-                _internalNameServerConfigOptionsMonitor.OnChange(InternalNameServerConfigListener);
+            //_internalNameServerConfigListener = _internalNameServerConfigOptionsMonitor.OnChange(InternalNameServerConfigListener);
             _dnsHostConfigListener = _dnsDefaultServerOptionsMonitor.OnChange(DnsHostConfigListener);
             DnsDefaultServerListener(_dnsDefaultServerOptionsMonitor.CurrentValue, null);
             RulesConfigListener(_rulesConfigOptionsMonitor.CurrentValue, null);
@@ -79,12 +78,12 @@ namespace DnsProxy.Strategies
             _rulesConfigListener?.Dispose();
             _dnsDefaultServerListener?.Dispose();
             _hostsConfigListener?.Dispose();
-            _internalNameServerConfigListener?.Dispose();
+            //_internalNameServerConfigListener?.Dispose();
             _dnsHostConfigListener?.Dispose();
             (_rulesConfigOptionsMonitor as IDisposable)?.Dispose();
             (_dnsDefaultServerOptionsMonitor as IDisposable)?.Dispose();
             (_hostsConfigOptionsMonitor as IDisposable)?.Dispose();
-            (_internalNameServerConfigOptionsMonitor as IDisposable)?.Dispose();
+            //(_internalNameServerConfigOptionsMonitor as IDisposable)?.Dispose();
             (_dnsHostConfigOptionsMonitor as IDisposable)?.Dispose();
         }
 
@@ -92,9 +91,9 @@ namespace DnsProxy.Strategies
         {
         }
 
-        private void InternalNameServerConfigListener(InternalNameServerConfig internalNameServerConfig, string name)
-        {
-        }
+        //private void InternalNameServerConfigListener(InternalNameServerConfig internalNameServerConfig, string name)
+        //{
+        //}
 
         private void HostsConfigListener(HostsConfig hostsConfig, string name)
         {

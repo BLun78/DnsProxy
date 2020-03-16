@@ -21,24 +21,24 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ARSoft.Tools.Net;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common;
 using DnsProxy.Models;
 using DnsProxy.Models.Context;
 using DnsProxy.Models.Rules;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace DnsProxy.Strategies
 {
-    internal class HostsResolverStrategy : BaseResolverStrategy<HostsRule>, IDnsResolverStrategy<HostsRule>
+    internal class CacheResolverStrategy : BaseResolverStrategy<HostsRule>, IDnsResolverStrategy<HostsRule>
     {
         private readonly IOptionsMonitor<HostsConfig> _hostConfigOptionsMonitor;
         private readonly IDisposable _parseHostConfig;
         private HostsConfig _hostConfigCache;
 
-        public HostsResolverStrategy(
+        public CacheResolverStrategy(
             IMemoryCache memoryCache,
             IOptionsMonitor<HostsConfig> hostConfigOptionsMonitor,
             IOptionsMonitor<CacheConfig> cacheConfigOptionsMonitor,
@@ -57,13 +57,14 @@ namespace DnsProxy.Strategies
         public override Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken)
         {
             var logger = DnsContextAccessor.DnsContext.Logger;
-            using (logger.BeginScope(nameof(HostsResolverStrategy)))
+            using (logger.BeginScope(nameof(CacheResolverStrategy)))
             {
                 var stopwatch = new Stopwatch();
                 LogDnsQuestion(dnsQuestion, stopwatch);
                 var result = new List<DnsRecordBase>();
+                var key = dnsQuestion.ToString();
 
-                var cacheItem = MemoryCache.Get<CacheItem>(dnsQuestion.Name.ToString());
+                var cacheItem = MemoryCache.Get<CacheItem>(key);
                 if (cacheItem != null && cacheItem.DnsRecordBases.Any())
                 {
                     if (cacheItem.RecordType == dnsQuestion.RecordType)
@@ -75,7 +76,7 @@ namespace DnsProxy.Strategies
                 stopwatch.Stop();
                 if (result.Any())
                 {
-                    LogDnsQuestionAndResultFromCache(dnsQuestion, result, stopwatch);
+                    LogDnsQuestionAndResult(dnsQuestion, result, stopwatch);
                 }
 
                 return Task.FromResult(result);
@@ -90,14 +91,6 @@ namespace DnsProxy.Strategies
         public override bool MatchPattern(DnsQuestion dnsQuestion)
         {
             return true;
-        }
-
-        protected void LogDnsQuestionAndResultFromCache(DnsQuestion dnsQuestion, List<DnsRecordBase> answers, Stopwatch stopwatch)
-        {
-            var dnsContext = DnsContextAccessor.DnsContext;
-            DnsContextAccessor.DnsContext.Logger.LogDebug("Cache >> ClientIpAddress: {0} resolve by cache to {1} (#{2}, {3}) after [{4} ms].",
-                dnsContext?.IpEndPoint, answers?.FirstOrDefault()?.ToString(),
-                dnsContext?.Request?.TransactionID.ToString(CultureInfo.InvariantCulture), dnsQuestion.RecordType, stopwatch.ElapsedMilliseconds);
         }
 
         protected override void Dispose(bool disposing)
@@ -116,12 +109,15 @@ namespace DnsProxy.Strategies
                     foreach (var ipAddress in host.IpAddresses)
                     {
                         var tempHost = host.ToPtrRecords(ipAddress);
-                        RemoveCacheItem(tempHost.Item1);
+                        var question = new DnsQuestion(DomainName.Parse(tempHost.Item1), RecordType.Ptr, RecordClass.INet);
+                        RemoveCacheItem(question);
                     }
 
                     foreach (var domainName in host.DomainNames)
                     {
-                        RemoveCacheItem(domainName);
+                        var tempHost = host.ToAddressRecord(domainName);
+                        var question = new DnsQuestion(DomainName.Parse(domainName), tempHost.First().RecordType, RecordClass.INet);
+                        RemoveCacheItem(question);
                     }
                 }
 
@@ -133,31 +129,34 @@ namespace DnsProxy.Strategies
                     foreach (var ipAddress in host.IpAddresses)
                     {
                         var tempHost = host.ToPtrRecords(ipAddress);
-                        StoreInCache(RecordType.Ptr, tempHost.Item2.Cast<DnsRecordBase>().ToList(), tempHost.Item1);
+                        var question = new DnsQuestion(DomainName.Parse(tempHost.Item1), RecordType.Ptr, RecordClass.INet);
+                        StoreInCache(question, tempHost.Item2.Cast<DnsRecordBase>().ToList());
                     }
 
                     foreach (var domainName in host.DomainNames)
                     {
-                        // TODO: Better group by ARecord and AaaaRecord
                         var tempHost = host.ToAddressRecord(domainName);
-                        StoreInCache(tempHost.First().RecordType, tempHost.Cast<DnsRecordBase>().ToList(), domainName);
+                        var question = new DnsQuestion(DomainName.Parse(domainName), tempHost.First().RecordType, RecordClass.INet);
+                        StoreInCache(question, tempHost.Cast<DnsRecordBase>().ToList());
                     }
                 }
         }
 
-        private void RemoveCacheItem(string key)
+        private void RemoveCacheItem(DnsQuestion dnsQuestion)
         {
+            var key = dnsQuestion.ToString();
             var lastChar = key.Substring(key.Length - 1, 1);
             MemoryCache.Remove(lastChar == "."
                 ? key
                 : $"{key}.");
         }
 
-        private void StoreInCache(RecordType recordType, List<DnsRecordBase> data, string key)
+        private void StoreInCache(DnsQuestion dnsQuestion, List<DnsRecordBase> data)
         {
             var cacheoptions = new MemoryCacheEntryOptions();
             cacheoptions.SetPriority(CacheItemPriority.NeverRemove);
-            StoreInCache(recordType, data, key, cacheoptions);
+
+            StoreInCache(dnsQuestion, data, cacheoptions);
         }
     }
 }

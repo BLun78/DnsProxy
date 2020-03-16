@@ -56,18 +56,18 @@ namespace DnsProxy.Models
             {
                 case Strategies.Hosts:
                     return new HostsRule(this);
-                case Strategies.InternalNameServer:
-                    return new InternalNameServerRule(this);
                 case Strategies.Dns:
                     return new DnsRule(this);
                 case Strategies.DoH:
                     return new DohRule(this);
-                case Strategies.AwsDocDb:
-                    return new AwsDocDbRule(this);
-                case Strategies.AwsElasticCache:
-                    return new AwsElasticCacheRule(this);
-                case Strategies.AwsApiGateway:
-                    return new AwsApiGatewayRule(this);
+                //case Strategies.InternalNameServer:
+                //    return new InternalNameServerRule(this);
+                //case Strategies.AwsDocDb:
+                //    return new AwsDocDbRule(this);
+                //case Strategies.AwsElasticCache:
+                //    return new AwsElasticCacheRule(this);
+                //case Strategies.AwsApiGateway:
+                //    return new AwsApiGatewayRule(this);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(Strategy), Strategy, null);
             }

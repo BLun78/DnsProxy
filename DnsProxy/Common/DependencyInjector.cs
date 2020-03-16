@@ -81,16 +81,16 @@ namespace DnsProxy.Common
 
             // Stratgies
             services.AddSingleton<StrategyManager>();
-            //services.AddSingleton<DohResolverStrategy>();
+            //services.AddSingleton<DohResolverStrategy>(); // take a look for services.AddHttpClient
             services.AddSingleton<DnsResolverStrategy>();
-            services.AddSingleton<InternalNameServerResolverStrategy>();
-            services.AddSingleton<HostsResolverStrategy>();
-            services.AddSingleton<AwsApiGatewayResolverStrategy>();
-            services.AddSingleton<AwsDocDbResolverStrategy>();
-            services.AddSingleton<AwsElasticCacheResolverStrategy>();
+            services.AddSingleton<CacheResolverStrategy>();
+            //services.AddSingleton<InternalNameServerResolverStrategy>();
+            //services.AddSingleton<AwsApiGatewayResolverStrategy>();
+            //services.AddSingleton<AwsDocDbResolverStrategy>();
+            //services.AddSingleton<AwsElasticCacheResolverStrategy>(); 
+            //services.AddSingleton<AwsDocDbResolverStrategy>();
 
             // common
-            services.AddSingleton<AwsDocDbResolverStrategy>();
             services.AddSingleton<AwsVpcManager>();
             services.AddSingleton(CreateHttpProxyConfig);
             services.AddSingleton(CreateAmazonConfig<AmazonEC2Config>);
@@ -106,7 +106,7 @@ namespace DnsProxy.Common
             services.Configure<RulesConfig>(_configuration.GetSection(nameof(RulesConfig)));
             services.Configure<DnsDefaultServer>(_configuration.GetSection(nameof(DnsDefaultServer)));
             services.Configure<HttpProxyConfig>(_configuration.GetSection(nameof(HttpProxyConfig)));
-            services.Configure<InternalNameServerConfig>(_configuration.GetSection(nameof(InternalNameServerConfig)));
+            //services.Configure<InternalNameServerConfig>(_configuration.GetSection(nameof(InternalNameServerConfig)));
             services.Configure<AwsSettings>(_configuration.GetSection(nameof(AwsSettings)));
             services.Configure<CacheConfig>(_configuration.GetSection(nameof(CacheConfig)));
 

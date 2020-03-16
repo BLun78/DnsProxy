@@ -53,6 +53,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\InternalNameServerConfig.cs" />
+    <Compile Remove="Models\Rules\AwsApiGatewayRule.cs" />
+    <Compile Remove="Models\Rules\AwsDocDbRule.cs" />
+    <Compile Remove="Models\Rules\AwsElasticCacheRule.cs" />
+    <Compile Remove="Models\Rules\InternalNameServerRule.cs" />
+    <Compile Remove="Strategies\AwsApiGatewayResolverStrategy.cs" />
+    <Compile Remove="Strategies\AwsBaseResolverStrategy.cs" />
+    <Compile Remove="Strategies\AwsDocDbResolverStrategy.cs" />
+    <Compile Remove="Strategies\AwsElasticCacheResolverStrategy.cs" />
+    <Compile Remove="Strategies\InternalNameServerResolverStrategy.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
@@ -61,6 +74,16 @@
 
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
+    <None Include="Models\InternalNameServerConfig.cs" />
+    <None Include="Models\Rules\AwsApiGatewayRule.cs" />
+    <None Include="Models\Rules\AwsDocDbRule.cs" />
+    <None Include="Models\Rules\AwsElasticCacheRule.cs" />
+    <None Include="Models\Rules\InternalNameServerRule.cs" />
+    <None Include="Strategies\AwsApiGatewayResolverStrategy.cs" />
+    <None Include="Strategies\AwsBaseResolverStrategy.cs" />
+    <None Include="Strategies\AwsDocDbResolverStrategy.cs" />
+    <None Include="Strategies\AwsElasticCacheResolverStrategy.cs" />
+    <None Include="Strategies\InternalNameServerResolverStrategy.cs" />
   </ItemGroup>
 
   <ItemGroup>
