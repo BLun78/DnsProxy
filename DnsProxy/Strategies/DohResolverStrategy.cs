@@ -57,7 +57,7 @@ namespace DnsProxy.Strategies
             CancellationToken cancellationToken)
         {
             var logger = DnsContextAccessor.DnsContext.Logger;
-            using (logger.BeginScope(nameof(DohResolverStrategy)))
+            using (logger.BeginScope("DOH =>"))
             {
                 var stopwatch = new Stopwatch();
                 LogDnsQuestion(dnsQuestion, stopwatch);

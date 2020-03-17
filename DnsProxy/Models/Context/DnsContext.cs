@@ -24,9 +24,9 @@ using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Models.Context
 {
-    internal class DnsContext : IWriteDnsContext, IDnsContext, IDisposable
+    internal class DnsContext : IWriteDnsContext, IDnsCtx, IDisposable
     {
-        private ILogger<IDnsContext> _logger;
+        private ILogger<IDnsCtx> _logger;
         private IDisposable _loggerScope;
 
         public void Dispose()
@@ -44,7 +44,7 @@ namespace DnsProxy.Models.Context
         public CancellationToken RootCancellationToken { get; set; }
         public string IpEndPoint { get; set; }
 
-        public ILogger<IDnsContext> Logger
+        public ILogger<IDnsCtx> Logger
         {
             get => _logger;
             set

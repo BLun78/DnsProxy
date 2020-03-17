@@ -35,7 +35,7 @@ namespace DnsProxy.Common
         public void LogAssemblyInformation()
         {
             var version = _assembly.GetName().Version;
-            var buildTime = new DateTime(2020, 3, 16);
+            var buildTime = new DateTime(2020, 3, 17);
             var title = DefaultTitle;
             //_logger.LogTrace(@"Title: '{title}' Version: '{version}' Builddate: '{buildTime}'", title, version,
             //    buildTime);

@@ -24,7 +24,7 @@ using Amazon.SecurityToken;
 using Amazon.SecurityToken.Model;
 using DnsProxy.Models.Aws;
 
-namespace DnsProxy.Common.Aws
+namespace DnsProxy.Aws
 {
     internal class AwsMfa
     {

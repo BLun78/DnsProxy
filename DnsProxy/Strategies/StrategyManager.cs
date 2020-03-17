@@ -257,7 +257,7 @@ namespace DnsProxy.Strategies
                 ? CreateStrategy(_hostsConfigOptionsMonitor.CurrentValue.Rule, scope)
                 : null;
 
-            dnsWriteContext.Logger = _serviceProvider.GetService<ILogger<IDnsContext>>();
+            dnsWriteContext.Logger = _serviceProvider.GetService<ILogger<IDnsCtx>>();
 
             //dnsWriteContext.InternalNameServerResolverStrategy =
             //    _internalNameServerConfigOptionsMonitor.CurrentValue.Rule.IsEnabled

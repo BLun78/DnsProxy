@@ -146,7 +146,7 @@ namespace DnsProxy.Strategies
 
         }
 
-        private static void LogMultiResolverLog(Stopwatch stopwatch, ILogger<IDnsContext> logger, IDnsContext dnsContext, int i, int count, DnsRecordBase dnsRecordBase)
+        private static void LogMultiResolverLog(Stopwatch stopwatch, ILogger<IDnsCtx> logger, IDnsCtx dnsContext, int i, int count, DnsRecordBase dnsRecordBase)
         {
             var messageTemplate = "ClientIpAddress: {0} resolve[{1}/{2}] {3} => {4} ({5}, {6}) after [{7} ms]";
             if (dnsRecordBase is CNameRecord cNameRecord)

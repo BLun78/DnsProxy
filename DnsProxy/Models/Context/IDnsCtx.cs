@@ -6,11 +6,11 @@ using DnsProxy.Models.Rules;
 using DnsProxy.Strategies;
 using Microsoft.Extensions.Logging;
 
-namespace DnsProxy.Models.Context
+namespace DnsProxy
 {
-    internal interface IDnsContext : IDisposable
+    internal interface IDnsCtx : IDisposable
     {
-        ILogger<IDnsContext> Logger { get; }
+        ILogger<IDnsCtx> Logger { get; }
         List<IRule> Rules { get; }
         DnsMessage Request { get; }
         DnsMessage Response { get; }

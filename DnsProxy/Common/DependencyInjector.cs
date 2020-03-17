@@ -25,7 +25,7 @@ using Amazon.DocDB;
 using Amazon.EC2;
 using Amazon.ElastiCache;
 using Amazon.Runtime;
-using DnsProxy.Common.Aws;
+using DnsProxy.Aws;
 using DnsProxy.Dns;
 using DnsProxy.Models;
 using DnsProxy.Models.Aws;

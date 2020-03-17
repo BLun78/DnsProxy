@@ -38,7 +38,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using DomainName = ARSoft.Tools.Net.DomainName;
 
-namespace DnsProxy.Common.Aws
+namespace DnsProxy.Aws
 {
     internal class AwsVpcManager
     {
@@ -144,7 +144,10 @@ namespace DnsProxy.Common.Aws
                     orderby newRecords.Key
                     select newRecords).ToList();
                 foreach (var dnsRecordBases in groupedResult)
-                    StoreInCache(RecordType.A, dnsRecordBases.ToList(), dnsRecordBases.Key);
+                {
+                    var dnsQuestion = new DnsQuestion(DomainName.Parse(dnsRecordBases.Key), RecordType.A, RecordClass.INet);
+                    StoreInCache(dnsQuestion, dnsRecordBases.ToList());
+                }
             }
             catch (AmazonEC2Exception aee)
             {
@@ -307,21 +310,27 @@ namespace DnsProxy.Common.Aws
             return new DescribeVpcsRequest();
         }
 
-        private void StoreInCache(RecordType recordType, List<DnsRecordBase> data, string key)
-        {
-            var cacheOptions = new MemoryCacheEntryOptions();
-            cacheOptions.SetPriority(CacheItemPriority.NeverRemove);
-            StoreInCache(recordType, data, key, cacheOptions);
-        }
-
-        private void StoreInCache(RecordType recordType, List<DnsRecordBase> data, string key,
+        protected void StoreInCache(DnsQuestion dnsQuestion, List<DnsRecordBase> data,
             MemoryCacheEntryOptions cacheEntryOptions)
         {
-            var cacheItem = new CacheItem(recordType, data);
-            var lastChar = key.Substring(key.Length - 1, 1);
-            _memoryCache.Set(lastChar == "."
-                ? key
-                : $"{key}.", cacheItem, cacheEntryOptions);
+            var key = dnsQuestion.ToString();
+            var key2 = new DnsQuestion(dnsQuestion.Name, RecordType.A, dnsQuestion.RecordClass).ToString();
+
+            var cacheItem = new CacheItem(dnsQuestion.RecordType, data);
+            _memoryCache.Set(key, cacheItem, cacheEntryOptions);
+
+            if (dnsQuestion.RecordType != RecordType.A)
+            {
+                _memoryCache.Set(key2, cacheItem, cacheEntryOptions);
+            }
+        }
+
+        private void StoreInCache(DnsQuestion dnsQuestion, List<DnsRecordBase> data)
+        {
+            var cacheoptions = new MemoryCacheEntryOptions();
+            cacheoptions.SetPriority(CacheItemPriority.NeverRemove);
+
+            StoreInCache(dnsQuestion, data, cacheoptions);
         }
     }
 }

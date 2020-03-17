@@ -23,7 +23,7 @@ namespace DnsProxy.Models.Context
         private static readonly AsyncLocal<WriteDnsContextHolder> WriteDnsContextCurrent =
             new AsyncLocal<WriteDnsContextHolder>();
 
-        public IDnsContext DnsContext
+        public IDnsCtx DnsContext
         {
             get => WriteDnsContext;
             set => WriteDnsContext = value as IWriteDnsContext;
