@@ -34,6 +34,8 @@ namespace DnsProxy.Common
             .AddJsonFile("rules.json", false, true)
             .AddJsonFile("hosts.json", false, true)
             .AddJsonFile("nameserver.json", false, true)
+            .AddJsonFile(".config.json", true, true)
+            .AddJsonFile(".rules.json", true, true)
             .AddEnvironmentVariables()
             .AddCommandLine(_args)
             .Build();
