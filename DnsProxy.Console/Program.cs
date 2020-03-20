@@ -215,7 +215,7 @@ namespace DnsProxy.Console
                     await mfa.CreateAwsCredentialsAsync(userAccount, mfsToken, CancellationTokenSource.Token)
                         .ConfigureAwait(false);
 
-                    foreach (var role in userAccount.Roles)
+                    foreach (var role in userAccount.Roles.Where(x => x.DoScan == true))
                         await mfa.AssumeRoleAsync(userAccount, role, CancellationTokenSource.Token)
                             .ConfigureAwait(false);
                 }
