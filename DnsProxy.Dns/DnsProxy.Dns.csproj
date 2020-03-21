@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+      <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+      <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
+      <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  
+      <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
+      <IncludeSymbols>true</IncludeSymbols>
+      <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  
+      <!-- Nuget specs -->
+      <PackageId>DnsProxy</PackageId>
+      <Authors>Björn Lundström</Authors>
+      <Copyright>© 2019-2020 Björn Lundström</Copyright>
+      <Title>BLun DNS Proxy</Title>
+      <Description>A dns-proxy for Developers!</Description>
+      <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+      <PackageTags>dns</PackageTags>
+      <PackageReleaseNotes>https://github.com/BLun78/DnsProxy/releases</PackageReleaseNotes>
+      <PackageProjectUrl>https://github.com/BLun78/DnsProxy</PackageProjectUrl>
+      <Company>BLun.de - Björn Lundström</Company>
+      <RepositoryType>git</RepositoryType>
+      <RepositoryUrl>https://github.com/BLun78/DnsProxy.git</RepositoryUrl>
+      <PackageLicenseFile>LICENSE</PackageLicenseFile>
+      <SignAssembly>false</SignAssembly>
+      <AssemblyOriginatorKeyFile>DnsProxy.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ARSoft.Tools.Net\ARSoft.Tools.Net.csproj" />
+    <ProjectReference Include="..\DnsProxy.Common\DnsProxy.Common.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.2" />
+  </ItemGroup>
+
+</Project>

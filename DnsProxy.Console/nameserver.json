@@ -1,9 +1,0 @@
-// Obsolete
-{
-  "InternalNameServerConfig": {
-    "Rule": {
-      "IsEnabled": false,
-      "QueryTimeout": 10000
-    }
-  }
-}

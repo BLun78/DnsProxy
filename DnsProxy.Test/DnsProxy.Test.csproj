@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+
+    <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+    <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    <!-- Nuget specs -->
+    <PackageId>DnsProxy</PackageId>
+    <Authors>Björn Lundström</Authors>
+    <Copyright>© 2019-2020 Björn Lundström</Copyright>
+    <Title>BLun DNS Proxy</Title>
+    <Description>A dns-proxy for Developers!</Description>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageTags>dns</PackageTags>
+    <PackageReleaseNotes>https://github.com/BLun78/DnsProxy/releases</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/BLun78/DnsProxy</PackageProjectUrl>
+    <Company>BLun.de - Björn Lundström</Company>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/BLun78/DnsProxy.git</RepositoryUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>DnsProxy.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.0.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.0.0" />
+    <PackageReference Include="coverlet.collector" Version="1.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ARSoft.Tools.Net\ARSoft.Tools.Net.csproj" />
+    <ProjectReference Include="..\DnsProxy.Abstractions\DnsProxy.Common.csproj" />
+    <ProjectReference Include="..\DnsProxy.Aws\DnsProxy.Aws.csproj" />
+    <ProjectReference Include="..\DnsProxy.Console\DnsProxy.Console.csproj" />
+    <ProjectReference Include="..\DnsProxy.Dns\DnsProxy.Dns.csproj" />
+    <ProjectReference Include="..\DnsProxy.Doh\DnsProxy.Doh.csproj" />
+    <ProjectReference Include="..\DnsProxy.Hosts\DnsProxy.Hosts.csproj" />
+    <ProjectReference Include="..\DnsProxy.Server\DnsProxy.Server.csproj" />
+    <ProjectReference Include="..\net-udns\src\Udns.csproj" />
+  </ItemGroup>
+
+</Project>

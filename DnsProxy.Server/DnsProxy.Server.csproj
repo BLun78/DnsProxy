@@ -1,12 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk" SDK="MSBuild.Sdk.Extras">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <PublishTrimmed>false</PublishTrimmed>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
     <TieredCompilation>true</TieredCompilation>
-    <PublishSingleFile>false</PublishSingleFile>
 
     <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -19,7 +16,7 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
     <!-- Nuget specs -->
-    <PackageId>DnsProxy.Console</PackageId>
+    <PackageId>DnsProxy</PackageId>
     <Authors>Björn Lundström</Authors>
     <Copyright>© 2019-2020 Björn Lundström</Copyright>
     <Title>BLun DNS Proxy</Title>
@@ -32,25 +29,15 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/BLun78/DnsProxy.git</RepositoryUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <StartupObject>DnsProxy.Console.Program</StartupObject>
 
-    <LangVersion>latest</LangVersion>
-    <Version>1.0.4.0</Version>
-    <AssemblyVersion>1.0.4.0</AssemblyVersion>
-    <FileVersion>1.0.4.0</FileVersion>
-
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <OutputType>Library</OutputType>
+    <ApplicationIcon />
+    <StartupObject />
+    <AssemblyName>DnsProxy.Server</AssemblyName>
+    <RootNamespace>DnsProxy.Server</RootNamespace>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>DnsProxy.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(OS))'=='osx-x64'">
-    <PublishReadyToRun>true</PublishReadyToRun>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(OS)'=='linux-x64'">
-    <PublishReadyToRun>true</PublishReadyToRun>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(OS)'=='win-x64'">
-    <PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -65,50 +52,30 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <NoWarn>1701;1702</NoWarn>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
-    <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove=".config.json" />
-    <None Remove=".rules.json" />
-    <None Remove="config.json" />
-    <None Remove="hosts.json" />
-    <None Remove="Plugins\README.MD" />
-    <None Remove="rules.json" />
-    <None Remove="_config.json" />
-    <None Remove="_rules.json" />
+    <Compile Remove="Models\Rules\AwsApiGatewayRule.cs" />
+    <Compile Remove="Models\Rules\AwsDocDbRule.cs" />
+    <Compile Remove="Models\Rules\AwsElasticCacheRule.cs" />
+    <Compile Remove="Models\Rules\InternalNameServerRule.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Plugins\README.MD">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="config.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="hosts.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="rules.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="_config.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="_rules.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\LICENSE" Link="LICENSE">
-      <PackagePath></PackagePath>
+    <None Include="..\LICENSE">
       <Pack>True</Pack>
+      <PackagePath></PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+    <None Include="Models\Rules\AwsApiGatewayRule.cs" />
+    <None Include="Models\Rules\AwsDocDbRule.cs" />
+    <None Include="Models\Rules\AwsElasticCacheRule.cs" />
+    <None Include="Models\Rules\InternalNameServerRule.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -117,12 +84,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="3.1.2" />
@@ -135,11 +96,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ARSoft.Tools.Net\ARSoft.Tools.Net.csproj" />
     <ProjectReference Include="..\DnsProxy.Common\DnsProxy.Common.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EditorConfigFiles Update="Y:\c#\DnsProxy\.editorconfig" Link=".editorconfig" />
+    <ProjectReference Include="..\net-udns\src\Udns.csproj" />
   </ItemGroup>
 
 </Project>
