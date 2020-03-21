@@ -17,9 +17,11 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using DnsProxy.Strategies;
+using DnsProxy.Common.Models.Rules;
+using DnsProxy.Dns.Strategies;
+using Rule = DnsProxy.Common.Models.Rules.Rule;
 
-namespace DnsProxy.Models.Rules
+namespace DnsProxy.Dns.Models.Rules
 {
     internal class DnsRule : RuleBase, IRule, IRuleStrategy
     {

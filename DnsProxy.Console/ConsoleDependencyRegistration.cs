@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using DnsProxy.Common;
+﻿using System.Threading;
 using DnsProxy.Common.DI;
+using DnsProxy.Console.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

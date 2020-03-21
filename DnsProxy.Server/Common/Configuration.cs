@@ -17,7 +17,7 @@
 using System.IO;
 using Microsoft.Extensions.Configuration;
 
-namespace DnsProxy.Common
+namespace DnsProxy.Server.Common
 {
     internal class Configuration
     {
@@ -32,8 +32,6 @@ namespace DnsProxy.Common
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("config.json", false, true)
             .AddJsonFile("rules.json", false, true)
-            .AddJsonFile("hosts.json", false, true)
-            .AddJsonFile("nameserver.json", false, true)
             .AddJsonFile("_config.json", true, true)
             .AddJsonFile("_rules.json", true, true)
             .AddEnvironmentVariables()

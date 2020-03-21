@@ -20,13 +20,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Amazon.Runtime;
 using ARSoft.Tools.Net.Dns;
-using DnsProxy.Models.Aws;
-using DnsProxy.Models.Context;
-using DnsProxy.Models.Rules;
+using DnsProxy.Aws.Models;
+using DnsProxy.Common.Models.Context;
+using DnsProxy.Common.Models.Rules;
+using DnsProxy.Common.Strategies;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DnsProxy.Strategies
+namespace DnsProxy.Aws.Strategies
 {
     internal abstract class AwsBaseResolverStrategy<TRule, TClient> : BaseResolverStrategy<TRule>
         where TRule : IRule

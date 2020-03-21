@@ -18,9 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
-using DnsProxy.Models.Rules;
 
-namespace DnsProxy.Models
+namespace DnsProxy.Common.Models.Rules
 {
     internal class Rule : IRule
     {
@@ -33,7 +32,7 @@ namespace DnsProxy.Models
         /// </summary>
         public int QueryTimeout { get; set; }
 
-        public Strategies Strategy { get; set; }
+        public Common.Models.Strategies Strategy { get; set; }
         public bool IsEnabled { get; set; }
 
         public string DomainName { get; set; }
@@ -54,18 +53,19 @@ namespace DnsProxy.Models
         {
             switch (Strategy)
             {
-                case Strategies.Hosts:
-                    return new HostsRule(this);
-                case Strategies.Dns:
-                    return new DnsRule(this);
-                case Strategies.DoH:
-                    return new DohRule(this);
-                case Strategies.AwsDocDb:
-                    return new AwsDocDbRule(this);
-                case Strategies.AwsElasticCache:
-                    return new AwsElasticCacheRule(this);
-                case Strategies.AwsApiGateway:
-                    return new AwsApiGatewayRule(this);
+                // TODO
+                //case Common.Models.Strategies.Hosts:
+                //    return new HostsRule(this);
+                //case Common.Models.Strategies.Dns:
+                //    return new DnsRule(this);
+                //case Common.Models.Strategies.DoH:
+                //    return new DohRule(this);
+                //case Common.Models.Strategies.AwsDocDb:
+                //    return new AwsDocDbRule(this);
+                //case Common.Models.Strategies.AwsElasticCache:
+                //    return new AwsElasticCacheRule(this);
+                //case Common.Models.Strategies.AwsApiGateway:
+                //    return new AwsApiGatewayRule(this);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(Strategy), Strategy, null);
             }

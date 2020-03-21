@@ -4,50 +4,36 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
 
     <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
-      <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
 
-      <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
-      <EmbedUntrackedSources>true</EmbedUntrackedSources>
-  
-      <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
-      <IncludeSymbols>true</IncludeSymbols>
-      <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-  
-      <!-- Nuget specs -->
-      <PackageId>DnsProxy</PackageId>
-      <Authors>Björn Lundström</Authors>
-      <Copyright>© 2019-2020 Björn Lundström</Copyright>
-      <Title>BLun DNS Proxy</Title>
-      <Description>A dns-proxy for Developers!</Description>
-      <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-      <PackageTags>dns</PackageTags>
-      <PackageReleaseNotes>https://github.com/BLun78/DnsProxy/releases</PackageReleaseNotes>
-      <PackageProjectUrl>https://github.com/BLun78/DnsProxy</PackageProjectUrl>
-      <Company>BLun.de - Björn Lundström</Company>
-      <RepositoryType>git</RepositoryType>
-      <RepositoryUrl>https://github.com/BLun78/DnsProxy.git</RepositoryUrl>
-      <PackageLicenseFile>LICENSE</PackageLicenseFile>
-      <SignAssembly>false</SignAssembly>
-      <AssemblyOriginatorKeyFile>DnsProxy.snk</AssemblyOriginatorKeyFile>
+    <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    <!-- Nuget specs -->
+    <PackageId>DnsProxy</PackageId>
+    <Authors>Björn Lundström</Authors>
+    <Copyright>© 2019-2020 Björn Lundström</Copyright>
+    <Title>BLun DNS Proxy</Title>
+    <Description>A dns-proxy for Developers!</Description>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageTags>dns</PackageTags>
+    <PackageReleaseNotes>https://github.com/BLun78/DnsProxy/releases</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/BLun78/DnsProxy</PackageProjectUrl>
+    <Company>BLun.de - Björn Lundström</Company>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/BLun78/DnsProxy.git</RepositoryUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
-
   <ItemGroup>
-    <Compile Remove="Models\Rules\AwsApiGatewayRule.cs" />
-    <Compile Remove="Models\Rules\AwsDocDbRule.cs" />
-    <Compile Remove="Models\Rules\AwsElasticCacheRule.cs" />
-    <Compile Remove="Strategies\AwsApiGatewayResolverStrategy.cs" />
-    <Compile Remove="Strategies\AwsBaseResolverStrategy.cs" />
-    <Compile Remove="Strategies\AwsDocDbResolverStrategy.cs" />
-    <Compile Remove="Strategies\AwsElasticCacheResolverStrategy.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="AWSSDK.APIGateway" Version="3.3.103.70" />
-    <PackageReference Include="AWSSDK.DocDB" Version="3.3.102.66" />
-    <PackageReference Include="AWSSDK.EC2" Version="3.3.168.4" />
-    <PackageReference Include="AWSSDK.ElastiCache" Version="3.3.108.3" />
-    <PackageReference Include="AWSSDK.SecurityToken" Version="3.3.104.45" />
-    <ProjectReference Include="..\ARSoft.Tools.Net\ARSoft.Tools.Net.csproj" />
-    <ProjectReference Include="..\DnsProxy.Common\DnsProxy.Common.csproj" />
+    <PackageReference Include="AWSSDK.APIGateway" Version="3.3.103.71" />
+    <PackageReference Include="AWSSDK.DocDB" Version="3.3.102.67" />
+    <PackageReference Include="AWSSDK.EC2" Version="3.3.168.5" />
+    <PackageReference Include="AWSSDK.ElastiCache" Version="3.3.108.4" />
+    <PackageReference Include="AWSSDK.SecurityToken" Version="3.3.104.46" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.2" />
@@ -59,12 +45,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Models\Rules\AwsApiGatewayRule.cs" />
-    <None Include="Models\Rules\AwsDocDbRule.cs" />
-    <None Include="Models\Rules\AwsElasticCacheRule.cs" />
-    <None Include="Strategies\AwsApiGatewayResolverStrategy.cs" />
-    <None Include="Strategies\AwsBaseResolverStrategy.cs" />
-    <None Include="Strategies\AwsDocDbResolverStrategy.cs" />
-    <None Include="Strategies\AwsElasticCacheResolverStrategy.cs" />
+    <ProjectReference Include="..\ARSoft.Tools.Net\ARSoft.Tools.Net.csproj" />
+    <ProjectReference Include="..\DnsProxy.Common\DnsProxy.Common.csproj" />
   </ItemGroup>
 </Project>

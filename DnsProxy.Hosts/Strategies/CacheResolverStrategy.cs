@@ -17,20 +17,21 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net;
 using ARSoft.Tools.Net.Dns;
-using DnsProxy.Common;
-using DnsProxy.Models;
-using DnsProxy.Models.Context;
-using DnsProxy.Models.Rules;
+using DnsProxy.Common.Models;
+using DnsProxy.Common.Models.Context;
+using DnsProxy.Common.Strategies;
+using DnsProxy.Hosts.Common;
+using DnsProxy.Hosts.Models;
+using DnsProxy.Hosts.Models.Rules;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
-namespace DnsProxy.Strategies
+namespace DnsProxy.Hosts.Strategies
 {
     internal class CacheResolverStrategy : BaseResolverStrategy<HostsRule>, IDnsResolverStrategy<HostsRule>
     {
@@ -83,9 +84,9 @@ namespace DnsProxy.Strategies
             }
         }
 
-        public override Models.Strategies GetStrategy()
+        public override DnsProxy.Common.Models.Strategies GetStrategy()
         {
-            return Models.Strategies.Hosts;
+            return DnsProxy.Common.Models.Strategies.Hosts;
         }
 
         public override bool MatchPattern(DnsQuestion dnsQuestion)

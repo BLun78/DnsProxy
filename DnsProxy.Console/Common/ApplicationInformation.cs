@@ -18,7 +18,7 @@ using System;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 
-namespace DnsProxy.Common
+namespace DnsProxy.Console.Common
 {
     internal class ApplicationInformation
     {

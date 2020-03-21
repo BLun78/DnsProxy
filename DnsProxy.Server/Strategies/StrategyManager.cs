@@ -22,14 +22,16 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
+using DnsProxy.Common.Models.Context;
+using DnsProxy.Common.Models.Rules;
+using DnsProxy.Common.Strategies;
 using DnsProxy.Models;
-using DnsProxy.Models.Context;
-using DnsProxy.Models.Rules;
+using DnsProxy.Server.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace DnsProxy.Strategies
+namespace DnsProxy.Server.Strategies
 {
     internal class StrategyManager : IDisposable
     {
@@ -129,7 +131,7 @@ namespace DnsProxy.Strategies
                 {
                     try
                     {
-                        await DoStrategyAsync(dnsWriteContext.HostsResolverStrategy, dnsQuestion, dnsWriteContext,
+                        await DoStrategyAsync(dnsWriteContext.CacheResolverStrategy, dnsQuestion, dnsWriteContext,
                             cancellationToken).ConfigureAwait(false);
                         if (dnsWriteContext.Response.AnswerRecords.Any())
                         {
@@ -240,14 +242,14 @@ namespace DnsProxy.Strategies
             dnsWriteContext.DefaultDnsStrategy =
                 CreateStrategy(_dnsDefaultServerOptionsMonitor.CurrentValue.Servers.GetInternalRule(), scope);
 
-            dnsWriteContext.HostsResolverStrategy = _hostsConfigOptionsMonitor.CurrentValue.Rule.IsEnabled
+            dnsWriteContext.CacheResolverStrategy = _hostsConfigOptionsMonitor.CurrentValue.Rule.IsEnabled
                 ? CreateStrategy(_hostsConfigOptionsMonitor.CurrentValue.Rule, scope)
                 : null;
 
             dnsWriteContext.Logger = _serviceProvider.GetService<ILogger<IDnsCtx>>();
 
-            var strategies = new List<Models.Strategies>
-                {Models.Strategies.Hosts, Models.Strategies.InternalNameServer};
+            var strategies = new List<DnsProxy.Common.Models.Strategies>
+                {DnsProxy.Common.Models.Strategies.Hosts, DnsProxy.Common.Models.Strategies.InternalNameServer};
             lock (_lockObjectRules)
             {
                 dnsWriteContext.DnsResolverStrategies = Rules

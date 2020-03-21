@@ -23,8 +23,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net;
 using ARSoft.Tools.Net.Dns;
-using DnsProxy.Models;
-using DnsProxy.Strategies;
+using DnsProxy.Server.Models;
+using DnsProxy.Server.Strategies;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -136,7 +136,7 @@ namespace DnsProxy.Dns
             await Task.CompletedTask.ConfigureAwait(false);
         }
 
-        private async Task OnClientConnected(object sender, ClientConnectedEventArgs e)
+        private Task OnClientConnected(object sender, ClientConnectedEventArgs e)
         {
             if (!_dnsHostConfigOptionsMonitor.CurrentValue.NetworkWhitelist.Any()
                 && !IPAddress.IsLoopback(e.RemoteEndpoint.Address))
@@ -148,7 +148,7 @@ namespace DnsProxy.Dns
                         .Equals(e.RemoteEndpoint.Address.GetNetworkAddress(pair.Value))))
                     e.RefuseConnect = true;
 
-            await Task.CompletedTask.ConfigureAwait(false);
+            return Task.CompletedTask;
         }
     }
 }

@@ -21,12 +21,13 @@ using System.Threading.Tasks;
 using Amazon.DocDB;
 using Amazon.DocDB.Model;
 using ARSoft.Tools.Net.Dns;
-using DnsProxy.Models.Aws;
-using DnsProxy.Models.Context;
-using DnsProxy.Models.Rules;
+using DnsProxy.Aws.Models;
+using DnsProxy.Aws.Models.Rules;
+using DnsProxy.Common.Models.Context;
+using DnsProxy.Common.Strategies;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace DnsProxy.Strategies
+namespace DnsProxy.Aws.Strategies
 {
     [Obsolete]
     internal class AwsDocDbResolverStrategy : AwsBaseResolverStrategy<AwsDocDbRule, AmazonDocDBClient>,
@@ -42,9 +43,9 @@ namespace DnsProxy.Strategies
         {
         }
 
-        public override Models.Strategies GetStrategy()
+        public override DnsProxy.Common.Models.Strategies GetStrategy()
         {
-            return Models.Strategies.AwsDocDb;
+            return DnsProxy.Common.Models.Strategies.AwsDocDb;
         }
 
         public override async Task<List<DnsRecordBase>> AwsResolveAsync(DnsQuestion dnsQuestion,

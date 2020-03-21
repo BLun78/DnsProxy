@@ -14,7 +14,7 @@
 //    limitations under the License.
 #endregion
 
-namespace DnsProxy.Models.Context
+namespace DnsProxy.Common.Models.Context
 {
     public interface IWriteDnsContextAccessor
     {

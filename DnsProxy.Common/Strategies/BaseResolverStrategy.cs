@@ -14,21 +14,21 @@
 //    limitations under the License.
 #endregion
 
+using ARSoft.Tools.Net.Dns;
+using DnsProxy.Common.Models;
+using DnsProxy.Common.Models.Context;
+using DnsProxy.Common.Models.Rules;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ARSoft.Tools.Net.Dns;
-using DnsProxy.Models;
-using DnsProxy.Models.Context;
-using DnsProxy.Models.Rules;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
-namespace DnsProxy.Strategies
+namespace DnsProxy.Common.Strategies
 {
     internal abstract class BaseResolverStrategy<TRule> : IDisposable, IOrder, IDnsResolverStrategy<TRule>,
         IDnsResolverStrategy

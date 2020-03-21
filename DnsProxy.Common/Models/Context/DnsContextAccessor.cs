@@ -16,7 +16,7 @@
 
 using System.Threading;
 
-namespace DnsProxy.Models.Context
+namespace DnsProxy.Common.Models.Context
 {
     internal class DnsContextAccessor : IDnsContextAccessor, IWriteDnsContextAccessor
     {
@@ -45,7 +45,7 @@ namespace DnsProxy.Models.Context
                 {
                     // Use an object indirection to hold the DnsContext in the AsyncLocal,
                     // so it can be cleared in all ExecutionContexts when its cleared.
-                    _writeDnsContextCurrent.Value = new WriteDnsContextHolder {Context = value};
+                    _writeDnsContextCurrent.Value = new WriteDnsContextHolder { Context = value };
                 }
             }
         }

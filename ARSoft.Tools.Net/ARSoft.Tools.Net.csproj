@@ -5,8 +5,6 @@
     <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
     <TieredCompilation>true</TieredCompilation>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>DnsProxy.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

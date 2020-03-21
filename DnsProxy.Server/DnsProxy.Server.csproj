@@ -36,8 +36,6 @@
     <StartupObject />
     <AssemblyName>DnsProxy.Server</AssemblyName>
     <RootNamespace>DnsProxy.Server</RootNamespace>
-    <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>DnsProxy.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -57,25 +55,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Models\Rules\AwsApiGatewayRule.cs" />
-    <Compile Remove="Models\Rules\AwsDocDbRule.cs" />
-    <Compile Remove="Models\Rules\AwsElasticCacheRule.cs" />
-    <Compile Remove="Models\Rules\InternalNameServerRule.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\.editorconfig" Link=".editorconfig" />
-    <None Include="Models\Rules\AwsApiGatewayRule.cs" />
-    <None Include="Models\Rules\AwsDocDbRule.cs" />
-    <None Include="Models\Rules\AwsElasticCacheRule.cs" />
-    <None Include="Models\Rules\InternalNameServerRule.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -98,7 +81,6 @@
   <ItemGroup>
     <ProjectReference Include="..\ARSoft.Tools.Net\ARSoft.Tools.Net.csproj" />
     <ProjectReference Include="..\DnsProxy.Common\DnsProxy.Common.csproj" />
-    <ProjectReference Include="..\net-udns\src\Udns.csproj" />
   </ItemGroup>
 
 </Project>

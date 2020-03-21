@@ -16,6 +16,7 @@
 
 using System;
 using System.Text.Json.Serialization;
+using DnsProxy.Common.Models;
 
 namespace DnsProxy.Models
 {

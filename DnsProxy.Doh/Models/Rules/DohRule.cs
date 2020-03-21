@@ -14,12 +14,12 @@
 //    limitations under the License.
 #endregion
 
+using DnsProxy.Common.Models.Rules;
+using DnsProxy.Doh.Strategies;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using DnsProxy.Strategies;
 
-namespace DnsProxy.Models.Rules
+namespace DnsProxy.Doh.Models.Rules
 {
     internal class DohRule : RuleBase, IRule, IRuleStrategy
     {

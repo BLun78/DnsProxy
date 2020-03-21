@@ -22,6 +22,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common;
+using DnsProxy.Console.Common;
+using DnsProxy.Server.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

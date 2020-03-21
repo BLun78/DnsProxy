@@ -14,7 +14,9 @@
 //    limitations under the License.
 #endregion
 
-namespace DnsProxy.Models
+using DnsProxy.Common.Models.Rules;
+
+namespace DnsProxy.Server.Models
 {
     internal class DnsDefaultServer
     {

@@ -33,7 +33,7 @@ using Amazon.EC2.Model;
 using Amazon.Runtime;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Aws.Models;
-using DnsProxy.Models;
+using DnsProxy.Common.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using DomainName = ARSoft.Tools.Net.DomainName;

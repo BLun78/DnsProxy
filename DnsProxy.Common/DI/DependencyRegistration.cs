@@ -33,6 +33,6 @@ namespace DnsProxy.Common.DI
 
         public int Order { get; }
 
-        public abstract void Register(IServiceCollection serviceCollection);
+        public abstract void Register(IServiceCollection services);
     }
 }

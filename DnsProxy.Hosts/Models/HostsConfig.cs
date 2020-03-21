@@ -16,9 +16,9 @@
 
 using System;
 using System.Collections.Generic;
-using DnsProxy.Models.Rules;
+using DnsProxy.Hosts.Models.Rules;
 
-namespace DnsProxy.Models
+namespace DnsProxy.Hosts.Models
 {
 #pragma warning disable CA2227 // Collection properties should be read only
     internal class HostsConfig : ICloneable

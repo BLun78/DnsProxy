@@ -20,7 +20,7 @@ using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 
-namespace DnsProxy.Models.Rules
+namespace DnsProxy.Common.Models.Rules
 {
     internal abstract class RuleBase : IRule, IRuleStrategy
     {
@@ -41,7 +41,7 @@ namespace DnsProxy.Models.Rules
             QueryTimeout = rule.QueryTimeout;
         }
 
-        public Strategies Strategy { get; set; }
+        public Common.Models.Strategies Strategy { get; set; }
         public bool IsEnabled { get; set; }
         public string DomainName { get; set; }
         public string DomainNamePattern { get; set; }

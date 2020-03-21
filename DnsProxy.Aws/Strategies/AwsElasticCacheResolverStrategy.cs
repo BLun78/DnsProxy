@@ -20,13 +20,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Amazon.ElastiCache;
 using ARSoft.Tools.Net.Dns;
-using DnsProxy.Models.Aws;
-using DnsProxy.Models.Context;
-using DnsProxy.Models.Rules;
+using DnsProxy.Aws.Models;
+using DnsProxy.Aws.Models.Rules;
+using DnsProxy.Common.Models.Context;
+using DnsProxy.Common.Strategies;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 
-namespace DnsProxy.Strategies
+namespace DnsProxy.Aws.Strategies
 {
     [Obsolete]
     internal class AwsElasticCacheResolverStrategy :
@@ -42,9 +42,9 @@ namespace DnsProxy.Strategies
         {
         }
 
-        public override Models.Strategies GetStrategy()
+        public override DnsProxy.Common.Models.Strategies GetStrategy()
         {
-            return Models.Strategies.AwsElasticCache;
+            return DnsProxy.Common.Models.Strategies.AwsElasticCache;
         }
 
         public override Task<List<DnsRecordBase>> AwsResolveAsync(DnsQuestion dnsQuestion, List<string> ScanVpcIds,

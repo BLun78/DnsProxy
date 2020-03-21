@@ -17,31 +17,22 @@
 using System;
 using System.Net;
 using System.Net.Http;
-using System.Reflection;
 using System.Security.Authentication;
-using System.Threading;
-using Amazon.APIGateway;
-using Amazon.DocDB;
-using Amazon.EC2;
-using Amazon.ElastiCache;
-using Amazon.Runtime;
+using DnsProxy.Common.Models;
 using DnsProxy.Dns;
 using DnsProxy.Models;
-using DnsProxy.Models.Aws;
-using DnsProxy.Models.Context;
-using DnsProxy.Strategies;
-using Makaretu.Dns;
+using DnsProxy.Server.Models;
+using DnsProxy.Server.Strategies;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 
-namespace DnsProxy.Common
+namespace DnsProxy.Server.Common
 {
     internal class DependencyInjector
     {
-        public static AwsContext AwsContext;
         private readonly IConfigurationRoot _configuration;
 
         public DependencyInjector(IConfigurationRoot configuration)
@@ -60,39 +51,7 @@ namespace DnsProxy.Common
         {
             var services = new ServiceCollection();
 
-            // Program
-            services.AddSingleton<DnsServer>();
-            services.AddSingleton<DohClient>();
-            
-            // Stratgies
-            services.AddSingleton<StrategyManager>();
-            //services.AddSingleton<DohResolverStrategy>(); // take a look for services.AddHttpClient
-            services.AddSingleton<DnsResolverStrategy>();
-            services.AddSingleton<CacheResolverStrategy>();
-            //services.AddSingleton<InternalNameServerResolverStrategy>();
-            //services.AddSingleton<AwsApiGatewayResolverStrategy>();
-            //services.AddSingleton<AwsDocDbResolverStrategy>();
-            //services.AddSingleton<AwsElasticCacheResolverStrategy>(); 
-            //services.AddSingleton<AwsDocDbResolverStrategy>();
-
-            // common
-            services.AddSingleton<AwsVpcManager>();
-            services.AddSingleton(CreateHttpProxyConfig);
-            services.AddSingleton(CreateAmazonConfig<AmazonEC2Config>);
-            services.AddSingleton(CreateAmazonConfig<AmazonDocDBConfig>);
-            services.AddSingleton(CreateAmazonConfig<AmazonAPIGatewayConfig>);
-            services.AddSingleton(CreateAmazonConfig<AmazonElastiCacheConfig>);
-            services.AddTransient(CreateAwsContext);
-
-            // .net core frameworks
-            services.Configure<HostsConfig>(_configuration.GetSection(nameof(HostsConfig)));
-            services.Configure<DnsHostConfig>(_configuration.GetSection(nameof(DnsHostConfig)));
-            services.Configure<RulesConfig>(_configuration.GetSection(nameof(RulesConfig)));
-            services.Configure<DnsDefaultServer>(_configuration.GetSection(nameof(DnsDefaultServer)));
-            services.Configure<HttpProxyConfig>(_configuration.GetSection(nameof(HttpProxyConfig)));
-            //services.Configure<InternalNameServerConfig>(_configuration.GetSection(nameof(InternalNameServerConfig)));
-            services.Configure<AwsSettings>(_configuration.GetSection(nameof(AwsSettings)));
-            services.Configure<CacheConfig>(_configuration.GetSection(nameof(CacheConfig)));
+           
 
             services.AddLogging(builder =>
             {
@@ -115,99 +74,8 @@ namespace DnsProxy.Common
             });
             services.AddMemoryCache();
 
-            // https://github.com/aspnet/Extensions/tree/master/src/HttpClientFactory
-            // https://docs.microsoft.com/de-de/dotnet/standard/microservices-architecture/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests
-            //services.AddHttpClient("httpClient", c => { })
-            //    .ConfigurePrimaryHttpMessageHandler(ConfigureHandler)
-            //    .AddTypedClient((client, provider) =>
-            //    {
-            //        var dohClient = new DohClient
-            //        {
-            //            HttpClient = client,
-            //            ThrowResponseError = false
-            //    };
-            //        return dohClient;
-            //    });
-            services.AddHttpClient<DohResolverStrategy>();
             return services;
         }
 
-        private HttpMessageHandler ConfigureHandler(IServiceProvider provider)
-        {
-            var handler = new HttpClientHandler();
-
-            var webProxy = provider.GetService<IWebProxy>();
-            if (webProxy != null)
-            {
-                handler.Proxy = webProxy;
-                handler.UseDefaultCredentials = true;
-                handler.PreAuthenticate = true;
-                handler.UseProxy = true;
-            }
-
-            handler.MaxConnectionsPerServer = 10000;
-            handler.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
-            handler.SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13;
-
-            return handler;
-        }
-
-        private IWebProxy CreateHttpProxyConfig(IServiceProvider provider)
-        {
-            var httpProxyConfig = provider.GetService<IOptions<HttpProxyConfig>>().Value;
-
-            if (string.IsNullOrWhiteSpace(httpProxyConfig.Address))
-            {
-                return null;
-            }
-
-            var proxy = new WebProxy(httpProxyConfig.Address, httpProxyConfig.Port ?? 8080)
-            {
-                BypassList = httpProxyConfig.BypassAddressesArray,
-                BypassProxyOnLocal = true
-            };
-
-            switch (httpProxyConfig.AuthenticationType)
-            {
-                case AuthenticationType.None:
-                    proxy.UseDefaultCredentials = false;
-                    break;
-                case AuthenticationType.WindowsUser:
-                    proxy.UseDefaultCredentials = true;
-                    break;
-                case AuthenticationType.Basic:
-                    proxy.UseDefaultCredentials = false;
-                    proxy.Credentials = new NetworkCredential(httpProxyConfig.User, httpProxyConfig.Password);
-                    break;
-                case AuthenticationType.WindowsDomain:
-                    proxy.UseDefaultCredentials = false;
-                    proxy.Credentials = new NetworkCredential(httpProxyConfig.User, httpProxyConfig.Password, httpProxyConfig.Domain);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(httpProxyConfig.AuthenticationType),
-                        httpProxyConfig.AuthenticationType, null);
-            }
-
-            return proxy;
-        }
-
-        private TConfig CreateAmazonConfig<TConfig>(IServiceProvider provider)
-            where TConfig : class, IClientConfig, new()
-        {
-            IClientConfig config = new TConfig();
-
-            var webProxy = provider.GetService<IWebProxy>();
-            if (webProxy != null)
-            {
-                ((ClientConfig)config)?.SetWebProxy(webProxy);
-            }
-
-            return config as TConfig;
-        }
-
-        private AwsContext CreateAwsContext(IServiceProvider provider)
-        {
-            return AwsContext;
-        }
     }
 }

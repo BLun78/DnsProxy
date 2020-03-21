@@ -21,9 +21,9 @@ using System.Net;
 using System.Net.Sockets;
 using ARSoft.Tools.Net;
 using ARSoft.Tools.Net.Dns;
-using DnsProxy.Models;
+using DnsProxy.Hosts.Models;
 
-namespace DnsProxy.Common
+namespace DnsProxy.Hosts.Common
 {
     internal static class DnsMessageExtensions
     {

@@ -14,15 +14,15 @@
 //    limitations under the License.
 #endregion
 
+using ARSoft.Tools.Net.Dns;
+using DnsProxy.Common.Models.Rules;
+using DnsProxy.Common.Strategies;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using ARSoft.Tools.Net.Dns;
-using DnsProxy.Models.Rules;
-using DnsProxy.Strategies;
-using Microsoft.Extensions.Logging;
 
-namespace DnsProxy.Models.Context
+namespace DnsProxy.Common.Models.Context
 {
     internal class DnsContext : IWriteDnsContext, IDnsCtx, IDisposable
     {
@@ -49,7 +49,7 @@ namespace DnsProxy.Models.Context
             set
             {
                 _logger = value;
-                
+
                 if (!string.IsNullOrWhiteSpace(Request?.TransactionID.ToString()))
                 {
                     _loggerScope = _logger.BeginScope(Request?.TransactionID.ToString());

@@ -14,16 +14,16 @@
 //    limitations under the License.
 #endregion
 
+using ARSoft.Tools.Net.Dns;
+using Makaretu.Dns;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using ARSoft.Tools.Net.Dns;
-using Makaretu.Dns;
 using ARecord = Makaretu.Dns.ARecord;
 using UnknownRecord = ARSoft.Tools.Net.Dns.UnknownRecord;
 
-namespace DnsProxy.Common
+namespace DnsProxy.Doh.Common
 {
 #pragma warning disable CS0618 // Type or member is obsolete
 #pragma warning disable CS0612 // Type or member is obsolete
@@ -35,28 +35,28 @@ namespace DnsProxy.Common
             switch (resourceRecord.Type)
             {
                 case DnsType.A:
-                    var a = (ARecord) resourceRecord;
+                    var a = (ARecord)resourceRecord;
                     return new ARSoft.Tools.Net.Dns.ARecord(resourceRecord.Name.ToDomainName(),
                         resourceRecord.TTL.Seconds,
                         a.Address);
                 case DnsType.NS:
-                    var ns = (NSRecord) resourceRecord;
+                    var ns = (NSRecord)resourceRecord;
                     return new NsRecord(resourceRecord.Name.ToDomainName(),
                         resourceRecord.TTL.Seconds,
                         ns.Authority.ToDomainName());
                 case DnsType.MX:
-                    var mx = (MXRecord) resourceRecord;
+                    var mx = (MXRecord)resourceRecord;
                     return new MxRecord(resourceRecord.Name.ToDomainName(),
                         resourceRecord.TTL.Seconds,
                         mx.Preference,
                         mx.Exchange.ToDomainName());
                 case DnsType.CNAME:
-                    var cname = (CNAMERecord) resourceRecord;
+                    var cname = (CNAMERecord)resourceRecord;
                     return new CNameRecord(resourceRecord.Name.ToDomainName(),
                         resourceRecord.TTL.Seconds,
                         cname.Target.ToDomainName());
                 case DnsType.SOA:
-                    var soa = (SOARecord) resourceRecord;
+                    var soa = (SOARecord)resourceRecord;
                     return new SoaRecord(resourceRecord.Name.ToDomainName(),
                         resourceRecord.TTL.Seconds,
                         soa.PrimaryName.ToDomainName(),
@@ -67,34 +67,34 @@ namespace DnsProxy.Common
                         soa.Expire.Seconds,
                         soa.Minimum.Seconds);
                 case DnsType.PTR:
-                    var ptr = (PTRRecord) resourceRecord;
+                    var ptr = (PTRRecord)resourceRecord;
                     return new PtrRecord(resourceRecord.Name.ToDomainName(),
                         resourceRecord.TTL.Seconds,
                         ptr.DomainName.ToDomainName());
                 case DnsType.HINFO:
-                    var hinfo = (HINFORecord) resourceRecord;
+                    var hinfo = (HINFORecord)resourceRecord;
                     return new HInfoRecord(resourceRecord.Name.ToDomainName(),
                         resourceRecord.TTL.Seconds,
                         hinfo.Cpu,
                         hinfo.OS);
                 case DnsType.TXT:
-                    var txt = (TXTRecord) resourceRecord;
+                    var txt = (TXTRecord)resourceRecord;
                     return new TxtRecord(resourceRecord.Name.ToDomainName(),
                         resourceRecord.TTL.Seconds,
                         txt.Strings);
                 case DnsType.AFSDB:
-                    var afsdg = (AFSDBRecord) resourceRecord;
+                    var afsdg = (AFSDBRecord)resourceRecord;
                     return new AfsdbRecord(resourceRecord.Name.ToDomainName(),
                         resourceRecord.TTL.Seconds,
                         afsdg.Subtype.ToAfsdbRecordAfsSubType(),
                         afsdg.Target.ToDomainName());
                 case DnsType.AAAA:
-                    var aaaa = (AAAARecord) resourceRecord;
+                    var aaaa = (AAAARecord)resourceRecord;
                     return new AaaaRecord(resourceRecord.Name.ToDomainName(),
                         resourceRecord.TTL.Seconds,
                         aaaa.Address);
                 case DnsType.SRV:
-                    var srv = (SRVRecord) resourceRecord;
+                    var srv = (SRVRecord)resourceRecord;
                     return new SrvRecord(resourceRecord.Name.ToDomainName(),
                         resourceRecord.TTL.Seconds,
                         srv.Priority,
@@ -102,12 +102,12 @@ namespace DnsProxy.Common
                         srv.Port,
                         srv.Target.ToDomainName());
                 case DnsType.DNAME:
-                    var dname = (DNAMERecord) resourceRecord;
+                    var dname = (DNAMERecord)resourceRecord;
                     return new DNameRecord(resourceRecord.Name.ToDomainName(),
                         resourceRecord.TTL.Seconds,
                         dname.Target.ToDomainName());
                 case DnsType.OPT:
-                    var opt = (OPTRecord) resourceRecord;
+                    var opt = (OPTRecord)resourceRecord;
                     var optRecord = new OptRecord();
                     optRecord.Options.AddRange(opt.Options.ToEDnsOption());
                     optRecord.Version = opt.Version;
@@ -115,7 +115,7 @@ namespace DnsProxy.Common
                     optRecord.UdpPayloadSize = opt.RequestorPayloadSize;
                     return optRecord;
                 case DnsType.DS:
-                    var ds = (DSRecord) resourceRecord;
+                    var ds = (DSRecord)resourceRecord;
                     return new DsRecord(resourceRecord.Name.ToDomainName(),
                         ds.Class.ToRecordClass(),
                         resourceRecord.TTL.Seconds,
@@ -124,14 +124,14 @@ namespace DnsProxy.Common
                         ds.HashAlgorithm.ToDnsSecDigestType(),
                         ds.Digest);
                 case DnsType.NSEC:
-                    var nsec = (NSECRecord) resourceRecord;
+                    var nsec = (NSECRecord)resourceRecord;
                     return new NSecRecord(resourceRecord.Name.ToDomainName(),
                         resourceRecord.Class.ToRecordClass(),
                         resourceRecord.TTL.Seconds,
                         nsec.NextOwnerName.ToDomainName(),
                         nsec.Types.ToRecordTypes());
                 case DnsType.DNSKEY:
-                    var dnskey = (DNSKEYRecord) resourceRecord;
+                    var dnskey = (DNSKEYRecord)resourceRecord;
                     return new DnsKeyRecord(resourceRecord.Name.ToDomainName(),
                         resourceRecord.Class.ToRecordClass(),
                         resourceRecord.TTL.Seconds,
@@ -140,18 +140,18 @@ namespace DnsProxy.Common
                         dnskey.Algorithm.ToDnsSecAlgorithm(),
                         dnskey.PublicKey);
                 case DnsType.NSEC3:
-                    var nsec3 = (NSEC3Record) resourceRecord;
+                    var nsec3 = (NSEC3Record)resourceRecord;
                     return new NSec3Record(resourceRecord.Name.ToDomainName(),
                         resourceRecord.Class.ToRecordClass(),
                         resourceRecord.TTL.Seconds,
                         nsec3.HashAlgorithm.ToNSec3HashAlgorithm(),
-                        (byte) nsec3.Flags,
+                        (byte)nsec3.Flags,
                         nsec3.Iterations,
                         nsec3.Salt,
                         nsec3.NextHashedOwnerName,
                         nsec3.Types.ToRecordTypes());
                 case DnsType.NSEC3PARAM:
-                    var nsec3param = (NSEC3PARAMRecord) resourceRecord;
+                    var nsec3param = (NSEC3PARAMRecord)resourceRecord;
                     return new NSec3ParamRecord(resourceRecord.Name.ToDomainName(),
                         resourceRecord.Class.ToRecordClass(),
                         resourceRecord.TTL.Seconds,
@@ -160,7 +160,7 @@ namespace DnsProxy.Common
                         nsec3param.Iterations,
                         nsec3param.Salt);
                 case DnsType.TKEY:
-                    var tkey = (TKEYRecord) resourceRecord;
+                    var tkey = (TKEYRecord)resourceRecord;
                     return new TKeyRecord(resourceRecord.Name.ToDomainName(),
                         tkey.Algorithm.ToTSigAlgorithm(),
                         tkey.Inception,
@@ -170,7 +170,7 @@ namespace DnsProxy.Common
                         tkey.Key,
                         tkey.OtherData);
                 case DnsType.TSIG:
-                    var tsig = (TSIGRecord) resourceRecord;
+                    var tsig = (TSIGRecord)resourceRecord;
                     return new TSigRecord(resourceRecord.Name.ToDomainName(),
                         tsig.Algorithm.ToTSigAlgorithm(),
                         tsig.TimeSigned,
@@ -180,7 +180,7 @@ namespace DnsProxy.Common
                         tsig.OtherData,
                         tsig.MAC);
                 case DnsType.RP:
-                    var rp = (RPRecord) resourceRecord;
+                    var rp = (RPRecord)resourceRecord;
                     return new RpRecord(resourceRecord.Name.ToDomainName(),
                         resourceRecord.TTL.Seconds,
                         rp.Mailbox.ToDomainName(),
@@ -323,7 +323,7 @@ namespace DnsProxy.Common
         {
             foreach (var ednsOption in ednsOptions)
             {
-                var unknownOption = (UnknownEdnsOption) ednsOption;
+                var unknownOption = (UnknownEdnsOption)ednsOption;
                 yield return new UnknownOption(unknownOption.Type.ToEDnsOptionType(), unknownOption.Data);
             }
         }

@@ -15,9 +15,10 @@
 #endregion
 
 using System;
-using DnsProxy.Strategies;
+using DnsProxy.Aws.Strategies;
+using DnsProxy.Common.Models.Rules;
 
-namespace DnsProxy.Models.Rules
+namespace DnsProxy.Aws.Models.Rules
 {
     internal class AwsElasticCacheRule : RuleBase, IRule, IRuleStrategy
     {

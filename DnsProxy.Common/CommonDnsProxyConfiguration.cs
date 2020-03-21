@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,18 +13,19 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
-using System.Collections.Generic;
+using DnsProxy.Common.Configuration;
+using Microsoft.Extensions.Configuration;
 
-namespace DnsProxy.Hosts.Models
+namespace DnsProxy.Common
 {
-#pragma warning disable CA2227 // Collection properties should be read only
-    internal class Host
+    public class CommonDnsProxyConfiguration : IDnsProxyConfiguration
     {
-        public List<string> IpAddresses { get; set; }
-
-        public List<string> DomainNames { get; set; }
+        public IConfigurationBuilder ConfigurationBuilder(IConfigurationBuilder configurationBuilder)
+        {
+            return configurationBuilder;
+        }
     }
-#pragma warning restore CA2227 // Collection properties should be read only
 }

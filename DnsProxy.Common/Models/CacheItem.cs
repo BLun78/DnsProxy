@@ -14,10 +14,10 @@
 //    limitations under the License.
 #endregion
 
-using System.Collections.Generic;
 using ARSoft.Tools.Net.Dns;
+using System.Collections.Generic;
 
-namespace DnsProxy.Models
+namespace DnsProxy.Common.Models
 {
     internal class CacheItem
     {

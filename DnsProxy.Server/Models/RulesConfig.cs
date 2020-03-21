@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using DnsProxy.Common.Models.Rules;
 
 namespace DnsProxy.Models
 {

@@ -14,6 +14,16 @@
 //    limitations under the License.
 #endregion
 
+using ARSoft.Tools.Net.Dns;
+using DnsProxy.Common.Models;
+using DnsProxy.Common.Models.Context;
+using DnsProxy.Common.Strategies;
+using DnsProxy.Doh.Common;
+using DnsProxy.Doh.Models.Rules;
+using Makaretu.Dns;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,16 +32,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using ARSoft.Tools.Net.Dns;
-using DnsProxy.Models;
-using DnsProxy.Models.Context;
-using DnsProxy.Models.Rules;
-using Makaretu.Dns;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
-namespace DnsProxy.Strategies
+namespace DnsProxy.Doh.Strategies
 {
     internal class DohResolverStrategy : BaseResolverStrategy<DohRule>, IDnsResolverStrategy<DohRule>
     {
@@ -120,9 +122,9 @@ namespace DnsProxy.Strategies
             }
         }
 
-        public override Models.Strategies GetStrategy()
+        public override DnsProxy.Common.Models.Strategies GetStrategy()
         {
-            return Models.Strategies.DoH;
+            return DnsProxy.Common.Models.Strategies.DoH;
         }
 
         protected override void Dispose(bool disposing)

@@ -16,7 +16,7 @@
 
 using System.Collections.Generic;
 
-namespace DnsProxy.Models
+namespace DnsProxy.Server.Models
 {
     internal class DnsHostConfig
     {

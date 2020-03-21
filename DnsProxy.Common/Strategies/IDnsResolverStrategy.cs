@@ -14,15 +14,15 @@
 //    limitations under the License.
 #endregion
 
+using ARSoft.Tools.Net.Dns;
+using DnsProxy.Common.Models;
+using DnsProxy.Common.Models.Rules;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ARSoft.Tools.Net.Dns;
-using DnsProxy.Models;
-using DnsProxy.Models.Rules;
 
-namespace DnsProxy.Strategies
+namespace DnsProxy.Common.Strategies
 {
     public interface IDnsResolverStrategy : IDisposable, IOrder
     {

@@ -14,7 +14,7 @@
 //    limitations under the License.
 #endregion
 
-namespace DnsProxy.Models
+namespace DnsProxy.Common.Models
 {
     public interface IOrder
     {

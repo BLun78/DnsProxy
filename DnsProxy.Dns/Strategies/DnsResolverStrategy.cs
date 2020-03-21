@@ -21,14 +21,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
-using DnsProxy.Models;
-using DnsProxy.Models.Context;
-using DnsProxy.Models.Rules;
+using DnsProxy.Common.Models;
+using DnsProxy.Common.Models.Context;
+using DnsProxy.Common.Strategies;
+using DnsProxy.Dns.Models.Rules;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace DnsProxy.Strategies
+namespace DnsProxy.Dns.Strategies
 {
     internal class DnsResolverStrategy : BaseResolverStrategy<DnsRule>, IDnsResolverStrategy<DnsRule>
     {
@@ -87,9 +88,9 @@ namespace DnsProxy.Strategies
             }
         }
 
-        public override Models.Strategies GetStrategy()
+        public override Common.Models.Strategies GetStrategy()
         {
-            return Models.Strategies.Dns;
+            return Common.Models.Strategies.Dns;
         }
     }
 }

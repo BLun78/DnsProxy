@@ -25,8 +25,7 @@
     <IncludeSymbols>True</IncludeSymbols>
     <PackageLicenseUrl>https://github.com/richardschneider/net-udns/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/richardschneider/net-udns</PackageProjectUrl>
-    <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>DnsProxy.snk</AssemblyOriginatorKeyFile>
+
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

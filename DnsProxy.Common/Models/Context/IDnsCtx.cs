@@ -1,12 +1,12 @@
-﻿using System;
+﻿using ARSoft.Tools.Net.Dns;
+using DnsProxy.Common.Models.Rules;
+using DnsProxy.Common.Strategies;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading;
-using ARSoft.Tools.Net.Dns;
-using DnsProxy.Models.Rules;
-using DnsProxy.Strategies;
-using Microsoft.Extensions.Logging;
 
-namespace DnsProxy
+namespace DnsProxy.Common.Models.Context
 {
     public interface IDnsCtx : IDisposable
     {
