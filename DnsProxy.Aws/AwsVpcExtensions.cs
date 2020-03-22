@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using DnsProxy.Aws.Models;
@@ -15,6 +13,7 @@ namespace DnsProxy.Aws
     {
 
         private static IOptionsMonitor<AwsSettings> _awsSettingsOptionsMonitor;
+        private static IDisposable _awsSettingsOptionsMonitorListener;
 
         static AwsVpcExtensions()
         {

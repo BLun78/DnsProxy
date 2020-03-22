@@ -17,15 +17,12 @@
 #endregion
 
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
-using DnsProxy.Common;
 using DnsProxy.Console.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace DnsProxy.Console
 {
@@ -35,7 +32,6 @@ namespace DnsProxy.Console
         private static ILogger<Program> _logger;
         private static string _title;
 
-        private static IDisposable _awsSettingsOptionsMonitorListener;
         private static ApplicationInformation ApplicationInformation { get; set; }
         private static CancellationTokenSource CancellationTokenSource { get; set; }
         private static Configuration Configuration { get; set; }
@@ -124,12 +120,13 @@ namespace DnsProxy.Console
         {
             CancellationTokenSource = new CancellationTokenSource();
             Configuration = new Configuration(args);
-            DependencyInjector = new DependencyInjector(Configuration.ConfigurationRoot, typeof(Program).Assembly, CancellationTokenSource);
+            DependencyInjector = new DependencyInjector(
+                Configuration.ConfigurationRoot, 
+                typeof(Program).Assembly, 
+                CancellationTokenSource);
 
             _logger = DependencyInjector.ServiceProvider.GetService<ILogger<Program>>();
             ApplicationInformation = DependencyInjector.ServiceProvider.GetService<ApplicationInformation>();
-            _awsSettingsOptionsMonitor = ServiceProvider.GetService<IOptionsMonitor<AwsSettings>>();
-            _awsSettingsOptionsMonitorListener = _awsSettingsOptionsMonitor.OnChange(settings => _requestNewMfa = true);
 
             CreateHeader();
         }
