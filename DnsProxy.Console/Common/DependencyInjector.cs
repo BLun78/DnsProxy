@@ -15,21 +15,12 @@
 #endregion
 
 using System;
-using System.Net;
-using System.Net.Http;
-using System.Security.Authentication;
-using DnsProxy.Common.Models;
-using DnsProxy.Dns;
-using DnsProxy.Models;
-using DnsProxy.Server.Models;
-using DnsProxy.Server.Strategies;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
-using Microsoft.Extensions.Options;
 
-namespace DnsProxy.Server.Common
+namespace DnsProxy.Console.Common
 {
     internal class DependencyInjector
     {

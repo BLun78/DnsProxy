@@ -46,15 +46,22 @@ namespace DnsProxy.Common.Strategies
             DnsContextAccessor = dnsContextAccessor;
             MemoryCache = memoryCache;
             CacheConfigOptionsMonitor = cacheConfigOptionsMonitor;
+            Order = 1000;
+            IsCache = false;
+            NeedsQueryTimeout = true;
         }
 
+        public bool NeedsQueryTimeout { get; protected set; }
         public TRule Rule { get; protected set; }
         IRule IDnsResolverStrategy.Rule => Rule;
+
+        public bool IsCache { get; protected set; }
+        public string StrategyName { get; protected set; }
 
         public abstract Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
             CancellationToken cancellationToken);
 
-        public abstract Models.Strategies GetStrategy();
+        public int Order { get; protected set; }
 
         void IDnsResolverStrategy.SetRule(IRule rule)
         {
@@ -83,8 +90,6 @@ namespace DnsProxy.Common.Strategies
                 dnsQuestion.Name.ToString(), match.Success);
             return match.Success;
         }
-
-        public int Order { get; protected set; }
 
         protected void LogDnsQuestion(DnsQuestion dnsQuestion, Stopwatch stopwatch)
         {

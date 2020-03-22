@@ -49,6 +49,7 @@ namespace DnsProxy.Aws.Strategies
             AwsContext = awsContext;
             AwsClientConfig = awsClientConfig;
             ServiceProvider = serviceProvider;
+            NeedsQueryTimeout = true;
         }
 
         public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,

@@ -23,6 +23,7 @@ namespace DnsProxy.Common.Models.Rules
 {
     internal class Rule : IRule
     {
+        public int Order { get; set; }
         public List<string> NameServer { get; set; }
         public string IpAddress { get; set; }
         public bool CompressionMutation { get; set; }
@@ -32,13 +33,14 @@ namespace DnsProxy.Common.Models.Rules
         /// </summary>
         public int QueryTimeout { get; set; }
 
-        public Common.Models.Strategies Strategy { get; set; }
+        public bool IsCache { get; set; }
+        public string StrategyName { get; set; }
         public bool IsEnabled { get; set; }
 
         public string DomainName { get; set; }
         public string DomainNamePattern { get; set; }
 
-        public Type GetStraegy()
+        public Type GetStrategy()
         {
             throw new NotImplementedException();
         }
@@ -51,7 +53,7 @@ namespace DnsProxy.Common.Models.Rules
         [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "<Pending>")]
         public IRule GetInternalRule()
         {
-            switch (Strategy)
+            switch (StrategyName)
             {
                 // TODO
                 //case Common.Models.Strategies.Hosts:
@@ -67,7 +69,7 @@ namespace DnsProxy.Common.Models.Rules
                 //case Common.Models.Strategies.AwsApiGateway:
                 //    return new AwsApiGatewayRule(this);
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(Strategy), Strategy, null);
+                    throw new ArgumentOutOfRangeException(nameof(StrategyName), StrategyName, null);
             }
         }
     }

@@ -19,7 +19,6 @@ namespace DnsProxy.Dns
 
             services.AddSingleton<DnsResolverStrategy>();
 
-            services.Configure<DnsHostConfig>(Configuration.GetSection(nameof(DnsHostConfig)));
         }
     }
 }

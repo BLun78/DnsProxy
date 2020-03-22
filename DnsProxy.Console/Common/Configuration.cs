@@ -14,10 +14,9 @@
 //    limitations under the License.
 #endregion
 
-using System.IO;
 using Microsoft.Extensions.Configuration;
 
-namespace DnsProxy.Server.Common
+namespace DnsProxy.Console.Common
 {
     internal class Configuration
     {
@@ -29,11 +28,6 @@ namespace DnsProxy.Server.Common
         }
 
         internal IConfigurationRoot ConfigurationRoot => new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("config.json", false, true)
-            .AddJsonFile("rules.json", false, true)
-            .AddJsonFile("_config.json", true, true)
-            .AddJsonFile("_rules.json", true, true)
             .AddEnvironmentVariables()
             .AddCommandLine(_args)
             .Build();

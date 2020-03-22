@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,31 +13,20 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
-using DnsProxy.Common.Models.Rules;
-using DnsProxy.Doh.Strategies;
 using System;
-using System.Collections.Generic;
+using DnsProxy.Common;
+using DnsProxy.Dns.Models.Rules;
 
-namespace DnsProxy.Doh.Models.Rules
+namespace DnsProxy.Dns
 {
-    internal class DohRule : RuleBase, IRule, IRuleStrategy
+    public class DnsPlugin : IPlugin
     {
-        public DohRule()
-        {
-        }
-
-        public DohRule(Rule rule) : base(rule)
-        {
-            NameServerUri = GetNameServerUri(rule.NameServer);
-        }
-
-        public List<Uri> NameServerUri { get; set; }
-
-        public override Type GetStrategy()
-        {
-            return typeof(DohResolverStrategy);
-        }
+        public string PluginName => "DnsProxy.Dns";
+        public Type DependencyRegistration => typeof(DnsDependencyRegistration);
+        public Type DnsProxyConfiguration => typeof(DnsDnsProxyConfiguration);
+        public Type[] Rules => new[] {typeof(DnsRule)};
     }
 }

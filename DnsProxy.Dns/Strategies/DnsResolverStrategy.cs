@@ -39,7 +39,8 @@ namespace DnsProxy.Dns.Strategies
             IOptionsMonitor<CacheConfig> cacheConfigOptionsMonitor)
             : base(dnsContextAccessor, memoryCache, cacheConfigOptionsMonitor)
         {
-            Order = 2000;
+            NeedsQueryTimeout = false;
+            StrategyName = "DNS";
         }
 
         public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
@@ -88,9 +89,5 @@ namespace DnsProxy.Dns.Strategies
             }
         }
 
-        public override Common.Models.Strategies GetStrategy()
-        {
-            return Common.Models.Strategies.Dns;
-        }
     }
 }

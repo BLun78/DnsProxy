@@ -16,6 +16,7 @@
 
 using System;
 using DnsProxy.Common.Models.Rules;
+using DnsProxy.Hosts.Strategies;
 
 namespace DnsProxy.Hosts.Models.Rules
 {
@@ -29,7 +30,7 @@ namespace DnsProxy.Hosts.Models.Rules
         {
         }
 
-        public override Type GetStraegy()
+        public override Type GetStrategy()
         {
             return typeof(CacheResolverStrategy);
         }

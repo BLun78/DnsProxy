@@ -30,7 +30,7 @@ namespace DnsProxy.Aws.Models.Rules
         {
         }
 
-        public override Type GetStraegy()
+        public override Type GetStrategy()
         {
             return typeof(AwsDocDbResolverStrategy);
         }

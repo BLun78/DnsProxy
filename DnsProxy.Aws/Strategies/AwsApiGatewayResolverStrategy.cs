@@ -41,11 +41,7 @@ namespace DnsProxy.Aws.Strategies
             IServiceProvider serviceProvider) : base(dnsContextAccessor, memoryCache, awsContext,
             amazonApiGatewayConfig, serviceProvider)
         {
-        }
-
-        public override DnsProxy.Common.Models.Strategies GetStrategy()
-        {
-            return DnsProxy.Common.Models.Strategies.AwsApiGateway;
+            StrategyName = "AwsApiGateway";
         }
 
         public override async Task<List<DnsRecordBase>> AwsResolveAsync(DnsQuestion dnsQuestion,

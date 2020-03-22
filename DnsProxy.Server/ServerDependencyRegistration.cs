@@ -36,6 +36,7 @@ namespace DnsProxy.Server
             services.Configure<RulesConfig>(Configuration.GetSection(nameof(RulesConfig)));
             services.Configure<HttpProxyConfig>(Configuration.GetSection(nameof(HttpProxyConfig)));
             services.Configure<CacheConfig>(Configuration.GetSection(nameof(CacheConfig)));
+            services.Configure<DnsHostConfig>(Configuration.GetSection(nameof(DnsHostConfig)));
         }
 
 

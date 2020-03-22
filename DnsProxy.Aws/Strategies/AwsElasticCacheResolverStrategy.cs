@@ -40,11 +40,7 @@ namespace DnsProxy.Aws.Strategies
             IServiceProvider serviceProvider) : base(dnsContextAccessor, memoryCache, awsContext,
             amazonElastiCacheConfig, serviceProvider)
         {
-        }
-
-        public override DnsProxy.Common.Models.Strategies GetStrategy()
-        {
-            return DnsProxy.Common.Models.Strategies.AwsElasticCache;
+            StrategyName = "AwsElasticCache";
         }
 
         public override Task<List<DnsRecordBase>> AwsResolveAsync(DnsQuestion dnsQuestion, List<string> ScanVpcIds,

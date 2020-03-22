@@ -34,14 +34,17 @@ namespace DnsProxy.Common.Models.Rules
 
         protected RuleBase(IRule rule) : this()
         {
-            Strategy = rule.Strategy;
+            StrategyName = rule.StrategyName;
             IsEnabled = rule.IsEnabled;
             DomainName = rule.DomainName;
             DomainNamePattern = rule.DomainNamePattern;
             QueryTimeout = rule.QueryTimeout;
+            IsCache = rule.IsCache;
+            Order = rule.Order;
         }
 
-        public Common.Models.Strategies Strategy { get; set; }
+        public bool IsCache { get; set; }
+        public string StrategyName { get; set; }
         public bool IsEnabled { get; set; }
         public string DomainName { get; set; }
         public string DomainNamePattern { get; set; }
@@ -51,7 +54,7 @@ namespace DnsProxy.Common.Models.Rules
         /// </summary>
         public int QueryTimeout { get; set; }
 
-        public abstract Type GetStraegy();
+        public abstract Type GetStrategy();
 
         public Regex GetDomainNameRegex()
         {
@@ -93,5 +96,7 @@ namespace DnsProxy.Common.Models.Rules
         {
             return new List<Uri>(nameServerUri.Select(x => new Uri(x)));
         }
+
+        public int Order { get; set; }
     }
 }

@@ -22,9 +22,9 @@ namespace DnsProxy.Common
 {
     public interface IPlugin
     {
+        string PluginName { get; }
         Type DependencyRegistration { get; }
         Type DnsProxyConfiguration { get; }
-
-
+        Type[] Rules { get; }
     }
 }

@@ -41,11 +41,7 @@ namespace DnsProxy.Aws.Strategies
             IServiceProvider serviceProvider) : base(dnsContextAccessor, memoryCache, awsContext,
             amazonDocDbConfig, serviceProvider)
         {
-        }
-
-        public override DnsProxy.Common.Models.Strategies GetStrategy()
-        {
-            return DnsProxy.Common.Models.Strategies.AwsDocDb;
+            StrategyName = "AwsDocDb";
         }
 
         public override async Task<List<DnsRecordBase>> AwsResolveAsync(DnsQuestion dnsQuestion,

@@ -20,6 +20,6 @@ namespace DnsProxy.Common.Models.Rules
 {
     public interface IRuleStrategy
     {
-        Type GetStraegy();
+        Type GetStrategy();
     }
 }

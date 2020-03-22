@@ -50,7 +50,10 @@ namespace DnsProxy.Hosts.Strategies
             _hostConfigOptionsMonitor = hostConfigOptionsMonitor;
             ParseHostConfig(_hostConfigOptionsMonitor.CurrentValue);
             _parseHostConfig = _hostConfigOptionsMonitor.OnChange(ParseHostConfig);
-            Order = 0;
+
+            StrategyName = "Cache";
+            NeedsQueryTimeout = true;
+            IsCache = true;
         }
 
         internal static CancellationToken CacheCancellationToken { get; private set; }
@@ -82,11 +85,6 @@ namespace DnsProxy.Hosts.Strategies
 
                 return Task.FromResult(result);
             }
-        }
-
-        public override DnsProxy.Common.Models.Strategies GetStrategy()
-        {
-            return DnsProxy.Common.Models.Strategies.Hosts;
         }
 
         public override bool MatchPattern(DnsQuestion dnsQuestion)

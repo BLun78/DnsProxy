@@ -18,9 +18,10 @@ using System.Text.RegularExpressions;
 
 namespace DnsProxy.Common.Models.Rules
 {
-    public interface IRule : IRuleStrategy
+    public interface IRule : IRuleStrategy, IOrder
     {
-        Strategies Strategy { get; }
+        bool IsCache { get; }
+        string StrategyName { get; }
         bool IsEnabled { get; }
         string DomainName { get; }
         string DomainNamePattern { get; }

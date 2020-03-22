@@ -26,9 +26,10 @@ namespace DnsProxy.Common.Strategies
 {
     public interface IDnsResolverStrategy : IDisposable, IOrder
     {
+        string StrategyName { get; }
+        bool NeedsQueryTimeout { get; }
         IRule Rule { get; }
         Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken);
-        Models.Strategies GetStrategy();
         void SetRule(IRule rule);
         bool MatchPattern(DnsQuestion dnsQuestion);
     }

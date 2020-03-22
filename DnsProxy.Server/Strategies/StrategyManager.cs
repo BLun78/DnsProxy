@@ -39,8 +39,6 @@ namespace DnsProxy.Server.Strategies
         private readonly IOptionsMonitor<DnsDefaultServer> _dnsDefaultServerOptionsMonitor;
         private readonly IDisposable _dnsHostConfigListener;
         private readonly IOptionsMonitor<DnsHostConfig> _dnsHostConfigOptionsMonitor;
-        private readonly IDisposable _hostsConfigListener;
-        private readonly IOptionsMonitor<HostsConfig> _hostsConfigOptionsMonitor;
         private readonly object _lockObjectRules;
         private readonly IDisposable _rulesConfigListener;
         private readonly IOptionsMonitor<RulesConfig> _rulesConfigOptionsMonitor;
@@ -51,8 +49,6 @@ namespace DnsProxy.Server.Strategies
             IServiceProvider serviceProvider,
             IOptionsMonitor<RulesConfig> rulesConfigOptionsMonitor,
             IOptionsMonitor<DnsDefaultServer> dnsDefaultServerOptionsMonitor,
-            IOptionsMonitor<HostsConfig> hostsConfigOptionsMonitor,
-            //IOptionsMonitor<InternalNameServerConfig> internalNameServerConfigOptionsMonitor,
             IOptionsMonitor<DnsHostConfig> dnsHostConfigOptionsMonitor)
         {
             _serviceProvider = serviceProvider;
@@ -61,13 +57,9 @@ namespace DnsProxy.Server.Strategies
 
             _rulesConfigOptionsMonitor = rulesConfigOptionsMonitor;
             _dnsDefaultServerOptionsMonitor = dnsDefaultServerOptionsMonitor;
-            _hostsConfigOptionsMonitor = hostsConfigOptionsMonitor;
-            //_internalNameServerConfigOptionsMonitor = internalNameServerConfigOptionsMonitor;
             _dnsHostConfigOptionsMonitor = dnsHostConfigOptionsMonitor;
             _rulesConfigListener = _rulesConfigOptionsMonitor.OnChange(RulesConfigListener);
             _dnsDefaultServerListener = _dnsDefaultServerOptionsMonitor.OnChange(DnsDefaultServerListener);
-            _hostsConfigListener = _hostsConfigOptionsMonitor.OnChange(HostsConfigListener);
-            //_internalNameServerConfigListener = _internalNameServerConfigOptionsMonitor.OnChange(InternalNameServerConfigListener);
             _dnsHostConfigListener = _dnsDefaultServerOptionsMonitor.OnChange(DnsHostConfigListener);
             DnsDefaultServerListener(_dnsDefaultServerOptionsMonitor.CurrentValue, null);
             RulesConfigListener(_rulesConfigOptionsMonitor.CurrentValue, null);
@@ -77,21 +69,13 @@ namespace DnsProxy.Server.Strategies
         {
             _rulesConfigListener?.Dispose();
             _dnsDefaultServerListener?.Dispose();
-            _hostsConfigListener?.Dispose();
-            //_internalNameServerConfigListener?.Dispose();
             _dnsHostConfigListener?.Dispose();
             (_rulesConfigOptionsMonitor as IDisposable)?.Dispose();
             (_dnsDefaultServerOptionsMonitor as IDisposable)?.Dispose();
-            (_hostsConfigOptionsMonitor as IDisposable)?.Dispose();
-            //(_internalNameServerConfigOptionsMonitor as IDisposable)?.Dispose();
             (_dnsHostConfigOptionsMonitor as IDisposable)?.Dispose();
         }
 
         private void DnsHostConfigListener(DnsDefaultServer dnsHostConfig, string name)
-        {
-        }
-
-        private void HostsConfigListener(HostsConfig hostsConfig, string name)
         {
         }
 
@@ -110,7 +94,7 @@ namespace DnsProxy.Server.Strategies
 
         private static IDnsResolverStrategy CreateStrategy(IRule rule, IServiceScope scope)
         {
-            var strategy = (IDnsResolverStrategy)scope.ServiceProvider.GetService(rule.GetStraegy());
+            var strategy = (IDnsResolverStrategy)scope.ServiceProvider.GetService(rule.GetStrategy());
             strategy.SetRule(rule);
             return strategy;
         }
@@ -188,8 +172,7 @@ namespace DnsProxy.Server.Strategies
             {
                 try
                 {
-                    if (dnsResolverStrategy.GetType() == typeof(DohResolverStrategy)
-                        || dnsResolverStrategy.GetType() == typeof(DnsResolverStrategy))
+                    if (!dnsResolverStrategy.NeedsQueryTimeout)
                     {
                         await DoResolveAsync(dnsResolverStrategy, dnsQuestion, dnsWriteContext, joinedGlobalCtx).ConfigureAwait(false);
                     }
@@ -242,18 +225,23 @@ namespace DnsProxy.Server.Strategies
             dnsWriteContext.DefaultDnsStrategy =
                 CreateStrategy(_dnsDefaultServerOptionsMonitor.CurrentValue.Servers.GetInternalRule(), scope);
 
-            dnsWriteContext.CacheResolverStrategy = _hostsConfigOptionsMonitor.CurrentValue.Rule.IsEnabled
-                ? CreateStrategy(_hostsConfigOptionsMonitor.CurrentValue.Rule, scope)
-                : null;
-
             dnsWriteContext.Logger = _serviceProvider.GetService<ILogger<IDnsCtx>>();
-
-            var strategies = new List<DnsProxy.Common.Models.Strategies>
-                {DnsProxy.Common.Models.Strategies.Hosts, DnsProxy.Common.Models.Strategies.InternalNameServer};
             lock (_lockObjectRules)
             {
+                var strategies = new List<string>
+                { dnsWriteContext.DefaultDnsStrategy.StrategyName};
+
+                dnsWriteContext.CacheResolverStrategy = Rules
+                    .Where(y => !strategies.Contains(y.StrategyName) && y.IsEnabled && y.IsCache)
+                    .Select(x => CreateStrategy(x, scope)).FirstOrDefault();
+
+                if (dnsWriteContext.CacheResolverStrategy != null)
+                {
+                    strategies.Add(dnsWriteContext.CacheResolverStrategy.StrategyName);
+                }
+                
                 dnsWriteContext.DnsResolverStrategies = Rules
-                    .Where(y => !strategies.Contains(y.Strategy) && y.IsEnabled)
+                    .Where(y => !strategies.Contains(y.StrategyName) && y.IsEnabled && y.IsCache == false)
                     .Select(x => CreateStrategy(x, scope)).ToList();
             }
 

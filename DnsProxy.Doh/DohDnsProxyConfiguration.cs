@@ -8,8 +8,7 @@ namespace DnsProxy.Doh
     {
         public IConfigurationBuilder ConfigurationBuilder(IConfigurationBuilder configurationBuilder)
         {
-            configurationBuilder = configurationBuilder.AddJsonFile("hosts.json", false, true);
-            configurationBuilder = configurationBuilder.AddJsonFile("_hosts.json", false, true);
+            return configurationBuilder;
         }
     }
 }

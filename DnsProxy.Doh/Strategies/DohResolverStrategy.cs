@@ -51,7 +51,8 @@ namespace DnsProxy.Doh.Strategies
                 HttpClient = httpClient,
                 ThrowResponseError = false
             };
-            Order = 1000;
+            StrategyName = "DOH";
+            NeedsQueryTimeout = false;
         }
 
         public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
@@ -120,11 +121,6 @@ namespace DnsProxy.Doh.Strategies
                 LogDnsQuestionAndResult(dnsQuestion, result, stopwatch);
                 return result;
             }
-        }
-
-        public override DnsProxy.Common.Models.Strategies GetStrategy()
-        {
-            return DnsProxy.Common.Models.Strategies.DoH;
         }
 
         protected override void Dispose(bool disposing)

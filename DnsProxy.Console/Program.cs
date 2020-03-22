@@ -23,7 +23,6 @@ using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common;
 using DnsProxy.Console.Common;
-using DnsProxy.Server.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -36,7 +35,6 @@ namespace DnsProxy.Console
         private static ILogger<Program> _logger;
         private static string _title;
 
-        private static IOptionsMonitor<AwsSettings> _awsSettingsOptionsMonitor;
         private static IDisposable _awsSettingsOptionsMonitorListener;
         private static ApplicationInformation ApplicationInformation { get; set; }
         private static CancellationTokenSource CancellationTokenSource { get; set; }
@@ -62,7 +60,7 @@ namespace DnsProxy.Console
 
                 using (var dnsServer = ServiceProvider.GetService<DnsServer>())
                 {
-                    await CheckAwsVpc().ConfigureAwait(false);
+                    await AwsVpcExtensions.CheckAwsVpc().ConfigureAwait(false);
 
                     return await WaitForEndAsync().ConfigureAwait(false);
                 }
@@ -122,31 +120,6 @@ namespace DnsProxy.Console
                 "==================================================================================");
         }
 
-        private static async Task CheckAwsVpc()
-        {
-            try
-            {
-                var awsSettings = ServiceProvider.GetService<IOptions<AwsSettings>>();
-                if (awsSettings?.Value != null
-                    && !string.IsNullOrWhiteSpace(awsSettings.Value.Region)
-                    && awsSettings.Value.UserAccounts != null
-                    && awsSettings.Value.UserAccounts.Any())
-                {
-                    await CheckForAwsMfaAsync().ConfigureAwait(false);
-                    var aws = ServiceProvider.GetService<AwsVpcManager>();
-                    await aws.StartReadingVpcAsync(CancellationTokenSource.Token).ConfigureAwait(false);
-                }
-                else
-                {
-                    _logger.LogInformation("No AWS config found!");
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, e.Message);
-            }
-        }
-
         private static void Setup(string[] args)
         {
             CancellationTokenSource = new CancellationTokenSource();
@@ -197,35 +170,5 @@ namespace DnsProxy.Console
             }).ConfigureAwait(false);
         }
 
-        private static async Task CheckForAwsMfaAsync()
-        {
-            try
-            {
-                var awsSettings = _awsSettingsOptionsMonitor.CurrentValue;
-                if (!awsSettings.UserAccounts.Any()) return;
-
-                var awsContext = new AwsContext(awsSettings);
-                var mfa = new AwsMfa();
-
-                foreach (var userAccount in awsContext.AwsSettings.UserAccounts)
-                {
-                    var mfsToken = await mfa.GetMfaAsync(userAccount, CancellationTokenSource.Token)
-                        .ConfigureAwait(false);
-
-                    await mfa.CreateAwsCredentialsAsync(userAccount, mfsToken, CancellationTokenSource.Token)
-                        .ConfigureAwait(false);
-
-                    foreach (var role in userAccount.Roles.Where(x => x.DoScan == true))
-                        await mfa.AssumeRoleAsync(userAccount, role, CancellationTokenSource.Token)
-                            .ConfigureAwait(false);
-                }
-
-                DependencyInjector.AwsContext = awsContext;
-            }
-            catch (Exception e)
-            {
-                System.Console.WriteLine(e);
-            }
-        }
     }
 }
