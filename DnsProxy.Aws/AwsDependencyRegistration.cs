@@ -37,11 +37,12 @@ namespace DnsProxy.Aws
 
             services.AddSingleton<AwsApiGatewayResolverStrategy>();
             services.AddSingleton<AwsDocDbResolverStrategy>();
-            services.AddSingleton<AwsElasticCacheResolverStrategy>(); 
+            services.AddSingleton<AwsElasticCacheResolverStrategy>();
             services.AddSingleton<AwsDocDbResolverStrategy>();
 
-            services.AddSingleton<AwsApiGatewayAdapter>();
-            services.AddSingleton<AwsVpcEndpointAdapter>();
+            services.AddSingleton<AwsVpcReader>();
+            services.AddSingleton<AwsAdapterBase, AwsApiGatewayAdapter>();
+            services.AddSingleton<AwsAdapterBase, AwsVpcEndpointAdapter>();
         }
 
 

@@ -10,11 +10,11 @@ using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Aws.Adapter
 {
-    internal class AwsVpc : AwsBase
+    internal class AwsVpcReader : AwsBase
     {
         private AmazonEC2Config AmazonEc2Config => AmazonClientConfig as AmazonEC2Config;
 
-        public AwsVpc(
+        public AwsVpcReader(
             ILogger<AwsAdapterBase> logger,
             AwsContext awsContext,
             AmazonEC2Config amazonEc2Config)
@@ -29,13 +29,16 @@ namespace DnsProxy.Aws.Adapter
         {
             using (var amazonEc2Client = new AmazonEC2Client(awsCredentials, AmazonEc2Config))
             {
-                var vpc = await amazonEc2Client.DescribeVpcsAsync(CreateDescribeVpcsRequest(awsDoScan), cancellationToken)
+                var vpc = await amazonEc2Client.DescribeVpcsAsync(CreateDescribeVpcsRequest(awsDoScan),
+                        cancellationToken)
                     .ConfigureAwait(false);
                 var vpcIds = vpc.Vpcs.Select(x => x.VpcId).ToList();
                 var vpcEndpointList = await amazonEc2Client
                     .DescribeVpcEndpointsAsync(new DescribeVpcEndpointsRequest(), cancellationToken)
                     .ConfigureAwait(false);
-                var result = vpcEndpointList.VpcEndpoints.Where(x => vpcIds.Contains(x.VpcId)).Select(x => new Endpoint(x))
+                var result = vpcEndpointList.VpcEndpoints
+                    .Where(x => vpcIds.Contains(x.VpcId))
+                    .Select(x => new Endpoint(x))
                     .ToList();
                 foreach (var endpoint in result)
                 {

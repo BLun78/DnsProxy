@@ -23,11 +23,11 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon;
 using Amazon.APIGateway;
 using Amazon.EC2;
 using Amazon.Runtime;
 using ARSoft.Tools.Net.Dns;
+using DnsProxy.Aws.Adapter;
 using DnsProxy.Aws.Models;
 using DnsProxy.Common.Models;
 using Microsoft.Extensions.Caching.Memory;
@@ -38,26 +38,25 @@ namespace DnsProxy.Aws
 {
     internal class AwsVpcManager
     {
-        private readonly AmazonAPIGatewayConfig _amazonApiGatewayConfig;
-        private readonly AmazonEC2Config _amazonEc2Config;
         private readonly AwsContext _awsContext;
         private readonly ILogger<AwsVpcManager> _logger;
         private readonly IMemoryCache _memoryCache;
+        private readonly AwsVpcReader _awsVpcReader;
+        private readonly AwsAdapterBase[] _awsAdapter;
         private readonly List<string> _proxyBypassList;
 
-        public AwsVpcManager(ILogger<AwsVpcManager> logger,
+        public AwsVpcManager(
+            ILogger<AwsVpcManager> logger,
             IMemoryCache memoryCache,
-            AwsContext awsContext,
-            AmazonEC2Config amazonEc2Config,
-            AmazonAPIGatewayConfig amazonApiGatewayConfig)
+            AwsVpcReader awsVpcReader,
+            AwsAdapterBase[] awsAdapter,
+            AwsContext awsContext)
         {
             _logger = logger;
             _memoryCache = memoryCache;
+            _awsVpcReader = awsVpcReader;
+            _awsAdapter = awsAdapter;
             _awsContext = awsContext;
-            _amazonEc2Config = amazonEc2Config;
-            _amazonApiGatewayConfig = amazonApiGatewayConfig;
-            _amazonEc2Config.RegionEndpoint = RegionEndpoint.GetBySystemName(_awsContext?.AwsSettings?.Region);
-            _amazonApiGatewayConfig.RegionEndpoint = _amazonEc2Config.RegionEndpoint;
             _proxyBypassList = new List<string>();
         }
 
@@ -116,24 +115,23 @@ namespace DnsProxy.Aws
             try
             {
                 var result = new List<DnsRecordBase>();
-                using (var amazonEc2Client = new AmazonEC2Client(awsCredentials, _amazonEc2Config))
+
+                var endpoints = await _awsVpcReader.ReadEndpoints(awsCredentials, awsScanRules, cancellationToken)
+                    .ConfigureAwait(false);
+
+                foreach (AwsAdapterBase adapter in _awsAdapter)
                 {
-                    var endpoints = await ReadVpcEndpointAsync(amazonEc2Client, awsScanRules, cancellationToken)
+                    var adapterResult = await adapter.GetAdapterResultAsync(awsCredentials, endpoints, cancellationToken)
                         .ConfigureAwait(false);
-
-                    var readApiGateway = await ReadApiGatewayAsync(awsCredentials, endpoints, cancellationToken)
-                        .ConfigureAwait(false);
-                    result.AddRange(readApiGateway);
-
-                    var readEndpoints = ReadEndpoints(endpoints);
-                    result.AddRange(readEndpoints);
+                    result.AddRange(adapterResult.DnsRecords);
+                    _proxyBypassList.AddRange(adapterResult.ProxyBypassList);
                 }
 
                 var groupedResult = (from record in result
-                    group record by record.Name.ToString()
-                    into newRecords
-                    orderby newRecords.Key
-                    select newRecords).ToList();
+                                     group record by record.Name.ToString()
+                into newRecords
+                                     orderby newRecords.Key
+                                     select newRecords).ToList();
                 foreach (var dnsRecordBases in groupedResult)
                 {
                     var dnsQuestion = new DnsQuestion(DomainName.Parse(dnsRecordBases.Key), RecordType.A, RecordClass.INet);

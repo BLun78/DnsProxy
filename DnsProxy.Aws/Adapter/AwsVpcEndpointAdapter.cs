@@ -25,6 +25,7 @@ namespace DnsProxy.Aws.Adapter
         public override Task<AwsAdapterResult> GetAdapterResultAsync(AWSCredentials awsCredentials, IEnumerable<Endpoint> endpoints, CancellationToken cancellationToken)
         {
             var result = new AwsAdapterResult();
+            // TODO: Change from S3 to Endpoint Type filter
             var listEndpoints = endpoints
                 .Where(x => !x.VpcEndpoint.ServiceName.Contains(".s3", StringComparison.InvariantCulture)).ToList();
             foreach (var endpoint in listEndpoints)
