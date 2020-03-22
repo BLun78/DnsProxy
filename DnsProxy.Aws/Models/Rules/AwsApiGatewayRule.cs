@@ -14,9 +14,9 @@
 //    limitations under the License.
 #endregion
 
-using System;
 using DnsProxy.Aws.Strategies;
 using DnsProxy.Common.Models.Rules;
+using System;
 
 namespace DnsProxy.Aws.Models.Rules
 {

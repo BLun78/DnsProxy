@@ -14,9 +14,9 @@
 //    limitations under the License.
 #endregion
 
+using Amazon.Runtime;
 using System.Collections.Generic;
 using System.Linq;
-using Amazon.Runtime;
 
 namespace DnsProxy.Aws.Models
 {

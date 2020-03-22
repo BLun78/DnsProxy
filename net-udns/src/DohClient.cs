@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Common.Logging;
+using Nito.AsyncEx;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
@@ -7,8 +9,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using Common.Logging;
-using Nito.AsyncEx;
 
 namespace Makaretu.Dns
 {
@@ -107,7 +107,7 @@ namespace Makaretu.Dns
             CancellationToken cancel = default)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
-            
+
             if (log.IsDebugEnabled)
             {
                 var names = request.Questions
@@ -147,7 +147,7 @@ namespace Makaretu.Dns
                 // Check the DNS response.
                 var body = await httpResponse.Content.ReadAsStreamAsync()
                     .ConfigureAwait(false);
-                var dnsResponse = (Message) new Message().Read(body);
+                var dnsResponse = (Message)new Message().Read(body);
                 if (ThrowResponseError)
                     if (dnsResponse.Status != MessageStatus.NoError)
                     {

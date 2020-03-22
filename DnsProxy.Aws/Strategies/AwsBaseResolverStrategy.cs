@@ -14,10 +14,6 @@
 //    limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Amazon.Runtime;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Aws.Models;
@@ -26,6 +22,10 @@ using DnsProxy.Common.Models.Rules;
 using DnsProxy.Common.Strategies;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DnsProxy.Aws.Strategies
 {
@@ -75,15 +75,15 @@ namespace DnsProxy.Aws.Strategies
             return result;
         }
 
-        private async Task DoScanAsync(DnsQuestion dnsQuestion, 
+        private async Task DoScanAsync(DnsQuestion dnsQuestion,
             CancellationToken cancellationToken,
-            IAwsScanRules awsDoScan, 
+            IAwsScanRules awsDoScan,
             List<DnsRecordBase> result)
         {
             if (awsDoScan.DoScan)
             {
                 AwsClient?.Dispose();
-                AwsClient = (TClient) Activator.CreateInstance(typeof(TClient), awsDoScan.AwsCredentials,
+                AwsClient = (TClient)Activator.CreateInstance(typeof(TClient), awsDoScan.AwsCredentials,
                     AwsClientConfig);
                 var userAccountResult = await AwsResolveAsync(dnsQuestion, awsDoScan.ScanVpcIds, cancellationToken)
                     .ConfigureAwait(false);

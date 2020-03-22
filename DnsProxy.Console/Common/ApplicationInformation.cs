@@ -14,9 +14,9 @@
 //    limitations under the License.
 #endregion
 
+using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
-using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Console.Common
 {

@@ -14,11 +14,11 @@
 //    limitations under the License.
 #endregion
 
-using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using System;
 
 namespace DnsProxy.Console.Common
 {
@@ -42,7 +42,7 @@ namespace DnsProxy.Console.Common
         {
             var services = new ServiceCollection();
 
-           
+
 
             services.AddLogging(builder =>
             {

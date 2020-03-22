@@ -1,5 +1,4 @@
 ﻿#region Apache License-2.0
-
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,14 +12,8 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
-
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common.Models.Context;
 using DnsProxy.Common.Models.Rules;
@@ -30,6 +23,11 @@ using DnsProxy.Server.Models.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DnsProxy.Server.Strategies
 {
@@ -49,7 +47,7 @@ namespace DnsProxy.Server.Strategies
 
         public StrategyManager(
             IServiceProvider serviceProvider,
-            IOptionsMonitor<RulesConfig> rulesConfigOptionsMonitor, 
+            IOptionsMonitor<RulesConfig> rulesConfigOptionsMonitor,
             IOptionsMonitor<HostsConfig> hostsConfigOptionsMonitor,
             IOptionsMonitor<DnsDefaultServer> dnsDefaultServerOptionsMonitor,
             IOptionsMonitor<DnsHostConfig> dnsHostConfigOptionsMonitor)

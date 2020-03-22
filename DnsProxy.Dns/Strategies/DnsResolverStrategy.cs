@@ -14,12 +14,6 @@
 //    limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common.Models;
 using DnsProxy.Common.Models.Context;
@@ -28,6 +22,12 @@ using DnsProxy.Dns.Models.Rules;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DnsProxy.Dns.Strategies
 {

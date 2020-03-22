@@ -14,8 +14,8 @@
 //    limitations under the License.
 #endregion
 
-using System.Collections.Generic;
 using Amazon.EC2.Model;
+using System.Collections.Generic;
 
 namespace DnsProxy.Aws.Models
 {

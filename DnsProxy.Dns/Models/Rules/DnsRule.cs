@@ -14,11 +14,11 @@
 //    limitations under the License.
 #endregion
 
+using DnsProxy.Common.Models.Rules;
+using DnsProxy.Dns.Strategies;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using DnsProxy.Common.Models.Rules;
-using DnsProxy.Dns.Strategies;
 using Rule = DnsProxy.Common.Models.Rules.Rule;
 
 namespace DnsProxy.Dns.Models.Rules

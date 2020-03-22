@@ -24,7 +24,7 @@ namespace Makaretu.Dns
         public ushort NextQueryId()
         {
             var next = Interlocked.Increment(ref _nextQueryId);
-            return (ushort) next;
+            return (ushort)next;
         }
 
         /// <inheritdoc />
@@ -40,8 +40,8 @@ namespace Makaretu.Dns
                 .SelectMany(m => m.Answers)
                 .Where(rr => rr.Type == DnsType.A || rr.Type == DnsType.AAAA)
                 .Select(rr => rr.Type == DnsType.A
-                    ? ((ARecord) rr).Address
-                    : ((AAAARecord) rr).Address);
+                    ? ((ARecord)rr).Address
+                    : ((AAAARecord)rr).Address);
         }
 
         /// <inheritdoc />
@@ -55,7 +55,7 @@ namespace Makaretu.Dns
                 Id = NextQueryId(),
                 RD = true
             };
-            query.Questions.Add(new Question {Name = name, Type = rtype});
+            query.Questions.Add(new Question { Name = name, Type = rtype });
 
             return QueryAsync(query, cancel);
         }
@@ -71,7 +71,7 @@ namespace Makaretu.Dns
                 Id = NextQueryId(),
                 RD = true
             }.UseDnsSecurity();
-            query.Questions.Add(new Question {Name = name, Type = rtype});
+            query.Questions.Add(new Question { Name = name, Type = rtype });
 
             return QueryAsync(query, cancel);
         }

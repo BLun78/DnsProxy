@@ -14,10 +14,6 @@
 //    limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Amazon.APIGateway;
 using Amazon.APIGateway.Model;
 using ARSoft.Tools.Net.Dns;
@@ -26,6 +22,10 @@ using DnsProxy.Aws.Models.Rules;
 using DnsProxy.Common.Models.Context;
 using DnsProxy.Common.Strategies;
 using Microsoft.Extensions.Caching.Memory;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DnsProxy.Aws.Strategies
 {

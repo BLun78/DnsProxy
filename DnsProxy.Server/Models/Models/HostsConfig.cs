@@ -14,9 +14,9 @@
 //    limitations under the License.
 #endregion
 
+using DnsProxy.Server.Models.Models.Rules;
 using System;
 using System.Collections.Generic;
-using DnsProxy.Server.Models.Models.Rules;
 
 namespace DnsProxy.Server.Models.Models
 {

@@ -1,5 +1,4 @@
 ﻿#region Apache License-2.0
-
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,16 +12,15 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
-
 #endregion
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Console.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DnsProxy.Console
 {
@@ -121,8 +119,8 @@ namespace DnsProxy.Console
             CancellationTokenSource = new CancellationTokenSource();
             Configuration = new Configuration(args);
             DependencyInjector = new DependencyInjector(
-                Configuration.ConfigurationRoot, 
-                typeof(Program).Assembly, 
+                Configuration.ConfigurationRoot,
+                typeof(Program).Assembly,
                 CancellationTokenSource);
 
             _logger = DependencyInjector.ServiceProvider.GetService<ILogger<Program>>();

@@ -14,6 +14,12 @@
 //    limitations under the License.
 #endregion
 
+using ARSoft.Tools.Net;
+using ARSoft.Tools.Net.Dns;
+using DnsProxy.Server.Models;
+using DnsProxy.Server.Strategies;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -21,12 +27,6 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using ARSoft.Tools.Net;
-using ARSoft.Tools.Net.Dns;
-using DnsProxy.Server.Models;
-using DnsProxy.Server.Strategies;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace DnsProxy.Server
 {
@@ -62,7 +62,7 @@ namespace DnsProxy.Server
         {
             StopServer();
             _dnsHostConfigListener?.Dispose();
-            ((IDisposable) _server)?.Dispose();
+            ((IDisposable)_server)?.Dispose();
             GC.SuppressFinalize(this);
         }
 
@@ -116,7 +116,7 @@ namespace DnsProxy.Server
                 && upstreamResponse.AnswerRecords.Any())
                 return upstreamResponse;
 
-            return await Task.FromResult((DnsMessage) null).ConfigureAwait(false);
+            return await Task.FromResult((DnsMessage)null).ConfigureAwait(false);
         }
 
         private async Task OnQueryReceived(object sender, QueryReceivedEventArgs e)
