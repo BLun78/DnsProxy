@@ -17,7 +17,7 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
     <!-- Nuget specs -->
-    <PackageId>DnsProxy</PackageId>
+    <PackageId>DnsProxy.Common</PackageId>
     <Authors>Björn Lundström</Authors>
     <Copyright>© 2019-2020 Björn Lundström</Copyright>
     <Title>BLun DNS Proxy</Title>
