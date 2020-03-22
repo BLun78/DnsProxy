@@ -4,9 +4,9 @@ using System.Net;
 using System.Text;
 using DnsProxy.Common.DI;
 using DnsProxy.Common.Models;
-using DnsProxy.Dns;
-using DnsProxy.Models;
+using DnsProxy.Hosts.Strategies;
 using DnsProxy.Server.Models;
+using DnsProxy.Server.Models.Models;
 using DnsProxy.Server.Strategies;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,6 +37,9 @@ namespace DnsProxy.Server
             services.Configure<HttpProxyConfig>(Configuration.GetSection(nameof(HttpProxyConfig)));
             services.Configure<CacheConfig>(Configuration.GetSection(nameof(CacheConfig)));
             services.Configure<DnsHostConfig>(Configuration.GetSection(nameof(DnsHostConfig)));
+
+            services.Configure<HostsConfig>(Configuration.GetSection(nameof(HostsConfig)));
+            services.AddSingleton<CacheResolverStrategy>();
         }
 
 

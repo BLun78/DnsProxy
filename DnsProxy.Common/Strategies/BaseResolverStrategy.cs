@@ -30,7 +30,7 @@ using System.Threading.Tasks;
 
 namespace DnsProxy.Common.Strategies
 {
-    internal abstract class BaseResolverStrategy<TRule> : IDisposable, IOrder, IDnsResolverStrategy<TRule>,
+    public abstract class BaseResolverStrategy<TRule> : IDisposable, IOrder, IDnsResolverStrategy<TRule>,
         IDnsResolverStrategy
         where TRule : IRule
     {
@@ -55,7 +55,7 @@ namespace DnsProxy.Common.Strategies
         public TRule Rule { get; protected set; }
         IRule IDnsResolverStrategy.Rule => Rule;
 
-        public bool IsCache { get; protected set; }
+        public bool IsCache { get; protected internal set; }
         public string StrategyName { get; protected set; }
 
         public abstract Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,

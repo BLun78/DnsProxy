@@ -16,7 +16,7 @@
 
 namespace DnsProxy.Common.Models.Context
 {
-    internal interface IDnsContextAccessor
+    public interface IDnsContextAccessor
     {
         IDnsCtx DnsContext { get; }
     }

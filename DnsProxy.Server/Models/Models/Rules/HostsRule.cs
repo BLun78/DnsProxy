@@ -14,16 +14,25 @@
 //    limitations under the License.
 #endregion
 
-using System.Collections.Generic;
+using System;
+using DnsProxy.Common.Models.Rules;
+using DnsProxy.Hosts.Strategies;
 
-namespace DnsProxy.Hosts.Models
+namespace DnsProxy.Server.Models.Models.Rules
 {
-#pragma warning disable CA2227 // Collection properties should be read only
-    internal class Host
+    internal class HostsRule : RuleBase, IRule, IRuleStrategy
     {
-        public List<string> IpAddresses { get; set; }
+        public HostsRule()
+        {
+        }
 
-        public List<string> DomainNames { get; set; }
+        public HostsRule(Rule rule) : base(rule)
+        {
+        }
+
+        public override Type GetStrategy()
+        {
+            return typeof(CacheResolverStrategy);
+        }
     }
-#pragma warning restore CA2227 // Collection properties should be read only
 }

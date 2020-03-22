@@ -7,14 +7,14 @@
           "10.240.69.153",
           "10.240.74.137"
         ],
-        "Strategy": "Dns",
+        "StrategyName": "DNS",
         "IsEnabled": true,
         "CompressionMutation": true,
         "QueryTimeout": 30000
       },
       {
         "DomainNamePattern": "(.*)\\.amazonaws.com.",
-        "Strategy": "DoH",
+        "StrategyName": "DOH",
         "NameServer": [
           "https://doh.securedns.eu/dns-query",
           "https://doh.xfinity.com/dns-query",
@@ -34,7 +34,7 @@
       //    ""
       //  ],
       //  "IpAddress": "",
-      //  "Strategy": "", // Dns, DoH
+      //  "StrategyName": "", // DNS, DOH
       //  "IsEnabled": false,
       //  "CompressionMutation": false,
       //  "QueryTimeout": 30000

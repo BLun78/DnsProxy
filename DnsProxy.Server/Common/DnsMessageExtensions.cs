@@ -21,7 +21,7 @@ using System.Net;
 using System.Net.Sockets;
 using ARSoft.Tools.Net;
 using ARSoft.Tools.Net.Dns;
-using DnsProxy.Hosts.Models;
+using DnsProxy.Server.Models.Models;
 
 namespace DnsProxy.Hosts.Common
 {

@@ -34,7 +34,7 @@ namespace DnsProxy.Common.Strategies
         bool MatchPattern(DnsQuestion dnsQuestion);
     }
 
-    internal interface IDnsResolverStrategy<TRule> : IDnsResolverStrategy
+    public interface IDnsResolverStrategy<TRule> : IDnsResolverStrategy
         where TRule : IRule
     {
         new TRule Rule { get; }

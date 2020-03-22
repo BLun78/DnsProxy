@@ -16,7 +16,7 @@
 
 namespace DnsProxy.Common.Models
 {
-    internal class CacheConfig
+    public class CacheConfig
     {
         public int MinimalTimeToLiveInSeconds { get; set; }
     }

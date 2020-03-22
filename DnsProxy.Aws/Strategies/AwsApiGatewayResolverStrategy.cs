@@ -47,10 +47,14 @@ namespace DnsProxy.Aws.Strategies
         public override async Task<List<DnsRecordBase>> AwsResolveAsync(DnsQuestion dnsQuestion,
             List<string> ScanVpcIds, CancellationToken cancellationToken)
         {
-            var vpc = await AwsClient.GetRestApisAsync(new GetRestApisRequest(), cancellationToken)
-                .ConfigureAwait(false);
+            var logger = DnsContextAccessor.DnsContext.Logger;
+            using (logger.BeginScope($"{StrategyName} =>"))
+            {
+                var vpc = await AwsClient.GetRestApisAsync(new GetRestApisRequest(), cancellationToken)
+                    .ConfigureAwait(false);
 
-            return null;
+                return null;
+            }
         }
     }
 }

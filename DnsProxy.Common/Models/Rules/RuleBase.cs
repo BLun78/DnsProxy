@@ -22,7 +22,7 @@ using System.Text.RegularExpressions;
 
 namespace DnsProxy.Common.Models.Rules
 {
-    internal abstract class RuleBase : IRule, IRuleStrategy
+    public abstract class RuleBase : IRule, IRuleStrategy
     {
         private readonly object _lockObject;
         private Regex _regex;

@@ -15,24 +15,21 @@
 #endregion
 
 using System;
-using DnsProxy.Common.Models.Rules;
-using DnsProxy.Hosts.Strategies;
+using System.Collections.Generic;
+using DnsProxy.Server.Models.Models.Rules;
 
-namespace DnsProxy.Hosts.Models.Rules
+namespace DnsProxy.Server.Models.Models
 {
-    internal class HostsRule : RuleBase, IRule, IRuleStrategy
+#pragma warning disable CA2227 // Collection properties should be read only
+    internal class HostsConfig : ICloneable
     {
-        public HostsRule()
-        {
-        }
+        public HostsRule Rule { get; set; }
+        public List<Host> Hosts { get; set; }
 
-        public HostsRule(Rule rule) : base(rule)
+        public object Clone()
         {
-        }
-
-        public override Type GetStrategy()
-        {
-            return typeof(CacheResolverStrategy);
+            return MemberwiseClone();
         }
     }
+#pragma warning restore CA2227 // Collection properties should be read only
 }

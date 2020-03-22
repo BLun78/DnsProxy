@@ -19,7 +19,7 @@ using System.Collections.Generic;
 
 namespace DnsProxy.Common.Models
 {
-    internal class CacheItem
+    public class CacheItem
     {
         public CacheItem(RecordType recordType, List<DnsRecordBase> dnsRecordBases)
         {

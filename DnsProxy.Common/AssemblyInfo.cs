@@ -21,8 +21,4 @@ using System.Runtime.CompilerServices;
 // associated with an assembly.
 [assembly: InternalsVisibleTo("DnsProxy.Console", AllInternalsVisible = true)]
 [assembly: InternalsVisibleTo("DnsProxy.Server", AllInternalsVisible = true)]
-[assembly: InternalsVisibleTo("DnsProxy.Hosts", AllInternalsVisible = true)]
-[assembly: InternalsVisibleTo("DnsProxy.Doh", AllInternalsVisible = true)]
-[assembly: InternalsVisibleTo("DnsProxy.Aws", AllInternalsVisible = true)]
-[assembly: InternalsVisibleTo("DnsProxy.Dns", AllInternalsVisible = true)]
 [assembly: InternalsVisibleTo("DnsProxy.Test", AllInternalsVisible = true)]

@@ -28,7 +28,7 @@ using DnsProxy.Server.Strategies;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace DnsProxy.Dns
+namespace DnsProxy.Server
 {
     internal class DnsServer : IDisposable
     {

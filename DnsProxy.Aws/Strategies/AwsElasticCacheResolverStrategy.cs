@@ -46,7 +46,11 @@ namespace DnsProxy.Aws.Strategies
         public override Task<List<DnsRecordBase>> AwsResolveAsync(DnsQuestion dnsQuestion, List<string> ScanVpcIds,
             CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var logger = DnsContextAccessor.DnsContext.Logger;
+            using (logger.BeginScope($"{StrategyName} =>"))
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

@@ -21,7 +21,7 @@ using System.Text.RegularExpressions;
 
 namespace DnsProxy.Common.Models.Rules
 {
-    internal class Rule : IRule
+    public class Rule : IRule
     {
         public int Order { get; set; }
         public List<string> NameServer { get; set; }

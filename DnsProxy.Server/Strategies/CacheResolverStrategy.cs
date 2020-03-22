@@ -26,8 +26,8 @@ using DnsProxy.Common.Models;
 using DnsProxy.Common.Models.Context;
 using DnsProxy.Common.Strategies;
 using DnsProxy.Hosts.Common;
-using DnsProxy.Hosts.Models;
-using DnsProxy.Hosts.Models.Rules;
+using DnsProxy.Server.Models.Models;
+using DnsProxy.Server.Models.Models.Rules;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
@@ -51,7 +51,7 @@ namespace DnsProxy.Hosts.Strategies
             ParseHostConfig(_hostConfigOptionsMonitor.CurrentValue);
             _parseHostConfig = _hostConfigOptionsMonitor.OnChange(ParseHostConfig);
 
-            StrategyName = "Cache";
+            StrategyName = "CACHE";
             NeedsQueryTimeout = true;
             IsCache = true;
         }
@@ -61,7 +61,7 @@ namespace DnsProxy.Hosts.Strategies
         public override Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken)
         {
             var logger = DnsContextAccessor.DnsContext.Logger;
-            using (logger.BeginScope("CACHE =>"))
+            using (logger.BeginScope($"{StrategyName} =>"))
             {
                 var stopwatch = new Stopwatch();
                 LogDnsQuestion(dnsQuestion, stopwatch);

@@ -25,8 +25,8 @@ using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common.Models.Context;
 using DnsProxy.Common.Models.Rules;
 using DnsProxy.Common.Strategies;
-using DnsProxy.Models;
 using DnsProxy.Server.Models;
+using DnsProxy.Server.Models.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -39,6 +39,8 @@ namespace DnsProxy.Server.Strategies
         private readonly IOptionsMonitor<DnsDefaultServer> _dnsDefaultServerOptionsMonitor;
         private readonly IDisposable _dnsHostConfigListener;
         private readonly IOptionsMonitor<DnsHostConfig> _dnsHostConfigOptionsMonitor;
+        private readonly IDisposable _hostsConfigListener;
+        private readonly IOptionsMonitor<HostsConfig> _hostsConfigOptionsMonitor;
         private readonly object _lockObjectRules;
         private readonly IDisposable _rulesConfigListener;
         private readonly IOptionsMonitor<RulesConfig> _rulesConfigOptionsMonitor;
@@ -47,7 +49,8 @@ namespace DnsProxy.Server.Strategies
 
         public StrategyManager(
             IServiceProvider serviceProvider,
-            IOptionsMonitor<RulesConfig> rulesConfigOptionsMonitor,
+            IOptionsMonitor<RulesConfig> rulesConfigOptionsMonitor, 
+            IOptionsMonitor<HostsConfig> hostsConfigOptionsMonitor,
             IOptionsMonitor<DnsDefaultServer> dnsDefaultServerOptionsMonitor,
             IOptionsMonitor<DnsHostConfig> dnsHostConfigOptionsMonitor)
         {
@@ -56,9 +59,11 @@ namespace DnsProxy.Server.Strategies
             Rules = new List<IRule>();
 
             _rulesConfigOptionsMonitor = rulesConfigOptionsMonitor;
+            _hostsConfigOptionsMonitor = hostsConfigOptionsMonitor;
             _dnsDefaultServerOptionsMonitor = dnsDefaultServerOptionsMonitor;
             _dnsHostConfigOptionsMonitor = dnsHostConfigOptionsMonitor;
             _rulesConfigListener = _rulesConfigOptionsMonitor.OnChange(RulesConfigListener);
+            _hostsConfigListener = _hostsConfigOptionsMonitor.OnChange(HostsConfigListener);
             _dnsDefaultServerListener = _dnsDefaultServerOptionsMonitor.OnChange(DnsDefaultServerListener);
             _dnsHostConfigListener = _dnsDefaultServerOptionsMonitor.OnChange(DnsHostConfigListener);
             DnsDefaultServerListener(_dnsDefaultServerOptionsMonitor.CurrentValue, null);
@@ -76,6 +81,10 @@ namespace DnsProxy.Server.Strategies
         }
 
         private void DnsHostConfigListener(DnsDefaultServer dnsHostConfig, string name)
+        {
+        }
+
+        private void HostsConfigListener(HostsConfig hostsConfig, string name)
         {
         }
 
@@ -222,24 +231,27 @@ namespace DnsProxy.Server.Strategies
             dnsWriteContext.RootCancellationToken = cancellationToken;
             dnsWriteContext.Request = dnsMessage;
             dnsWriteContext.Response = dnsMessage.CreateResponseInstance();
+
             dnsWriteContext.DefaultDnsStrategy =
                 CreateStrategy(_dnsDefaultServerOptionsMonitor.CurrentValue.Servers.GetInternalRule(), scope);
+            dnsWriteContext.CacheResolverStrategy = _hostsConfigOptionsMonitor.CurrentValue.Rule.IsEnabled
+                ? CreateStrategy(_hostsConfigOptionsMonitor.CurrentValue.Rule, scope)
+                : null;
 
             dnsWriteContext.Logger = _serviceProvider.GetService<ILogger<IDnsCtx>>();
+
             lock (_lockObjectRules)
             {
-                var strategies = new List<string>
-                { dnsWriteContext.DefaultDnsStrategy.StrategyName};
-
-                dnsWriteContext.CacheResolverStrategy = Rules
-                    .Where(y => !strategies.Contains(y.StrategyName) && y.IsEnabled && y.IsCache)
-                    .Select(x => CreateStrategy(x, scope)).FirstOrDefault();
-
+                var strategies = new List<string>();
                 if (dnsWriteContext.CacheResolverStrategy != null)
                 {
                     strategies.Add(dnsWriteContext.CacheResolverStrategy.StrategyName);
                 }
-                
+                if (dnsWriteContext.DefaultDnsStrategy != null)
+                {
+                    strategies.Add(dnsWriteContext.DefaultDnsStrategy.StrategyName);
+                }
+
                 dnsWriteContext.DnsResolverStrategies = Rules
                     .Where(y => !strategies.Contains(y.StrategyName) && y.IsEnabled && y.IsCache == false)
                     .Select(x => CreateStrategy(x, scope)).ToList();

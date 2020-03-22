@@ -84,8 +84,4 @@
     <ProjectReference Include="..\DnsProxy.Common\DnsProxy.Common.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Common\" />
-  </ItemGroup>
-
 </Project>
