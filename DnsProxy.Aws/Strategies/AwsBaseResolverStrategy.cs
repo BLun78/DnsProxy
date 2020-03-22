@@ -75,8 +75,10 @@ namespace DnsProxy.Aws.Strategies
             return result;
         }
 
-        private async Task DoScanAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken,
-            IAwsScanRules awsDoScan, List<DnsRecordBase> result)
+        private async Task DoScanAsync(DnsQuestion dnsQuestion, 
+            CancellationToken cancellationToken,
+            IAwsScanRules awsDoScan, 
+            List<DnsRecordBase> result)
         {
             if (awsDoScan.DoScan)
             {

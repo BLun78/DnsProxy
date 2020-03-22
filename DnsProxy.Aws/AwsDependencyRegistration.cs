@@ -5,6 +5,7 @@ using Amazon.DocDB;
 using Amazon.EC2;
 using Amazon.ElastiCache;
 using Amazon.Runtime;
+using DnsProxy.Aws.Adapter;
 using DnsProxy.Aws.Models;
 using DnsProxy.Aws.Strategies;
 using DnsProxy.Common.DI;
@@ -38,6 +39,9 @@ namespace DnsProxy.Aws
             services.AddSingleton<AwsDocDbResolverStrategy>();
             services.AddSingleton<AwsElasticCacheResolverStrategy>(); 
             services.AddSingleton<AwsDocDbResolverStrategy>();
+
+            services.AddSingleton<AwsApiGatewayAdapter>();
+            services.AddSingleton<AwsVpcEndpointAdapter>();
         }
 
 
