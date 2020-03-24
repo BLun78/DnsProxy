@@ -21,7 +21,7 @@ using System.Collections.Generic;
 
 namespace DnsProxy.Doh.Models.Rules
 {
-    internal class DohRule : RuleBase, IRule, IRuleStrategy
+    public class DohRule : RuleBase, IRule, IRuleStrategy
     {
         public DohRule()
         {

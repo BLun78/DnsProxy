@@ -20,7 +20,7 @@ using System;
 
 namespace DnsProxy.Aws.Models.Rules
 {
-    internal class AwsElasticCacheRule : RuleBase, IRule, IRuleStrategy
+    public class AwsElasticCacheRule : RuleBase, IRule, IRuleStrategy
     {
         public AwsElasticCacheRule()
         {

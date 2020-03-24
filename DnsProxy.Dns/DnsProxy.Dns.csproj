@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
     <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -50,8 +51,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ARSoft.Tools.Net\ARSoft.Tools.Net.csproj" />
-    <ProjectReference Include="..\DnsProxy.Common\DnsProxy.Common.csproj" />
+    <ProjectReference Include="..\ARSoft.Tools.Net\ARSoft.Tools.Net.csproj"/>
+    <ProjectReference Include="..\DnsProxy.Common\DnsProxy.Common.csproj"/>
+    <ProjectReference Include="..\DnsProxy.Plugin\DnsProxy.Plugin.csproj" >
+      <Private>false</Private>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </ProjectReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <PluginHostTf Include="netcoreapp3.1" />
+  </ItemGroup>
+
+  <Target Name="PluginCopy" AfterTargets="Build">
+
+    <ItemGroup>
+      <ServerOutput Include="$(OutputPath)/*.*" />
+    </ItemGroup>
+
+    <!-- Deploy all required server outputs -->
+    <Copy SourceFiles="@(ServerOutput)" DestinationFolder="../DnsProxy.Console/$(BaseOutputPath)$(Configuration)/%(PluginHostTf.Identity)/Plugins/$(MSBuildProjectName)/" />
+  </Target>
 </Project>

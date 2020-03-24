@@ -20,7 +20,7 @@ using System;
 
 namespace DnsProxy.Aws.Models.Rules
 {
-    internal class AwsDocDbRule : RuleBase, IRule, IRuleStrategy
+    public class AwsDocDbRule : RuleBase, IRule, IRuleStrategy
     {
         public AwsDocDbRule()
         {

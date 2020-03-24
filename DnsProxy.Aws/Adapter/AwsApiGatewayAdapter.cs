@@ -61,7 +61,7 @@ namespace DnsProxy.Aws.Adapter
                     .ConfigureAwait(false);
 
                 var orderedApis = apis.Items.Where(x =>
-                    x.EndpointConfiguration.Types.SingleOrDefault(x => "PRIVATE".Equals(x, StringComparison.InvariantCulture)) !=
+                    x.EndpointConfiguration.Types.SingleOrDefault(y => "PRIVATE".Equals(y, StringComparison.InvariantCulture)) !=
                     null).ToArray();
 
                 foreach (var endpoint in apiGatewayNetworkInterfaces)

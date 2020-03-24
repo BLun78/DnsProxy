@@ -23,7 +23,7 @@ using Rule = DnsProxy.Common.Models.Rules.Rule;
 
 namespace DnsProxy.Dns.Models.Rules
 {
-    internal class DnsRule : RuleBase, IRule, IRuleStrategy
+    public class DnsRule : RuleBase, IRule, IRuleStrategy
     {
         public DnsRule()
         {

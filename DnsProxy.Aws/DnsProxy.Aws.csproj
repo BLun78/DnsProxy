@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
     <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -28,6 +29,14 @@
     <RepositoryUrl>https://github.com/BLun78/DnsProxy.git</RepositoryUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="AwsVpcExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="AwsVpcExtensions.cs" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.APIGateway" Version="3.3.103.71" />
     <PackageReference Include="AWSSDK.DocDB" Version="3.3.102.67" />
@@ -52,7 +61,25 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ARSoft.Tools.Net\ARSoft.Tools.Net.csproj" />
-    <ProjectReference Include="..\DnsProxy.Common\DnsProxy.Common.csproj" />
+    <ProjectReference Include="..\ARSoft.Tools.Net\ARSoft.Tools.Net.csproj"/>
+    <ProjectReference Include="..\DnsProxy.Common\DnsProxy.Common.csproj"/>
+    <ProjectReference Include="..\DnsProxy.Plugin\DnsProxy.Plugin.csproj" >
+      <Private>false</Private>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </ProjectReference>
   </ItemGroup>
+
+  <ItemGroup>
+    <PluginHostTf Include="netcoreapp3.1" />
+  </ItemGroup>
+
+  <Target Name="PluginCopy" AfterTargets="Build">
+
+    <ItemGroup>
+      <ServerOutput Include="$(OutputPath)/*.*" />
+    </ItemGroup>
+
+    <!-- Deploy all required server outputs -->
+    <Copy SourceFiles="@(ServerOutput)" DestinationFolder="../DnsProxy.Console/$(BaseOutputPath)$(Configuration)/%(PluginHostTf.Identity)/Plugins/$(MSBuildProjectName)/" />
+  </Target>
 </Project>

@@ -103,7 +103,7 @@ namespace Makaretu.Dns
         ///     When the DNS server returns error status or no response.
         /// </exception>
         public override async Task<Message> QueryAsync(
-            [NotNull] Message request,
+            Message request,
             CancellationToken cancel = default)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));

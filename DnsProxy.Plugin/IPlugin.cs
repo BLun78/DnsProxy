@@ -14,25 +14,15 @@
 //    limitations under the License.
 #endregion
 
-using DnsProxy.Aws.Strategies;
-using DnsProxy.Common.Models.Rules;
 using System;
 
-namespace DnsProxy.Aws.Models.Rules
+namespace DnsProxy.Plugin
 {
-    public class AwsApiGatewayRule : RuleBase, IRule, IRuleStrategy
+    public interface IPlugin
     {
-        public AwsApiGatewayRule()
-        {
-        }
-
-        public AwsApiGatewayRule(Rule rule) : base(rule)
-        {
-        }
-
-        public override Type GetStrategy()
-        {
-            return typeof(AwsApiGatewayResolverStrategy);
-        }
+        string PluginName { get; }
+        Type DependencyRegistration { get; }
+        Type DnsProxyConfiguration { get; }
+        Type[] Rules { get; }
     }
 }

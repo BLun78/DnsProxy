@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
     <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -27,7 +28,9 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/BLun78/DnsProxy.git</RepositoryUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
       <PrivateAssets>all</PrivateAssets>
@@ -52,6 +55,24 @@
   <ItemGroup>
     <ProjectReference Include="..\ARSoft.Tools.Net\ARSoft.Tools.Net.csproj" />
     <ProjectReference Include="..\DnsProxy.Common\DnsProxy.Common.csproj" />
+    <ProjectReference Include="..\DnsProxy.Plugin\DnsProxy.Plugin.csproj" >
+      <Private>false</Private>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </ProjectReference>
     <ProjectReference Include="..\net-udns\src\Udns.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PluginHostTf Include="netcoreapp3.1" />
+  </ItemGroup>
+  
+  <Target Name="PluginCopy" AfterTargets="Build">
+    
+    <ItemGroup>
+      <ServerOutput Include="$(OutputPath)/*.*" />
+    </ItemGroup>
+
+    <!-- Deploy all required server outputs -->
+    <Copy SourceFiles="@(ServerOutput)" DestinationFolder="../DnsProxy.Console/$(BaseOutputPath)$(Configuration)/%(PluginHostTf.Identity)/Plugins/$(MSBuildProjectName)/" />
+  </Target>
 </Project>

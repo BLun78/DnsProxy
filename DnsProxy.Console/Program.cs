@@ -46,32 +46,32 @@ namespace DnsProxy.Console
             }
         }
 
-        private static async Task<int> Main(string[] args)
-        {
-            try
-            {
-                Setup(args);
+//        private static async Task<int> Main(string[] args)
+//        {
+//            try
+//            {
+//                Setup(args);
 
-                using (var dnsServer = ServiceProvider.GetService<DnsServer>())
-                {
-                    await AwsVpcExtensions.CheckAwsVpc().ConfigureAwait(false);
+//                using (var dnsServer = ServiceProvider.GetService<DnsServer>())
+//                {
+//                    await AwsVpcExtensions.CheckAwsVpc().ConfigureAwait(false);
 
-                    return await WaitForEndAsync().ConfigureAwait(false);
-                }
-            }
-#pragma warning disable CA1031 // Do not catch general exception types
-            catch (Exception e)
-            {
-                _logger.LogError(e, e.Message);
-                await Task.Delay(100).ConfigureAwait(false);
-                return await Task.FromResult(1).ConfigureAwait(false);
-            }
-#pragma warning restore CA1031 // Do not catch general exception types
-            finally
-            {
-                _logger.LogInformation("stop {DefaultTitle}", ApplicationInformation.DefaultTitle);
-            }
-        }
+//                    return await WaitForEndAsync().ConfigureAwait(false);
+//                }
+//            }
+//#pragma warning disable CA1031 // Do not catch general exception types
+//            catch (Exception e)
+//            {
+//                _logger.LogError(e, e.Message);
+//                await Task.Delay(100).ConfigureAwait(false);
+//                return await Task.FromResult(1).ConfigureAwait(false);
+//            }
+//#pragma warning restore CA1031 // Do not catch general exception types
+//            finally
+//            {
+//                _logger.LogInformation("stop {DefaultTitle}", ApplicationInformation.DefaultTitle);
+//            }
+//        }
 
         private static void CreateHeader()
         {
