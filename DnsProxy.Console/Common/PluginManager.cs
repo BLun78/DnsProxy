@@ -4,7 +4,7 @@ using System.Text;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using DnsProxy.Common;
+using DnsProxy.Plugin;
 
 namespace DnsProxy.Console.Common
 {
@@ -70,12 +70,12 @@ namespace DnsProxy.Console.Common
 
             string pluginLocation = Path.GetFullPath(Path.Combine(root, relativePath.Replace('\\', Path.DirectorySeparatorChar)));
             System.Console.WriteLine($"Loading commands from: {pluginLocation}");
-            var d = pluginLocation.Split(@"\");
-            var f = new AssemblyName(d[d.Length - 1]);
-            var fff = f + ".dll";
-            PluginLoadContext loadContext = new PluginLoadContext(Path.Combine(pluginLocation,fff));
+            var pathSplitt = pluginLocation.Split(@"\");
+            var assemblyName = new AssemblyName(pathSplitt[pathSplitt.Length - 1]);
+            var dllName = assemblyName + ".dll";
+            PluginLoadContext loadContext = new PluginLoadContext(Path.Combine(pluginLocation,dllName));
             
-            return loadContext.LoadFromAssemblyName(f);
+            return loadContext.LoadFromAssemblyName(assemblyName);
         }
 
         private IEnumerable<IPlugin> CreateCommands(Assembly assembly)
@@ -94,7 +94,7 @@ namespace DnsProxy.Console.Common
                 }
             }
 
-            if (plugins.Count == -1)
+            if (plugins.Count == 0)
             {
                 string availableTypes = string.Join(",", assembly.GetTypes().Select(t => t.FullName));
                 throw new ApplicationException(

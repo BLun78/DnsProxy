@@ -14,9 +14,9 @@
 //    limitations under the License.
 #endregion
 
-using DnsProxy.Common;
 using DnsProxy.Doh.Models.Rules;
 using System;
+using DnsProxy.Plugin;
 
 namespace DnsProxy.Doh
 {
