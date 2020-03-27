@@ -38,11 +38,11 @@
     <None Include="AwsVpcExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.APIGateway" Version="3.3.103.74" />
-    <PackageReference Include="AWSSDK.DocDB" Version="3.3.102.70" />
-    <PackageReference Include="AWSSDK.EC2" Version="3.3.168.8" />
-    <PackageReference Include="AWSSDK.ElastiCache" Version="3.3.108.7" />
-    <PackageReference Include="AWSSDK.SecurityToken" Version="3.3.104.49" />
+    <PackageReference Include="AWSSDK.APIGateway" Version="3.3.103.75" />
+    <PackageReference Include="AWSSDK.DocDB" Version="3.3.102.71" />
+    <PackageReference Include="AWSSDK.EC2" Version="3.3.168.9" />
+    <PackageReference Include="AWSSDK.ElastiCache" Version="3.3.108.8" />
+    <PackageReference Include="AWSSDK.SecurityToken" Version="3.3.104.50" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
