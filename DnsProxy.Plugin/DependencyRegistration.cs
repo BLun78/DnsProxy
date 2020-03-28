@@ -14,13 +14,23 @@
 //    limitations under the License.
 #endregion
 
-using DnsProxy.Common.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DnsProxy.Common.DI
+namespace DnsProxy.Plugin
 {
-    public interface IDependencyRegistration : IOrder
+    public abstract class DependencyRegistration : IDependencyRegistration
     {
-        void Register(IServiceCollection services);
+        protected IConfigurationRoot Configuration { get; }
+
+        protected DependencyRegistration(IConfigurationRoot configuration)
+        {
+            Configuration = configuration;
+            Order = 100;
+        }
+
+        public int Order { get; }
+
+        public abstract void Register(IServiceCollection services);
     }
 }

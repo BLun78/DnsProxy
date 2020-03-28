@@ -15,22 +15,11 @@
 #endregion
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace DnsProxy.Common.DI
+namespace DnsProxy.Plugin
 {
-    public abstract class DependencyRegistration : IDependencyRegistration
+    public interface IDnsProxyConfiguration
     {
-        protected IConfigurationRoot Configuration { get; }
-
-        protected DependencyRegistration(IConfigurationRoot configuration)
-        {
-            Configuration = configuration;
-            Order = 100;
-        }
-
-        public int Order { get; }
-
-        public abstract void Register(IServiceCollection services);
+        IConfigurationBuilder ConfigurationBuilder(IConfigurationBuilder configurationBuilder);
     }
 }

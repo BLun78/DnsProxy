@@ -14,7 +14,6 @@
 //    limitations under the License.
 #endregion
 
-using DnsProxy.Common.DI;
 using DnsProxy.Doh.Strategies;
 using Makaretu.Dns;
 using Microsoft.Extensions.Configuration;
@@ -23,6 +22,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Security.Authentication;
+using DnsProxy.Plugin;
 
 namespace DnsProxy.Doh
 {

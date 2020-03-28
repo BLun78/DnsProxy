@@ -1,42 +1,76 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using DnsProxy.Plugin;
+using Microsoft.Extensions.Configuration;
+using Serilog;
 
-namespace DnsProxy.Console.Common
+namespace DnsProxy.Console.Common.Plugin
 {
     internal class PluginManager
     {
+        private readonly ILogger _logger;
         private const string PluginFolder = @".\Plugins";
 
-        public PluginManager()
+        public List<IPlugin> Plugin { get; }
+        public List<IDnsProxyConfiguration> Configurations { get; }
+        public List<DependencyRegistration> DependencyRegistration { get; }
+
+        public PluginManager(ILogger logger)
+        {
+            Plugin = new List<IPlugin>();
+            Configurations = new List<IDnsProxyConfiguration>();
+            DependencyRegistration = new List<DependencyRegistration>();
+            _logger = logger;
+            InitialPluginManager();
+        }
+
+        public void RegisterDependencyRegistration(IConfigurationRoot configurationRoot)
+        {
+            DependencyRegistration.AddRange(Plugin
+                .Select(x => (DependencyRegistration)Activator.CreateInstance(x.DependencyRegistration, configurationRoot)));
+        }
+
+        private void InitialPluginManager()
         {
             try
             {
+                foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    asm.GetTypes();
+                }
+
                 var path = Path.Combine(Directory.GetCurrentDirectory(), PluginFolder);
-                System.Console.WriteLine(path);
+                _logger.Information("Pluginpath: {path}", path);
 
                 var folder = Directory.GetDirectories(path);
                 foreach (var item in folder)
                 {
-                    System.Console.WriteLine(item);
+                    _logger.Information(item);
                     Assembly pluginAssembly = LoadPlugin(item);
-                    var plugin = CreateCommands(pluginAssembly);
 
-                    System.Console.WriteLine(plugin?.FirstOrDefault()?.PluginName);
+                    //foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+                    //{
+                    //    asm.GetTypes();
+                    //}
+
+                    Plugin.AddRange(CreateCommands(pluginAssembly));
+
+                    _logger.Information("Loaded Plugin: {pluginName}", Plugin?.FirstOrDefault()?.PluginName);
+
+                    Configurations.AddRange(Plugin.Select(x => x.DnsProxyConfiguration));
                 }
             }
             catch (ReflectionTypeLoadException ex)
             {
-                StringBuilder sb = new StringBuilder();
-                foreach (Exception exSub in ex.LoaderExceptions)
+                var sb = new StringBuilder();
+                foreach (var exSub in ex.LoaderExceptions)
                 {
                     sb.AppendLine(exSub.Message);
-                    FileNotFoundException exFileNotFound = exSub as FileNotFoundException;
-                    if (exFileNotFound != null)
+                    if (exSub is FileNotFoundException exFileNotFound)
                     {
                         if (!string.IsNullOrEmpty(exFileNotFound.FusionLog))
                         {
@@ -46,16 +80,16 @@ namespace DnsProxy.Console.Common
                     }
                     sb.AppendLine();
                 }
+
                 string errorMessage = sb.ToString();
                 //Display or log the error based on your application.
-                System.Console.WriteLine(errorMessage);
+                _logger.Error(ex, errorMessage);
             }
             catch (Exception e)
             {
-                System.Console.WriteLine(e);
+                _logger.Fatal(e, e.Message);
                 throw;
             }
-           
         }
 
         private Assembly LoadPlugin(string relativePath)
@@ -69,12 +103,14 @@ namespace DnsProxy.Console.Common
                                 Path.GetDirectoryName(typeof(Program2).Assembly.Location)))))));
 
             string pluginLocation = Path.GetFullPath(Path.Combine(root, relativePath.Replace('\\', Path.DirectorySeparatorChar)));
-            System.Console.WriteLine($"Loading commands from: {pluginLocation}");
-            var pathSplitt = pluginLocation.Split(@"\");
-            var assemblyName = new AssemblyName(pathSplitt[pathSplitt.Length - 1]);
-            var dllName = assemblyName + ".dll";
-            PluginLoadContext loadContext = new PluginLoadContext(Path.Combine(pluginLocation,dllName));
             
+            _logger.Information("Loading commands from: {pluginLocation}", pluginLocation);
+
+            var pathSplit = pluginLocation.Split(@"\");
+            var assemblyName = new AssemblyName(pathSplit[pathSplit.Length - 1]);
+            var dllName = assemblyName + ".dll";
+            var loadContext = new PluginLoadContext(Path.Combine(pluginLocation, dllName));
+
             return loadContext.LoadFromAssemblyName(assemblyName);
         }
 
@@ -84,9 +120,8 @@ namespace DnsProxy.Console.Common
 
             foreach (Type type in assembly.GetTypes())
             {
-                if (typeof(IPlugin).IsAssignableFrom(type) // || type.
-                    )
-                { 
+                if (typeof(IPlugin).IsAssignableFrom(type))
+                {
                     if (Activator.CreateInstance(type) is IPlugin result)
                     {
                         plugins.Add(result);

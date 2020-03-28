@@ -22,11 +22,11 @@ using Amazon.Runtime;
 using DnsProxy.Aws.Adapter;
 using DnsProxy.Aws.Models;
 using DnsProxy.Aws.Strategies;
-using DnsProxy.Common.DI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net;
+using DnsProxy.Plugin;
 
 namespace DnsProxy.Aws
 {

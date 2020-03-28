@@ -22,7 +22,7 @@ namespace DnsProxy.Plugin
     {
         string PluginName { get; }
         Type DependencyRegistration { get; }
-        Type DnsProxyConfiguration { get; }
+        IDnsProxyConfiguration DnsProxyConfiguration { get; }
         Type[] Rules { get; }
     }
 }

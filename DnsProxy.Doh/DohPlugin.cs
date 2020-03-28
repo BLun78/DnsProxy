@@ -24,7 +24,7 @@ namespace DnsProxy.Doh
     {
         public string PluginName => "DnsProxy.Doh";
         public Type DependencyRegistration => typeof(DohDependencyRegistration);
-        public Type DnsProxyConfiguration => typeof(DohDnsProxyConfiguration);
+        public IDnsProxyConfiguration DnsProxyConfiguration => new DohDnsProxyConfiguration();
         public Type[] Rules => new[] { typeof(DohRule) };
     }
 }

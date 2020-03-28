@@ -53,8 +53,14 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ARSoft.Tools.Net\ARSoft.Tools.Net.csproj" />
-    <ProjectReference Include="..\DnsProxy.Common\DnsProxy.Common.csproj" />
+    <ProjectReference Include="..\ARSoft.Tools.Net\ARSoft.Tools.Net.csproj">
+      <Private>false</Private>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\DnsProxy.Common\DnsProxy.Common.csproj" >
+      <Private>false</Private>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </ProjectReference>
     <ProjectReference Include="..\DnsProxy.Plugin\DnsProxy.Plugin.csproj">
       <Private>false</Private>
       <ExcludeAssets>runtime</ExcludeAssets>
@@ -65,9 +71,9 @@
   <ItemGroup>
     <PluginHostTf Include="netcoreapp3.1" />
   </ItemGroup>
-  
+
   <Target Name="PluginCopy" AfterTargets="Build">
-    
+
     <ItemGroup>
       <ServerOutput Include="$(OutputPath)/*.*" />
     </ItemGroup>

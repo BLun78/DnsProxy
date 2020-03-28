@@ -27,6 +27,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DnsProxy.Plugin;
 
 namespace DnsProxy.Common.Strategies
 {

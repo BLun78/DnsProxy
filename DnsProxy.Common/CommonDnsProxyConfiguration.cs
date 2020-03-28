@@ -14,7 +14,7 @@
 //    limitations under the License.
 #endregion
 
-using DnsProxy.Common.Configuration;
+using DnsProxy.Plugin;
 using Microsoft.Extensions.Configuration;
 
 namespace DnsProxy.Common

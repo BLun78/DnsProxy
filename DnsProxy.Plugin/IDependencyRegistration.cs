@@ -14,12 +14,12 @@
 //    limitations under the License.
 #endregion
 
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace DnsProxy.Common.Configuration
+namespace DnsProxy.Plugin
 {
-    public interface IDnsProxyConfiguration
+    public interface IDependencyRegistration : IOrder
     {
-        IConfigurationBuilder ConfigurationBuilder(IConfigurationBuilder configurationBuilder);
+        void Register(IServiceCollection services);
     }
 }

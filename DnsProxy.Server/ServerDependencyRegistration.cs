@@ -14,7 +14,6 @@
 //    limitations under the License.
 #endregion
 
-using DnsProxy.Common.DI;
 using DnsProxy.Common.Models;
 using DnsProxy.Hosts.Strategies;
 using DnsProxy.Server.Models;
@@ -25,6 +24,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 using System.Net;
+using DnsProxy.Plugin;
 
 namespace DnsProxy.Server
 {

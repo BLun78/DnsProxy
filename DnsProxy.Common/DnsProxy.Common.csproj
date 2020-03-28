@@ -38,6 +38,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ARSoft.Tools.Net\ARSoft.Tools.Net.csproj" />
+    <ProjectReference Include="..\DnsProxy.Plugin\DnsProxy.Plugin.csproj" >
+      <Private>false</Private>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </ProjectReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -52,6 +56,11 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Configuration\" />
+    <Folder Include="DI\" />
   </ItemGroup>
 
 </Project>

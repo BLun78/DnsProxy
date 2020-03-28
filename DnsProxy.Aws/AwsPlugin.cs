@@ -24,7 +24,7 @@ namespace DnsProxy.Aws
     {
         public string PluginName => " DnsProxy.Aws";
         public Type DependencyRegistration => typeof(AwsDependencyRegistration);
-        public Type DnsProxyConfiguration => typeof(AwsDnsProxyConfiguration);
+        public IDnsProxyConfiguration DnsProxyConfiguration => new AwsDnsProxyConfiguration();
         public Type[] Rules => new[] { typeof(AwsApiGatewayRule), typeof(AwsDocDbRule), typeof(AwsElasticCacheRule) };
     }
 }

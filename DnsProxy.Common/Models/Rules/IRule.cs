@@ -15,6 +15,7 @@
 #endregion
 
 using System.Text.RegularExpressions;
+using DnsProxy.Plugin;
 
 namespace DnsProxy.Common.Models.Rules
 {
