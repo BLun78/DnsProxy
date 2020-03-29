@@ -15,14 +15,14 @@
 #endregion
 
 using DnsProxy.Common.Models.Context;
-using DnsProxy.Plugin;
 using DnsProxy.Plugin.DI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using DependencyRegistration = DnsProxy.Plugin.DI.DependencyRegistration;
 
 namespace DnsProxy.Common
 {
-    public class CommonDependencyRegistration : DependencyRegistration, IDependencyRegistration
+    public class CommonDependencyRegistration : Plugin.DI.DependencyRegistration, IDependencyRegistration
     {
         private readonly DnsContextAccessor _dnsContextAccessor;
 
@@ -31,7 +31,7 @@ namespace DnsProxy.Common
             _dnsContextAccessor = new DnsContextAccessor();
         }
 
-        public override void Register(IServiceCollection services)
+        public override IServiceCollection Register(IServiceCollection services)
         {
             // Dns Context
             services.AddSingleton<IDnsContextAccessor>(_dnsContextAccessor);
@@ -40,6 +40,8 @@ namespace DnsProxy.Common
 
             // .net core frameworks
             services.AddOptions();
+
+            return services;
         }
     }
 }

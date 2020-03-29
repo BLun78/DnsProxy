@@ -21,6 +21,6 @@ namespace DnsProxy.Plugin.DI
 {
     public interface IDependencyRegistration : IOrder
     {
-        void Register(IServiceCollection services);
+        IServiceCollection Register(IServiceCollection services);
     }
 }

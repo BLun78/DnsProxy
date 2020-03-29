@@ -23,7 +23,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 using System.Net;
-using DnsProxy.Plugin;
 using DnsProxy.Plugin.DI;
 
 namespace DnsProxy.Server
@@ -34,7 +33,7 @@ namespace DnsProxy.Server
         {
         }
 
-        public override void Register(IServiceCollection services)
+        public override IServiceCollection Register(IServiceCollection services)
         {
             // Program
             services.AddSingleton<DnsServer>();
@@ -54,6 +53,8 @@ namespace DnsProxy.Server
 
             services.Configure<HostsConfig>(Configuration.GetSection(nameof(HostsConfig)));
             services.AddSingleton<CacheResolverStrategy>();
+
+            return services;
         }
 
 

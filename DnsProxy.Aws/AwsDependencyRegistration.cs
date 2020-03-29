@@ -26,7 +26,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net;
-using DnsProxy.Plugin;
 using DnsProxy.Plugin.DI;
 
 namespace DnsProxy.Aws
@@ -40,7 +39,7 @@ namespace DnsProxy.Aws
         {
         }
 
-        public override void Register(IServiceCollection services)
+        public override IServiceCollection Register(IServiceCollection services)
         {
             services.Configure<AwsSettings>(Configuration.GetSection(nameof(AwsSettings)));
 
@@ -60,6 +59,8 @@ namespace DnsProxy.Aws
             services.AddSingleton<AwsVpcReader>();
             services.AddSingleton<AwsAdapterBase, AwsApiGatewayAdapter>();
             services.AddSingleton<AwsAdapterBase, AwsVpcEndpointAdapter>();
+
+            return services;
         }
 
 

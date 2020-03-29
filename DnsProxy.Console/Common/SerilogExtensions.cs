@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
 
@@ -28,6 +29,14 @@ namespace DnsProxy.Console.Common
 
             Log.Logger = loggerConfig.CreateLogger();
             return Log.Logger;
+        }
+
+        public static IServiceCollection AddSerilog(this IServiceCollection services)
+        {
+            services.AddLogging(loggingBuilder =>
+                loggingBuilder.AddSerilog(dispose: true));
+
+            return services;
         }
     }
 }

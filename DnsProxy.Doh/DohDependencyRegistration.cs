@@ -22,7 +22,6 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Security.Authentication;
-using DnsProxy.Plugin;
 using DnsProxy.Plugin.DI;
 
 namespace DnsProxy.Doh
@@ -33,7 +32,7 @@ namespace DnsProxy.Doh
         {
         }
 
-        public override void Register(IServiceCollection services)
+        public override IServiceCollection Register(IServiceCollection services)
         {
             //services.AddSingleton<DohResolverStrategy>(); // take a look for services.AddHttpClient
 
@@ -53,11 +52,8 @@ namespace DnsProxy.Doh
             //        return dohClient;
             //    });
             services.AddHttpClient<DohResolverStrategy>();
-        }
 
-        void IDependencyRegistration.Register(IServiceCollection services)
-        {
-            this.Register(services);
+            return services;
         }
 
         private HttpMessageHandler ConfigureHandler(IServiceProvider provider)

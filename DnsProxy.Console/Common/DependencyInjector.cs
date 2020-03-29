@@ -16,23 +16,23 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 using System;
+using System.Collections.Generic;
+using DnsProxy.Plugin.DI;
 
 namespace DnsProxy.Console.Common
 {
-    internal class DependencyInjector
+    internal class DependencyInjector : DependencyRegistration, IDependencyRegistration
     {
-        private readonly IConfigurationRoot _configuration;
+        private readonly List<IDependencyRegistration> _dependencyRegistration;
 
-        public DependencyInjector(IConfigurationRoot configuration)
+        public DependencyInjector(IConfigurationRoot configuration, List<IDependencyRegistration> dependencyRegistration) : base(configuration)
         {
-            _configuration = configuration;
+            _dependencyRegistration = dependencyRegistration;
             ServiceProvider = ConfigureDependencyInjector().BuildServiceProvider(new ServiceProviderOptions
             {
-                ValidateOnBuild = true,
-                ValidateScopes = true
+                ValidateOnBuild = false,
+                ValidateScopes = false
             });
         }
 
@@ -40,33 +40,42 @@ namespace DnsProxy.Console.Common
 
         private IServiceCollection ConfigureDependencyInjector()
         {
-            var services = new ServiceCollection();
+            IServiceCollection services = new ServiceCollection();
 
-
-
-            services.AddLogging(builder =>
+            foreach (var item in _dependencyRegistration)
             {
-                builder
-                    .SetMinimumLevel(LogLevel.Debug)
-                    .AddFilter("Microsoft", LogLevel.Warning)
-                    .AddFilter("System", LogLevel.Warning)
-                    //.AddFilter("DnsProxy.Program", LogLevel.Trace)
-                    //.AddFilter("DnsProxy.Dns", LogLevel.Trace)
-                    //.AddFilter("DnsProxy.Dns.DnsServer", LogLevel.Trace)
-                    //.AddFilter("DnsProxy", LogLevel.Trace)
-                    .AddConsole(options =>
-                    {
-                        options.IncludeScopes = true;
-                        options.Format = ConsoleLoggerFormat.Systemd;
-                        options.LogToStandardErrorThreshold = LogLevel.Warning;
-                        options.DisableColors = false;
-                        options.TimestampFormat = "[dd.MM.yyyy hh:mm:ss]";
-                    });
-            });
+                services = item.Register(services);
+            }
+
+            return Register(services);
+        }
+
+        public override IServiceCollection Register(IServiceCollection services)
+        {
+            services.AddSerilog();
+            //services.AddLogging(builder =>
+            //{
+            //    builder
+            //        .SetMinimumLevel(LogLevel.Debug)
+            //        .AddFilter("Microsoft", LogLevel.Warning)
+            //        .AddFilter("System", LogLevel.Warning)
+            //        //.AddFilter("DnsProxy.Program", LogLevel.Trace)
+            //        //.AddFilter("DnsProxy.Dns", LogLevel.Trace)
+            //        //.AddFilter("DnsProxy.Dns.DnsServer", LogLevel.Trace)
+            //        //.AddFilter("DnsProxy", LogLevel.Trace)
+            //        //.AddConsole(options =>
+            //        //{
+            //        //    options.IncludeScopes = true;
+            //        //    options.Format = ConsoleLoggerFormat.Systemd;
+            //        //    options.LogToStandardErrorThreshold = LogLevel.Warning;
+            //        //    options.DisableColors = false;
+            //        //    options.TimestampFormat = "[dd.MM.yyyy hh:mm:ss]";
+            //        //})
+            //        ;
+            //});
             services.AddMemoryCache();
 
             return services;
         }
-
     }
 }

@@ -9,12 +9,11 @@ using DnsProxy.Plugin.Configuration;
 using DnsProxy.Plugin.DI;
 using McMaster.NETCore.Plugins;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
-namespace DnsProxy.Console.Common.Plugin
+namespace DnsProxy.Console.Common
 {
-    internal class PluginManager
+    internal class PluginManager : IDisposable
     {
         private readonly ILogger _logger;
         private const string PluginFolder = @".\Plugins";
@@ -23,11 +22,14 @@ namespace DnsProxy.Console.Common.Plugin
         public List<IDnsProxyConfiguration> Configurations { get; }
         public List<DependencyRegistration> DependencyRegistration { get; }
 
+        private List<PluginLoader> PluginLoaders { get; }
+
         public PluginManager(ILogger logger)
         {
             Plugin = new List<IPlugin>();
             Configurations = new List<IDnsProxyConfiguration>();
             DependencyRegistration = new List<DependencyRegistration>();
+            PluginLoaders = new List<PluginLoader>();
             _logger = logger;
             InitialPluginManager();
         }
@@ -56,14 +58,10 @@ namespace DnsProxy.Console.Common.Plugin
                     _logger.Information(item);
                     Assembly pluginAssembly = LoadPlugin(item);
 
-                    //foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
-                    //{
-                    //    asm.GetTypes();
-                    //}
+                    var plugins = CreateCommands(pluginAssembly).ToList();
+                    Plugin.AddRange(plugins);
 
-                    Plugin.AddRange(CreateCommands(pluginAssembly));
-
-                    _logger.Information("Loaded Plugin: {pluginName}", Plugin?.FirstOrDefault()?.PluginName);
+                    _logger.Information("Loaded Plugin: {pluginName}", plugins?.FirstOrDefault()?.PluginName);
 
                     Configurations.AddRange(Plugin.Select(x => (IDnsProxyConfiguration)x.DnsProxyConfiguration));
                 }
@@ -114,13 +112,14 @@ namespace DnsProxy.Console.Common.Plugin
             var assemblyName = new AssemblyName(pathSplit[pathSplit.Length - 1]);
             var pluginDll = $"{pluginLocation}\\{assemblyName}.dll";
 
-            using (var loader = PluginLoader.CreateFromAssemblyFile(
-                                    pluginDll,
-                                    sharedTypes: PluginSharedTypes.SharedTypes)
-            )
-            {
-                return loader.LoadDefaultAssembly();
-            }
+            var loader = PluginLoader.CreateFromAssemblyFile(
+                pluginDll,
+                sharedTypes: PluginSharedTypes.SharedTypes);
+
+            PluginLoaders.Add(loader);
+
+            return loader.LoadDefaultAssembly();
+
         }
 
         private IEnumerable<IPlugin> CreateCommands(Assembly assembly)
@@ -146,6 +145,15 @@ namespace DnsProxy.Console.Common.Plugin
             }
 
             return plugins;
+        }
+
+        public void Dispose()
+        {
+            PluginLoaders.ForEach(x => x.Dispose());
+            PluginLoaders.Clear();
+            Configurations.Clear();
+            DependencyRegistration.Clear();
+            Plugin.Clear();
         }
     }
 }

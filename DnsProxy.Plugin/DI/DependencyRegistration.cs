@@ -31,6 +31,6 @@ namespace DnsProxy.Plugin.DI
 
         public int Order { get; }
 
-        public abstract void Register(IServiceCollection services);
+        public abstract IServiceCollection Register(IServiceCollection services);
     }
 }

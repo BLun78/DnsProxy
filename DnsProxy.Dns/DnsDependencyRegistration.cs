@@ -15,7 +15,6 @@
 #endregion
 
 using DnsProxy.Dns.Strategies;
-using DnsProxy.Plugin;
 using DnsProxy.Plugin.DI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,11 +27,12 @@ namespace DnsProxy.Dns
         {
         }
 
-        public override void Register(IServiceCollection services)
+        public override IServiceCollection Register(IServiceCollection services)
         {
 
             services.AddSingleton<DnsResolverStrategy>();
 
+            return services;
         }
     }
 }

@@ -18,7 +18,6 @@ using DnsProxy.Console.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
-using DnsProxy.Plugin;
 using DnsProxy.Plugin.DI;
 
 namespace DnsProxy.Console
@@ -32,12 +31,13 @@ namespace DnsProxy.Console
             _cancellationTokenSource = cancellationTokenSource;
         }
 
-        public override void Register(IServiceCollection services)
+        public override IServiceCollection Register(IServiceCollection services)
         {
             // Program
             services.AddSingleton(this.GetType().Assembly);
             services.AddSingleton<ApplicationInformation>();
             services.AddSingleton(_cancellationTokenSource);
+            return services; 
         }
     }
 }

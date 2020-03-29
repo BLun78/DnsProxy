@@ -15,15 +15,18 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using DnsProxy.Common;
 using DnsProxy.Console.Common;
-using DnsProxy.Console.Common.Plugin;
-using DnsProxy.Plugin;
 using DnsProxy.Plugin.Configuration;
+using DnsProxy.Plugin.DI;
+using DnsProxy.Server;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 
@@ -33,17 +36,19 @@ namespace DnsProxy.Console
     {
         private static ILogger<Program2> _logger;
         private static string _title;
+        private static string[] _args;
 
         private static CancellationTokenSource CancellationTokenSource { get; set; }
         private static DependencyInjector DependencyInjector { get; set; }
+        private static ApplicationInformation ApplicationInformation { get; set; }
         private static IServiceProvider ServiceProvider => DependencyInjector.ServiceProvider;
 
         public static IConfigurationRoot Configuration
         {
             get
             {
-                IConfigurationBuilder builder = new ConfigurationBuilder();
-                builder = builder.SetBasePath(Directory.GetCurrentDirectory());
+                IConfigurationBuilder builder = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory());
 
                 if (PluginManager != null)
                 {
@@ -54,6 +59,7 @@ namespace DnsProxy.Console
                 }
 
                 builder = builder.AddEnvironmentVariables();
+                builder = builder.AddCommandLine(_args);
                 return builder.Build();
             }
         }
@@ -62,29 +68,30 @@ namespace DnsProxy.Console
 
         public static async Task<int> Main(string[] args)
         {
-            //AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
+            _args = args;
+            AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
             SerilogExtensions.SetupSerilog(null);
             try
             {
-                PluginManager = new PluginManager(Log.Logger);
-                var containerOptions = Configuration.SetupSerilog();
-                PluginManager.RegisterDependencyRegistration(Configuration);
+                using (PluginManager = new PluginManager(Log.Logger))
+                {
+                    Configuration.SetupSerilog();
+                    PluginManager.RegisterDependencyRegistration(Configuration);
 
 #if true
-                Serilog.Debugging.SelfLog.Enable(System.Console.Error);
-                Serilog.Debugging.SelfLog.Enable(System.Console.WriteLine);
+                    Serilog.Debugging.SelfLog.Enable(System.Console.Error);
+                    Serilog.Debugging.SelfLog.Enable(System.Console.WriteLine);
 #endif
 
-                Setup(args);
+                    Setup(args);
 
-                //using (var dnsServer = ServiceProvider.GetService<DnsServer>())
-                //{
-                //    await AwsVpcExtensions.CheckAwsVpc().ConfigureAwait(false);
+                    using (var dnsServer = ServiceProvider.GetService<DnsServer>())
+                    {
+                        return await WaitForEndAsync().ConfigureAwait(false);
+                    }
 
-                //    return await WaitForEndAsync().ConfigureAwait(false);
-                //}
-
-                return 0;
+                    return 0;
+                }
             }
 #pragma warning disable CA1031 // Do not catch general exception types
             // Last Global Exception Handler!!!
@@ -98,16 +105,46 @@ namespace DnsProxy.Console
             }
             finally
             {
-                Log.CloseAndFlush();
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
+                CurrentDomain_ProcessExit(null, null);
             }
         }
 
-        private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        private static async Task<int> WaitForEndAsync()
         {
-            System.Console.WriteLine("Resolving...");
-            return typeof(Program2).Assembly;
+            return await Task.Run(async () =>
+            {
+                var exit = false;
+                while (!exit)
+                {
+
+                    var key = System.Console.ReadKey(true);
+                    switch (key.Modifiers, key.Key)
+                    {
+                        case (ConsoleModifiers.Control, ConsoleKey.H):
+                            CreateHeader();
+                            break;
+                        case (ConsoleModifiers.Control, ConsoleKey.R):
+                            break;
+                        case (ConsoleModifiers.Control, ConsoleKey.Q):
+                        case (ConsoleModifiers.Control, ConsoleKey.X):
+                            exit = true;
+                            break;
+                    }
+                }
+
+                CancellationTokenSource?.Cancel();
+                CancellationTokenSource?.Dispose();
+                return 0;
+            }).ConfigureAwait(false);
+        }
+
+        static void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        {
+            CancellationTokenSource.Cancel();
+            PluginManager?.Dispose();
+            Log.CloseAndFlush();
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
         }
 
         internal static string Title
@@ -124,18 +161,57 @@ namespace DnsProxy.Console
         {
             CancellationTokenSource = new CancellationTokenSource();
 
+            var dependencyRegistrations = new List<IDependencyRegistration>();
+            dependencyRegistrations.AddRange(PluginManager.DependencyRegistration);
+            dependencyRegistrations.Add(new ConsoleDependencyRegistration(Configuration, CancellationTokenSource));
+            dependencyRegistrations.Add(new CommonDependencyRegistration(Configuration));
+            dependencyRegistrations.Add(new ServerDependencyRegistration(Configuration));
+            DependencyInjector = new DependencyInjector(Configuration, dependencyRegistrations);
 
-            //Configuration = new Configuration(args);
-            //DependencyInjector = new DependencyInjector(
-            //    Configuration.ConfigurationRoot,
-            //    typeof(Program).Assembly,
-            //    CancellationTokenSource);
+            ApplicationInformation = DependencyInjector.ServiceProvider.GetService<ApplicationInformation>();
 
-            //_logger = DependencyInjector.ServiceProvider.GetService<ILogger<Program>>();
-            //ApplicationInformation = DependencyInjector.ServiceProvider.GetService<ApplicationInformation>();
-
-            //CreateHeader();
+            CreateHeader();
         }
 
+        private static void CreateHeader()
+        {
+            Title = ApplicationInformation.DefaultTitle;
+            System.Console.WriteLine(
+                "========================================================================================");
+            ApplicationInformation.LogAssemblyInformation();
+            System.Console.WriteLine(
+                "========================================================================================");
+            System.Console.WriteLine("Copyright 2019 - 2020 Bjoern Lundstroem - (https://github.com/BLun78)");
+            System.Console.WriteLine("");
+            System.Console.WriteLine("Licensed under the Apache License, Version 2.0(the \"License\");");
+            System.Console.WriteLine("you may not use this file except in compliance with the License.");
+            System.Console.WriteLine("You may obtain a copy of the License at");
+            System.Console.WriteLine("");
+            System.Console.WriteLine("\thttp://www.apache.org/licenses/LICENSE-2.0");
+            System.Console.WriteLine("");
+            System.Console.WriteLine("Unless required by applicable law or agreed to in writing, software");
+            System.Console.WriteLine("distributed under the License is distributed on an \"AS IS\" BASIS,");
+            System.Console.WriteLine("WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.");
+            System.Console.WriteLine("See the License for the specific language governing permissions and");
+            System.Console.WriteLine("limitations under the License.");
+            System.Console.WriteLine(
+                "========================================================================================");
+            var color = System.Console.ForegroundColor;
+            System.Console.ForegroundColor = ConsoleColor.DarkYellow;
+            System.Console.WriteLine("\t[strg]+[x] or [strg]+[q] = exit Application");
+            System.Console.WriteLine("\t[strg]+[r] = reload AWS-VPC's with new mfa");
+            System.Console.WriteLine("\t[strg]+[h] = show this help / information");
+            System.Console.ForegroundColor = color;
+            System.Console.WriteLine(
+                "========================================================================================");
+            System.Console.WriteLine("Description:");
+            System.Console.WriteLine("\tA DNS-Proxy with routing for DNS-Request for development with hybrid clouds!");
+            System.Console.WriteLine("\tconfig.json, rules.json and hosts,json are used for configure.");
+            System.Console.WriteLine(
+                "========================================================================================");
+            System.Console.WriteLine("starts up " + ApplicationInformation.DefaultTitle + " ...");
+            System.Console.WriteLine(
+                "==================================================================================");
+        }
     }
 }

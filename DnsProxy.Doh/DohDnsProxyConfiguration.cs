@@ -26,10 +26,5 @@ namespace DnsProxy.Doh
         {
             return configurationBuilder;
         }
-
-        IConfigurationBuilder IDnsProxyConfiguration.ConfigurationBuilder(IConfigurationBuilder configurationBuilder)
-        {
-            return ConfigurationBuilder(configurationBuilder);
-        }
     }
 }
