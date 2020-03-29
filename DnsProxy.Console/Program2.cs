@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using DnsProxy.Console.Common;
 using DnsProxy.Console.Common.Plugin;
 using DnsProxy.Plugin;
+using DnsProxy.Plugin.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -61,7 +62,7 @@ namespace DnsProxy.Console
 
         public static async Task<int> Main(string[] args)
         {
-            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+            //AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
             SerilogExtensions.SetupSerilog(null);
             try
             {
@@ -105,8 +106,8 @@ namespace DnsProxy.Console
 
         private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
-           
-            return null;
+            System.Console.WriteLine("Resolving...");
+            return typeof(Program2).Assembly;
         }
 
         internal static string Title

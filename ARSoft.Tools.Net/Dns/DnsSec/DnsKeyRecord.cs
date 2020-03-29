@@ -33,6 +33,7 @@ using Org.BouncyCastle.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DnsProxy.Plugin.Models.Dns;
 
 namespace ARSoft.Tools.Net.Dns
 {

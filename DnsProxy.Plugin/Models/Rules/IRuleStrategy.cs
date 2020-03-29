@@ -16,7 +16,7 @@
 
 using System;
 
-namespace DnsProxy.Common.Models.Rules
+namespace DnsProxy.Plugin.Models.Rules
 {
     public interface IRuleStrategy
     {

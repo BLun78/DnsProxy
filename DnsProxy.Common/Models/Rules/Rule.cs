@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
+using DnsProxy.Plugin.Models.Rules;
 
 namespace DnsProxy.Common.Models.Rules
 {

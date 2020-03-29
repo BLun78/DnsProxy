@@ -15,7 +15,6 @@
 #endregion
 
 using DnsProxy.Common.Models;
-using DnsProxy.Hosts.Strategies;
 using DnsProxy.Server.Models;
 using DnsProxy.Server.Models.Models;
 using DnsProxy.Server.Strategies;
@@ -25,6 +24,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Net;
 using DnsProxy.Plugin;
+using DnsProxy.Plugin.DI;
 
 namespace DnsProxy.Server
 {

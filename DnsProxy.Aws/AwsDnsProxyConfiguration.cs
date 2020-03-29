@@ -17,6 +17,7 @@
 using Microsoft.Extensions.Configuration;
 using System;
 using DnsProxy.Plugin;
+using DnsProxy.Plugin.Configuration;
 
 namespace DnsProxy.Aws
 {
@@ -24,7 +25,7 @@ namespace DnsProxy.Aws
     {
         public IConfigurationBuilder ConfigurationBuilder(IConfigurationBuilder configurationBuilder)
         {
-            throw new NotImplementedException();
+            return configurationBuilder;
         }
     }
 }

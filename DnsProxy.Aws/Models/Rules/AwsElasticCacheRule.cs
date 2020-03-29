@@ -17,6 +17,7 @@
 using DnsProxy.Aws.Strategies;
 using DnsProxy.Common.Models.Rules;
 using System;
+using DnsProxy.Plugin.Models.Rules;
 
 namespace DnsProxy.Aws.Models.Rules
 {

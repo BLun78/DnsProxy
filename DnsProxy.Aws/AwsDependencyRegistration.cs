@@ -27,6 +27,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net;
 using DnsProxy.Plugin;
+using DnsProxy.Plugin.DI;
 
 namespace DnsProxy.Aws
 {

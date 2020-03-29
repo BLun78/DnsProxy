@@ -19,6 +19,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
 using DnsProxy.Plugin;
+using DnsProxy.Plugin.DI;
 
 namespace DnsProxy.Console
 {

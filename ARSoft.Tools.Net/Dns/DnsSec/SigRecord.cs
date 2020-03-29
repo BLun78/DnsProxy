@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using DnsProxy.Plugin.Models.Dns;
 
 namespace ARSoft.Tools.Net.Dns
 {

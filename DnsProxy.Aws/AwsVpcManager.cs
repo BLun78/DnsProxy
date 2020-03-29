@@ -29,6 +29,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DnsProxy.Plugin.Models.Dns;
 using DomainName = ARSoft.Tools.Net.DomainName;
 
 namespace DnsProxy.Aws
@@ -111,7 +112,7 @@ namespace DnsProxy.Aws
         {
             try
             {
-                var result = new List<DnsRecordBase>();
+                var result = new List<IDnsRecordBase>();
 
                 var endpoints = await _awsVpcReader.ReadEndpoints(awsCredentials, awsScanRules, cancellationToken)
                     .ConfigureAwait(false);
@@ -149,9 +150,10 @@ namespace DnsProxy.Aws
             }
         }
 
-        private void StoreInCache(DnsQuestion dnsQuestion, List<DnsRecordBase> data,
+        private void StoreInCache(IDnsQuestion dnsQuestionInput, List<IDnsRecordBase> data,
             MemoryCacheEntryOptions cacheEntryOptions)
         {
+            var dnsQuestion = dnsQuestionInput as DnsQuestion;
             var key = dnsQuestion.ToString();
             var key2 = new DnsQuestion(dnsQuestion.Name, RecordType.A, dnsQuestion.RecordClass).ToString();
 
@@ -164,7 +166,7 @@ namespace DnsProxy.Aws
             }
         }
 
-        private void StoreInCache(DnsQuestion dnsQuestion, List<DnsRecordBase> data)
+        private void StoreInCache(IDnsQuestion dnsQuestion, List<IDnsRecordBase> data)
         {
             var cacheoptions = new MemoryCacheEntryOptions();
             cacheoptions.SetPriority(CacheItemPriority.NeverRemove);

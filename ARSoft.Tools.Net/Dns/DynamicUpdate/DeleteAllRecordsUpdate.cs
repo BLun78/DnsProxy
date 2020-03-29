@@ -17,6 +17,8 @@
 #endregion
 
 
+using DnsProxy.Plugin.Models.Dns;
+
 namespace ARSoft.Tools.Net.Dns.DynamicUpdate
 {
     /// <summary>

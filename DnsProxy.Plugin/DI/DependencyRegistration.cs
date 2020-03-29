@@ -17,7 +17,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DnsProxy.Plugin
+namespace DnsProxy.Plugin.DI
 {
     public abstract class DependencyRegistration : IDependencyRegistration
     {

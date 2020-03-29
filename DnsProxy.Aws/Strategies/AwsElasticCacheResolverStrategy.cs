@@ -25,6 +25,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using DnsProxy.Plugin.Models.Dns;
+using DnsProxy.Plugin.Strategies;
 
 namespace DnsProxy.Aws.Strategies
 {
@@ -43,7 +45,7 @@ namespace DnsProxy.Aws.Strategies
             StrategyName = "AwsElasticCache";
         }
 
-        public override Task<List<DnsRecordBase>> AwsResolveAsync(DnsQuestion dnsQuestion, List<string> ScanVpcIds,
+        public override Task<List<IDnsRecordBase>> AwsResolveAsync(IDnsQuestion dnsQuestion, List<string> ScanVpcIds,
             CancellationToken cancellationToken)
         {
             var logger = DnsContextAccessor.DnsContext.Logger;

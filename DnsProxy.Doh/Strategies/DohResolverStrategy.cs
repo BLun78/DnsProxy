@@ -32,6 +32,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using DnsProxy.Plugin.Models.Dns;
+using DnsProxy.Plugin.Strategies;
 
 namespace DnsProxy.Doh.Strategies
 {
@@ -55,7 +57,7 @@ namespace DnsProxy.Doh.Strategies
             NeedsQueryTimeout = false;
         }
 
-        public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
+        public override async Task<List<IDnsRecordBase>> ResolveAsync(IDnsQuestion dnsQuestion,
             CancellationToken cancellationToken)
         {
             var logger = DnsContextAccessor.DnsContext.Logger;
@@ -63,7 +65,7 @@ namespace DnsProxy.Doh.Strategies
             {
                 var stopwatch = new Stopwatch();
                 LogDnsQuestion(dnsQuestion, stopwatch);
-                var result = new List<DnsRecordBase>();
+                var result = new List<IDnsRecordBase>();
 
                 // https://github.com/curl/curl/wiki/DNS-over-HTTPS
                 foreach (var nameServerUri in Rule.NameServerUri)
@@ -73,7 +75,7 @@ namespace DnsProxy.Doh.Strategies
 
                     var question = new Question
                     {
-                        Name = dnsQuestion.Name.ToDomainName(),
+                        Name = (dnsQuestion.Name as ARSoft.Tools.Net.DomainName).ToDomainName(),
                         Type = dnsQuestion.RecordType.ToDnsType(),
                         Class = dnsQuestion.RecordClass.ToDnsClass()
                     };

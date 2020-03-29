@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
+using DnsProxy.Plugin.Models.Rules;
 
 namespace DnsProxy.Common.Models.Rules
 {

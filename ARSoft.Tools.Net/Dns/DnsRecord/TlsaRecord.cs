@@ -22,6 +22,7 @@ using Org.BouncyCastle.X509;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DnsProxy.Plugin.Models.Dns;
 using X509Certificate = System.Security.Cryptography.X509Certificates.X509Certificate;
 
 namespace ARSoft.Tools.Net.Dns

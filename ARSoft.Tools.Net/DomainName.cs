@@ -25,13 +25,14 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using DnsProxy.Plugin.Models.Dns;
 
 namespace ARSoft.Tools.Net
 {
     /// <summary>
     ///   Represents a domain name
     /// </summary>
-    public class DomainName : IEquatable<DomainName>, IComparable<DomainName>
+    public class DomainName : IEquatable<DomainName>, IComparable<DomainName>, IDomainName
     {
         private readonly string[] _labels;
 

@@ -14,9 +14,10 @@
 //    limitations under the License.
 #endregion
 
+using DnsProxy.Plugin.Common;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DnsProxy.Plugin
+namespace DnsProxy.Plugin.DI
 {
     public interface IDependencyRegistration : IOrder
     {

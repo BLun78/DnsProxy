@@ -15,6 +15,7 @@
 #endregion
 
 using DnsProxy.Plugin;
+using DnsProxy.Plugin.Configuration;
 using Microsoft.Extensions.Configuration;
 
 namespace DnsProxy.Doh
@@ -24,6 +25,11 @@ namespace DnsProxy.Doh
         public IConfigurationBuilder ConfigurationBuilder(IConfigurationBuilder configurationBuilder)
         {
             return configurationBuilder;
+        }
+
+        IConfigurationBuilder IDnsProxyConfiguration.ConfigurationBuilder(IConfigurationBuilder configurationBuilder)
+        {
+            return ConfigurationBuilder(configurationBuilder);
         }
     }
 }

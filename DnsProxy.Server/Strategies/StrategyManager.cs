@@ -16,8 +16,6 @@
 
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common.Models.Context;
-using DnsProxy.Common.Models.Rules;
-using DnsProxy.Common.Strategies;
 using DnsProxy.Server.Models;
 using DnsProxy.Server.Models.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +26,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DnsProxy.Plugin.Models.Dns;
+using DnsProxy.Plugin.Models.Rules;
+using DnsProxy.Plugin.Strategies;
 
 namespace DnsProxy.Server.Strategies
 {
@@ -106,8 +107,7 @@ namespace DnsProxy.Server.Strategies
             return strategy;
         }
 
-        public async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, string ipEndPoint,
-            CancellationToken cancellationToken)
+        public async Task<DnsMessage> ResolveAsync(DnsMessage dnsMessage, string ipEndPoint, CancellationToken cancellationToken)
         {
             if (dnsMessage == null) throw new ArgumentNullException(nameof(dnsMessage));
             if (cancellationToken == null) throw new ArgumentNullException(nameof(cancellationToken));
@@ -209,13 +209,13 @@ namespace DnsProxy.Server.Strategies
             }
         }
 
-        private static async Task DoResolveAsync(IDnsResolverStrategy dnsResolverStrategy, DnsQuestion dnsQuestion,
+        private static async Task DoResolveAsync(IDnsResolverStrategy dnsResolverStrategy, IDnsQuestion dnsQuestion,
             IWriteDnsContext dnsWriteContext, CancellationToken cancellationToken)
         {
             var answer = await dnsResolverStrategy
                 .ResolveAsync(dnsQuestion, cancellationToken)
                 .ConfigureAwait(false);
-            dnsWriteContext.Response.AnswerRecords.AddRange(answer);
+            dnsWriteContext.Response.AnswerRecords.AddRange(answer.Cast<DnsRecordBase>());
         }
 
         private IWriteDnsContext GetWriteDnsContext(IServiceScope scope, DnsMessage dnsMessage, string ipEndPoint,

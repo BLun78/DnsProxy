@@ -14,24 +14,24 @@
 //    limitations under the License.
 #endregion
 
-using ARSoft.Tools.Net.Dns;
-using DnsProxy.Common.Models.Rules;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using DnsProxy.Plugin;
+using DnsProxy.Plugin.Common;
+using DnsProxy.Plugin.Models.Dns;
+using DnsProxy.Plugin.Models.Rules;
 
-namespace DnsProxy.Common.Strategies
+namespace DnsProxy.Plugin.Strategies
 {
     public interface IDnsResolverStrategy : IDisposable, IOrder
     {
         string StrategyName { get; }
         bool NeedsQueryTimeout { get; }
         IRule Rule { get; }
-        Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken);
+        Task<List<IDnsRecordBase>> ResolveAsync(IDnsQuestion dnsQuestion, CancellationToken cancellationToken);
         void SetRule(IRule rule);
-        bool MatchPattern(DnsQuestion dnsQuestion);
+        bool MatchPattern(IDnsQuestion dnsQuestion);
     }
 
     public interface IDnsResolverStrategy<TRule> : IDnsResolverStrategy

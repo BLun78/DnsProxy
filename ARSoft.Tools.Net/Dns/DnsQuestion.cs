@@ -19,13 +19,15 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using DnsProxy.Plugin.Models.Dns;
 
 namespace ARSoft.Tools.Net.Dns
 {
+
     /// <summary>
     ///   A single entry of the Question section of a dns query
     /// </summary>
-    public class DnsQuestion : DnsMessageEntryBase, IEquatable<DnsQuestion>
+    public class DnsQuestion : DnsMessageEntryBase, IEquatable<DnsQuestion>, IDnsQuestion
     {
         /// <summary>
         ///   Creates a new instance of the DnsQuestion class
@@ -43,7 +45,17 @@ namespace ARSoft.Tools.Net.Dns
             RecordClass = recordClass;
         }
 
-        internal DnsQuestion() { }
+        internal DnsQuestion()
+        {
+        }
+
+        /// <summary>
+        ///   Domain name
+        /// </summary>
+        IDomainName IDnsQuestion.Name
+        {
+            get => this.Name;
+        }
 
         internal override int MaximumLength => Name.MaximumRecordDataLength + 6;
 

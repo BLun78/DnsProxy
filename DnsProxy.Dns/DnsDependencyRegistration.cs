@@ -16,6 +16,7 @@
 
 using DnsProxy.Dns.Strategies;
 using DnsProxy.Plugin;
+using DnsProxy.Plugin.DI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -5,7 +5,11 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using DnsProxy.Plugin;
+using DnsProxy.Plugin.Configuration;
+using DnsProxy.Plugin.DI;
+using McMaster.NETCore.Plugins;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 namespace DnsProxy.Console.Common.Plugin
@@ -61,7 +65,7 @@ namespace DnsProxy.Console.Common.Plugin
 
                     _logger.Information("Loaded Plugin: {pluginName}", Plugin?.FirstOrDefault()?.PluginName);
 
-                    Configurations.AddRange(Plugin.Select(x => x.DnsProxyConfiguration));
+                    Configurations.AddRange(Plugin.Select(x => (IDnsProxyConfiguration)x.DnsProxyConfiguration));
                 }
             }
             catch (ReflectionTypeLoadException ex)
@@ -103,29 +107,33 @@ namespace DnsProxy.Console.Common.Plugin
                                 Path.GetDirectoryName(typeof(Program2).Assembly.Location)))))));
 
             string pluginLocation = Path.GetFullPath(Path.Combine(root, relativePath.Replace('\\', Path.DirectorySeparatorChar)));
-            
+
             _logger.Information("Loading commands from: {pluginLocation}", pluginLocation);
 
             var pathSplit = pluginLocation.Split(@"\");
             var assemblyName = new AssemblyName(pathSplit[pathSplit.Length - 1]);
-            var dllName = assemblyName + ".dll";
-            var loadContext = new PluginLoadContext(Path.Combine(pluginLocation, dllName));
+            var pluginDll = $"{pluginLocation}\\{assemblyName}.dll";
 
-            return loadContext.LoadFromAssemblyName(assemblyName);
+            using (var loader = PluginLoader.CreateFromAssemblyFile(
+                                    pluginDll,
+                                    sharedTypes: PluginSharedTypes.SharedTypes)
+            )
+            {
+                return loader.LoadDefaultAssembly();
+            }
         }
 
         private IEnumerable<IPlugin> CreateCommands(Assembly assembly)
         {
             var plugins = new List<IPlugin>();
 
-            foreach (Type type in assembly.GetTypes())
+            foreach (Type type in assembly
+                .GetTypes()
+                .Where(x => typeof(IPlugin).IsAssignableFrom(x) && !x.IsAbstract))
             {
-                if (typeof(IPlugin).IsAssignableFrom(type))
+                if (Activator.CreateInstance(type) is IPlugin result)
                 {
-                    if (Activator.CreateInstance(type) is IPlugin result)
-                    {
-                        plugins.Add(result);
-                    }
+                    plugins.Add(result);
                 }
             }
 

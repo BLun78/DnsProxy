@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using DnsProxy.Plugin.Models.Dns;
 
 namespace ARSoft.Tools.Net.Dns
 {

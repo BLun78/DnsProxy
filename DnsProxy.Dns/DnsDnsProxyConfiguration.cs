@@ -15,8 +15,7 @@
 #endregion
 
 using Microsoft.Extensions.Configuration;
-using System;
-using DnsProxy.Plugin;
+using DnsProxy.Plugin.Configuration;
 
 namespace DnsProxy.Dns
 {
@@ -24,7 +23,7 @@ namespace DnsProxy.Dns
     {
         public IConfigurationBuilder ConfigurationBuilder(IConfigurationBuilder configurationBuilder)
         {
-            throw new NotImplementedException();
+            return configurationBuilder;
         }
     }
 }

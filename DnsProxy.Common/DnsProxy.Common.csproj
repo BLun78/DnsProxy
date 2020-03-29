@@ -38,7 +38,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ARSoft.Tools.Net\ARSoft.Tools.Net.csproj" />
-    <ProjectReference Include="..\DnsProxy.Plugin\DnsProxy.Plugin.csproj" >
+    <ProjectReference Include="..\DnsProxy.Plugin\DnsProxy.Plugin.csproj">
       <Private>false</Private>
       <ExcludeAssets>runtime</ExcludeAssets>
     </ProjectReference>
@@ -56,11 +56,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Configuration\" />
-    <Folder Include="DI\" />
   </ItemGroup>
 
 </Project>

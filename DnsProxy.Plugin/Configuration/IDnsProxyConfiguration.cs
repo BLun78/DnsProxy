@@ -14,24 +14,12 @@
 //    limitations under the License.
 #endregion
 
-using System.Text.RegularExpressions;
-using DnsProxy.Plugin;
+using Microsoft.Extensions.Configuration;
 
-namespace DnsProxy.Common.Models.Rules
+namespace DnsProxy.Plugin.Configuration
 {
-    public interface IRule : IRuleStrategy, IOrder
+    public interface IDnsProxyConfiguration
     {
-        bool IsCache { get; }
-        string StrategyName { get; }
-        bool IsEnabled { get; }
-        string DomainName { get; }
-        string DomainNamePattern { get; }
-
-        /// <summary>
-        ///     Query timeout in milliseconds
-        /// </summary>
-        int QueryTimeout { get; }
-
-        Regex GetDomainNameRegex();
+        IConfigurationBuilder ConfigurationBuilder(IConfigurationBuilder configurationBuilder);
     }
 }

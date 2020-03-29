@@ -24,7 +24,7 @@ namespace DnsProxy.Dns
     {
         public string PluginName => "DnsProxy.Dns";
         public Type DependencyRegistration => typeof(DnsDependencyRegistration);
-        public IDnsProxyConfiguration DnsProxyConfiguration =>new DnsDnsProxyConfiguration();
+        public object DnsProxyConfiguration =>new DnsDnsProxyConfiguration();
         public Type[] Rules => new[] { typeof(DnsRule) };
     }
 }

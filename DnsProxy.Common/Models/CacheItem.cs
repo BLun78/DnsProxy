@@ -16,18 +16,19 @@
 
 using ARSoft.Tools.Net.Dns;
 using System.Collections.Generic;
+using DnsProxy.Plugin.Models.Dns;
 
 namespace DnsProxy.Common.Models
 {
     public class CacheItem
     {
-        public CacheItem(RecordType recordType, List<DnsRecordBase> dnsRecordBases)
+        public CacheItem(RecordType recordType, List<IDnsRecordBase> dnsRecordBases)
         {
             DnsRecordBases = dnsRecordBases;
             RecordType = recordType;
         }
 
-        public List<DnsRecordBase> DnsRecordBases { get; }
+        public List<IDnsRecordBase> DnsRecordBases { get; }
         public RecordType RecordType { get; set; }
     }
 }

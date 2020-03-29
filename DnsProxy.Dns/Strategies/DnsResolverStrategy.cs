@@ -28,6 +28,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DnsProxy.Plugin.Models.Dns;
+using DnsProxy.Plugin.Strategies;
 
 namespace DnsProxy.Dns.Strategies
 {
@@ -43,15 +45,16 @@ namespace DnsProxy.Dns.Strategies
             StrategyName = "DNS";
         }
 
-        public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
+        public override async Task<List<IDnsRecordBase>> ResolveAsync(IDnsQuestion dnsQuestionInput,
             CancellationToken cancellationToken)
         {
             var logger = DnsContextAccessor.DnsContext.Logger;
+            var dnsQuestion = dnsQuestionInput as DnsQuestion;
             using (logger.BeginScope($"{StrategyName} =>"))
             {
                 var stopwatch = new Stopwatch();
                 LogDnsQuestion(dnsQuestion, stopwatch);
-                var result = new List<DnsRecordBase>();
+                var result = new List<IDnsRecordBase>();
 
                 try
                 {

@@ -14,24 +14,26 @@
 //    limitations under the License.
 #endregion
 
-using ARSoft.Tools.Net;
-using ARSoft.Tools.Net.Dns;
-using DnsProxy.Common.Models;
-using DnsProxy.Common.Models.Context;
-using DnsProxy.Common.Strategies;
-using DnsProxy.Hosts.Common;
-using DnsProxy.Server.Models.Models;
-using DnsProxy.Server.Models.Models.Rules;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ARSoft.Tools.Net;
+using ARSoft.Tools.Net.Dns;
+using DnsProxy.Common.Models;
+using DnsProxy.Common.Models.Context;
+using DnsProxy.Common.Strategies;
+using DnsProxy.Hosts.Common;
+using DnsProxy.Plugin.Models.Dns;
+using DnsProxy.Plugin.Strategies;
+using DnsProxy.Server.Models.Models;
+using DnsProxy.Server.Models.Models.Rules;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 
-namespace DnsProxy.Hosts.Strategies
+namespace DnsProxy.Server.Strategies
 {
     internal class CacheResolverStrategy : BaseResolverStrategy<HostsRule>, IDnsResolverStrategy<HostsRule>
     {
@@ -58,14 +60,14 @@ namespace DnsProxy.Hosts.Strategies
 
         internal static CancellationToken CacheCancellationToken { get; private set; }
 
-        public override Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken)
+        public override Task<List<IDnsRecordBase>> ResolveAsync(IDnsQuestion dnsQuestion, CancellationToken cancellationToken)
         {
             var logger = DnsContextAccessor.DnsContext.Logger;
             using (logger.BeginScope($"{StrategyName} =>"))
             {
                 var stopwatch = new Stopwatch();
                 LogDnsQuestion(dnsQuestion, stopwatch);
-                var result = new List<DnsRecordBase>();
+                var result = new List<IDnsRecordBase>();
                 var key = dnsQuestion.ToString();
 
                 var cacheItem = MemoryCache.Get<CacheItem>(key);
@@ -87,7 +89,7 @@ namespace DnsProxy.Hosts.Strategies
             }
         }
 
-        public override bool MatchPattern(DnsQuestion dnsQuestion)
+        public override bool MatchPattern(IDnsQuestion dnsQuestion)
         {
             return true;
         }
@@ -129,19 +131,19 @@ namespace DnsProxy.Hosts.Strategies
                     {
                         var tempHost = host.ToPtrRecords(ipAddress);
                         var question = new DnsQuestion(DomainName.Parse(tempHost.Item1), RecordType.Ptr, RecordClass.INet);
-                        StoreInCache(question, tempHost.Item2.Cast<DnsRecordBase>().ToList());
+                        StoreInCache(question, tempHost.Item2.Cast<IDnsRecordBase>().ToList());
                     }
 
                     foreach (var domainName in host.DomainNames)
                     {
                         var tempHost = host.ToAddressRecord(domainName);
                         var question = new DnsQuestion(DomainName.Parse(domainName), tempHost.First().RecordType, RecordClass.INet);
-                        StoreInCache(question, tempHost.Cast<DnsRecordBase>().ToList());
+                        StoreInCache(question, tempHost.Cast<IDnsRecordBase>().ToList());
                     }
                 }
         }
 
-        private void RemoveCacheItem(DnsQuestion dnsQuestion)
+        private void RemoveCacheItem(IDnsQuestion dnsQuestion)
         {
             var key = dnsQuestion.ToString();
             var lastChar = key.Substring(key.Length - 1, 1);
@@ -150,7 +152,7 @@ namespace DnsProxy.Hosts.Strategies
                 : $"{key}.");
         }
 
-        private void StoreInCache(DnsQuestion dnsQuestion, List<DnsRecordBase> data)
+        private void StoreInCache(IDnsQuestion dnsQuestion, List<IDnsRecordBase> data)
         {
             var cacheoptions = new MemoryCacheEntryOptions();
             cacheoptions.SetPriority(CacheItemPriority.NeverRemove);
