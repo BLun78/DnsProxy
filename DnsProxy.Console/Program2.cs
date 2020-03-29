@@ -27,14 +27,12 @@ using DnsProxy.Plugin.DI;
 using DnsProxy.Server;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace DnsProxy.Console
 {
-    public sealed class Program2
+    public static class Program2
     {
-        private static ILogger<Program2> _logger;
         private static string _title;
         private static string[] _args;
 
@@ -49,6 +47,9 @@ namespace DnsProxy.Console
             {
                 IConfigurationBuilder builder = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory());
+
+                builder = new ServerDnsProxyConfiguration().ConfigurationBuilder(builder);
+                builder = new CommonDnsProxyConfiguration().ConfigurationBuilder(builder);
 
                 if (PluginManager != null)
                 {
@@ -140,8 +141,9 @@ namespace DnsProxy.Console
 
         static void CurrentDomain_ProcessExit(object sender, EventArgs e)
         {
-            CancellationTokenSource.Cancel();
+            CancellationTokenSource?.Cancel();
             PluginManager?.Dispose();
+            CancellationTokenSource?.Dispose();
             Log.CloseAndFlush();
             GC.Collect();
             GC.WaitForPendingFinalizers();

@@ -25,13 +25,13 @@ namespace DnsProxy.Server
     {
         public IConfigurationBuilder ConfigurationBuilder(IConfigurationBuilder configurationBuilder)
         {
-            return configurationBuilder.SetBasePath(Directory.GetCurrentDirectory())
+            return configurationBuilder
                     .AddJsonFile("config.json", false, true)
                     .AddJsonFile("rules.json", false, true)
                     .AddJsonFile("hosts.json", false, true)
                     .AddJsonFile("_config.json", true, true)
                     .AddJsonFile("_rules.json", true, true)
-                    .AddJsonFile("_hosts.json", false, true);
+                    .AddJsonFile("_hosts.json", true, true);
         }
     }
 }
