@@ -25,9 +25,8 @@ using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common.Models;
 using DnsProxy.Common.Models.Context;
 using DnsProxy.Common.Strategies;
-using DnsProxy.Hosts.Common;
-using DnsProxy.Plugin.Models.Dns;
 using DnsProxy.Plugin.Strategies;
+using DnsProxy.Server.Common;
 using DnsProxy.Server.Models.Models;
 using DnsProxy.Server.Models.Models.Rules;
 using Microsoft.Extensions.Caching.Memory;
@@ -60,14 +59,14 @@ namespace DnsProxy.Server.Strategies
 
         internal static CancellationToken CacheCancellationToken { get; private set; }
 
-        public override Task<List<IDnsRecordBase>> ResolveAsync(IDnsQuestion dnsQuestion, CancellationToken cancellationToken)
+        public override Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken)
         {
             var logger = DnsContextAccessor.DnsContext.Logger;
             using (logger.BeginScope($"{StrategyName} =>"))
             {
                 var stopwatch = new Stopwatch();
                 LogDnsQuestion(dnsQuestion, stopwatch);
-                var result = new List<IDnsRecordBase>();
+                var result = new List<DnsRecordBase>();
                 var key = dnsQuestion.ToString();
 
                 var cacheItem = MemoryCache.Get<CacheItem>(key);
@@ -89,7 +88,7 @@ namespace DnsProxy.Server.Strategies
             }
         }
 
-        public override bool MatchPattern(IDnsQuestion dnsQuestion)
+        public override bool MatchPattern(DnsQuestion dnsQuestion)
         {
             return true;
         }
@@ -131,19 +130,19 @@ namespace DnsProxy.Server.Strategies
                     {
                         var tempHost = host.ToPtrRecords(ipAddress);
                         var question = new DnsQuestion(DomainName.Parse(tempHost.Item1), RecordType.Ptr, RecordClass.INet);
-                        StoreInCache(question, tempHost.Item2.Cast<IDnsRecordBase>().ToList());
+                        StoreInCache(question, tempHost.Item2.Cast<DnsRecordBase>().ToList());
                     }
 
                     foreach (var domainName in host.DomainNames)
                     {
                         var tempHost = host.ToAddressRecord(domainName);
                         var question = new DnsQuestion(DomainName.Parse(domainName), tempHost.First().RecordType, RecordClass.INet);
-                        StoreInCache(question, tempHost.Cast<IDnsRecordBase>().ToList());
+                        StoreInCache(question, tempHost.Cast<DnsRecordBase>().ToList());
                     }
                 }
         }
 
-        private void RemoveCacheItem(IDnsQuestion dnsQuestion)
+        private void RemoveCacheItem(DnsQuestion dnsQuestion)
         {
             var key = dnsQuestion.ToString();
             var lastChar = key.Substring(key.Length - 1, 1);
@@ -152,7 +151,7 @@ namespace DnsProxy.Server.Strategies
                 : $"{key}.");
         }
 
-        private void StoreInCache(IDnsQuestion dnsQuestion, List<IDnsRecordBase> data)
+        private void StoreInCache(DnsQuestion dnsQuestion, List<DnsRecordBase> data)
         {
             var cacheoptions = new MemoryCacheEntryOptions();
             cacheoptions.SetPriority(CacheItemPriority.NeverRemove);

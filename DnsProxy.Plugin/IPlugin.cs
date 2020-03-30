@@ -15,6 +15,8 @@
 #endregion
 
 using System;
+using DnsProxy.Plugin.Configuration;
+using DnsProxy.Plugin.Models.Rules;
 
 namespace DnsProxy.Plugin
 {
@@ -22,7 +24,8 @@ namespace DnsProxy.Plugin
     {
         string PluginName { get; }
         Type DependencyRegistration { get; }
-        object DnsProxyConfiguration { get; }
+        IDnsProxyConfiguration DnsProxyConfiguration { get; }
+        IRuleFactory RuleFactory { get; }
         Type[] Rules { get; }
     }
 }

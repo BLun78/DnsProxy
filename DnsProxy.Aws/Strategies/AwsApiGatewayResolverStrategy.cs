@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using DnsProxy.Plugin.Models.Dns;
+using ARSoft.Tools.Net.Dns;
 using DnsProxy.Plugin.Strategies;
 
 namespace DnsProxy.Aws.Strategies
@@ -44,7 +44,7 @@ namespace DnsProxy.Aws.Strategies
             StrategyName = "AwsApiGateway";
         }
 
-        public override async Task<List<IDnsRecordBase>> AwsResolveAsync(IDnsQuestion dnsQuestion,
+        public override async Task<List<DnsRecordBase>> AwsResolveAsync(DnsQuestion dnsQuestion,
             List<string> ScanVpcIds, CancellationToken cancellationToken)
         {
             var logger = DnsContextAccessor.DnsContext.Logger;

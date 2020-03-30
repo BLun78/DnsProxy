@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,24 +13,21 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
-using DnsProxy.Common.Models.Rules;
 using System;
 using System.Collections.Generic;
 using DnsProxy.Plugin.Models.Rules;
 
-namespace DnsProxy.Server.Models
+namespace DnsProxy.Server.Models.Rules
 {
-#pragma warning disable CA2227 // Collection properties should be read only
-    internal class RulesConfig : ICloneable
+    public class RuleFactories : IRuleFactories
     {
-        public List<Rule> Rules { get; set; }
-
-        public object Clone()
+        public RuleFactories(List<IRuleFactory> ruleFactories)
         {
-            return MemberwiseClone();
+            Factories = ruleFactories;
         }
+        public List<IRuleFactory> Factories { get; }
     }
-#pragma warning restore CA2227 // Collection properties should be read only
 }

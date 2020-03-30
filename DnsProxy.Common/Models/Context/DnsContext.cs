@@ -15,8 +15,6 @@
 #endregion
 
 using ARSoft.Tools.Net.Dns;
-using DnsProxy.Common.Models.Rules;
-using DnsProxy.Common.Strategies;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;

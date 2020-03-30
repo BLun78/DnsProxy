@@ -20,14 +20,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using DnsProxy.Plugin.Models.Dns;
 
 namespace ARSoft.Tools.Net.Dns
 {
     /// <summary>
     ///   Base class representing a dns record
     /// </summary>
-    public abstract class DnsRecordBase : DnsMessageEntryBase, IComparable<DnsRecordBase>, IEquatable<DnsRecordBase>, IDnsRecordBase
+    public abstract class DnsRecordBase : DnsMessageEntryBase, IComparable<DnsRecordBase>, IEquatable<DnsRecordBase>
     {
         internal int StartPosition { get; set; }
         internal ushort RecordDataLength { get; set; }
@@ -36,8 +35,6 @@ namespace ARSoft.Tools.Net.Dns
         ///   Seconds which a record should be cached at most
         /// </summary>
         public int TimeToLive { get; internal set; }
-
-        IDomainName IDnsRecordBase.Name => this.Name;
 
         protected DnsRecordBase() { }
 

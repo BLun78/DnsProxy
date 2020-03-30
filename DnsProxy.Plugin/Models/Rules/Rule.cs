@@ -18,9 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
-using DnsProxy.Plugin.Models.Rules;
 
-namespace DnsProxy.Common.Models.Rules
+namespace DnsProxy.Plugin.Models.Rules
 {
     public class Rule : IRule
     {
@@ -52,26 +51,17 @@ namespace DnsProxy.Common.Models.Rules
         }
 
         [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "<Pending>")]
-        public IRule GetInternalRule()
+        public IRule GetInternalRule(List<IRuleFactory> ruleTypes)
         {
-            switch (StrategyName)
+            foreach (IRuleFactory factory in ruleTypes)
             {
-                // TODO
-                //case Common.Models.Strategies.Hosts:
-                //    return new HostsRule(this);
-                //case Common.Models.Strategies.Dns:
-                //    return new DnsRule(this);
-                //case Common.Models.Strategies.DoH:
-                //    return new DohRule(this);
-                //case Common.Models.Strategies.AwsDocDb:
-                //    return new AwsDocDbRule(this);
-                //case Common.Models.Strategies.AwsElasticCache:
-                //    return new AwsElasticCacheRule(this);
-                //case Common.Models.Strategies.AwsApiGateway:
-                //    return new AwsApiGatewayRule(this);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(StrategyName), StrategyName, null);
+                var rule = factory.Create(StrategyName, this);
+                if (rule != null)
+                {
+                    return rule;
+                }
             }
+            throw new ArgumentOutOfRangeException(nameof(StrategyName), StrategyName, null);
         }
     }
 }

@@ -14,9 +14,7 @@
 //    limitations under the License.
 #endregion
 
-using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common.Models;
-using DnsProxy.Common.Models.Context;
 using DnsProxy.Common.Strategies;
 using DnsProxy.Doh.Common;
 using DnsProxy.Doh.Models.Rules;
@@ -32,7 +30,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using DnsProxy.Plugin.Models.Dns;
+using ARSoft.Tools.Net.Dns;
+using DnsProxy.Common.Models.Context;
 using DnsProxy.Plugin.Strategies;
 
 namespace DnsProxy.Doh.Strategies
@@ -57,7 +56,7 @@ namespace DnsProxy.Doh.Strategies
             NeedsQueryTimeout = false;
         }
 
-        public override async Task<List<IDnsRecordBase>> ResolveAsync(IDnsQuestion dnsQuestion,
+        public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
             CancellationToken cancellationToken)
         {
             var logger = DnsContextAccessor.DnsContext.Logger;
@@ -65,7 +64,7 @@ namespace DnsProxy.Doh.Strategies
             {
                 var stopwatch = new Stopwatch();
                 LogDnsQuestion(dnsQuestion, stopwatch);
-                var result = new List<IDnsRecordBase>();
+                var result = new List<DnsRecordBase>();
 
                 // https://github.com/curl/curl/wiki/DNS-over-HTTPS
                 foreach (var nameServerUri in Rule.NameServerUri)

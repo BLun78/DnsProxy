@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using DnsProxy.Plugin.Models.Dns;
 
 namespace ARSoft.Tools.Net.Dns
 {

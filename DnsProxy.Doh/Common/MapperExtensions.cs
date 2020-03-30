@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using DnsProxy.Plugin.Models.Dns;
 using ARecord = Makaretu.Dns.ARecord;
 using UnknownRecord = ARSoft.Tools.Net.Dns.UnknownRecord;
 

@@ -18,7 +18,6 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using DnsProxy.Plugin.Models.Dns;
 
 namespace ARSoft.Tools.Net.Dns
 {

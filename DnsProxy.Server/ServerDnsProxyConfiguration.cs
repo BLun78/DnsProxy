@@ -15,8 +15,6 @@
 #endregion
 
 using Microsoft.Extensions.Configuration;
-using System.IO;
-using DnsProxy.Plugin;
 using DnsProxy.Plugin.Configuration;
 
 namespace DnsProxy.Server

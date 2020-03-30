@@ -16,7 +16,10 @@
 
 using DnsProxy.Doh.Models.Rules;
 using System;
+using DnsProxy.Common.Models.Rules;
 using DnsProxy.Plugin;
+using DnsProxy.Plugin.Configuration;
+using DnsProxy.Plugin.Models.Rules;
 
 namespace DnsProxy.Doh
 {
@@ -24,7 +27,8 @@ namespace DnsProxy.Doh
     {
         public string PluginName => "DnsProxy.Doh";
         public Type DependencyRegistration => typeof(DohDependencyRegistration);
-        public object DnsProxyConfiguration => new DohDnsProxyConfiguration();
+        public IDnsProxyConfiguration DnsProxyConfiguration => new DohDnsProxyConfiguration();
+        public IRuleFactory RuleFactory => new RuleFactory(this.Rules);
         public Type[] Rules => new[] { typeof(DohRule) };
     }
 }

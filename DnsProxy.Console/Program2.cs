@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using DnsProxy.Common;
@@ -76,15 +75,7 @@ namespace DnsProxy.Console
             {
                 using (PluginManager = new PluginManager(Log.Logger))
                 {
-                    Configuration.SetupSerilog();
-                    PluginManager.RegisterDependencyRegistration(Configuration);
-
-#if true
-                    Serilog.Debugging.SelfLog.Enable(System.Console.Error);
-                    Serilog.Debugging.SelfLog.Enable(System.Console.WriteLine);
-#endif
-
-                    Setup(args);
+                    Setup();
 
                     using (var dnsServer = ServiceProvider.GetService<DnsServer>())
                     {
@@ -159,18 +150,20 @@ namespace DnsProxy.Console
             }
         }
 
-        private static void Setup(string[] args)
+        private static void Setup()
         {
+            Configuration.SetupSerilog();
+            PluginManager.RegisterDependencyRegistration(Configuration);
             CancellationTokenSource = new CancellationTokenSource();
 
             var dependencyRegistrations = new List<IDependencyRegistration>();
             dependencyRegistrations.AddRange(PluginManager.DependencyRegistration);
             dependencyRegistrations.Add(new ConsoleDependencyRegistration(Configuration, CancellationTokenSource));
             dependencyRegistrations.Add(new CommonDependencyRegistration(Configuration));
-            dependencyRegistrations.Add(new ServerDependencyRegistration(Configuration));
+            dependencyRegistrations.Add(new ServerDependencyRegistration(Configuration, PluginManager.RuleFactories));
             DependencyInjector = new DependencyInjector(Configuration, dependencyRegistrations);
 
-            ApplicationInformation = DependencyInjector.ServiceProvider.GetService<ApplicationInformation>();
+            ApplicationInformation = ServiceProvider.GetService<ApplicationInformation>();
 
             CreateHeader();
         }
@@ -178,42 +171,33 @@ namespace DnsProxy.Console
         private static void CreateHeader()
         {
             Title = ApplicationInformation.DefaultTitle;
-            System.Console.WriteLine(
-                "========================================================================================");
+            Log.Information("========================================================================================");
             ApplicationInformation.LogAssemblyInformation();
-            System.Console.WriteLine(
-                "========================================================================================");
-            System.Console.WriteLine("Copyright 2019 - 2020 Bjoern Lundstroem - (https://github.com/BLun78)");
-            System.Console.WriteLine("");
-            System.Console.WriteLine("Licensed under the Apache License, Version 2.0(the \"License\");");
-            System.Console.WriteLine("you may not use this file except in compliance with the License.");
-            System.Console.WriteLine("You may obtain a copy of the License at");
-            System.Console.WriteLine("");
-            System.Console.WriteLine("\thttp://www.apache.org/licenses/LICENSE-2.0");
-            System.Console.WriteLine("");
-            System.Console.WriteLine("Unless required by applicable law or agreed to in writing, software");
-            System.Console.WriteLine("distributed under the License is distributed on an \"AS IS\" BASIS,");
-            System.Console.WriteLine("WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.");
-            System.Console.WriteLine("See the License for the specific language governing permissions and");
-            System.Console.WriteLine("limitations under the License.");
-            System.Console.WriteLine(
-                "========================================================================================");
-            var color = System.Console.ForegroundColor;
-            System.Console.ForegroundColor = ConsoleColor.DarkYellow;
-            System.Console.WriteLine("\t[strg]+[x] or [strg]+[q] = exit Application");
-            System.Console.WriteLine("\t[strg]+[r] = reload AWS-VPC's with new mfa");
-            System.Console.WriteLine("\t[strg]+[h] = show this help / information");
-            System.Console.ForegroundColor = color;
-            System.Console.WriteLine(
-                "========================================================================================");
-            System.Console.WriteLine("Description:");
-            System.Console.WriteLine("\tA DNS-Proxy with routing for DNS-Request for development with hybrid clouds!");
-            System.Console.WriteLine("\tconfig.json, rules.json and hosts,json are used for configure.");
-            System.Console.WriteLine(
-                "========================================================================================");
-            System.Console.WriteLine("starts up " + ApplicationInformation.DefaultTitle + " ...");
-            System.Console.WriteLine(
-                "==================================================================================");
+            Log.Information("========================================================================================");
+            Log.Information("Copyright 2019 - 2020 Bjoern Lundstroem - (https://github.com/BLun78)");
+            Log.Information("");
+            Log.Information("Licensed under the Apache License, Version 2.0(the \"License\");");
+            Log.Information("you may not use this file except in compliance with the License.");
+            Log.Information("You may obtain a copy of the License at");
+            Log.Information("");
+            Log.Information("\thttp://www.apache.org/licenses/LICENSE-2.0");
+            Log.Information("");
+            Log.Information("Unless required by applicable law or agreed to in writing, software");
+            Log.Information("distributed under the License is distributed on an \"AS IS\" BASIS,");
+            Log.Information("WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.");
+            Log.Information("See the License for the specific language governing permissions and");
+            Log.Information("limitations under the License.");
+            Log.Information("========================================================================================");
+            Log.Information("\t[strg]+[x] or [strg]+[q] = exit Application");
+            Log.Information("\t[strg]+[r] = reload AWS-VPC's with new mfa");
+            Log.Information("\t[strg]+[h] = show this help / information");
+            Log.Information("========================================================================================");
+            Log.Information("Description:");
+            Log.Information("\tA DNS-Proxy with routing for DNS-Request for development with hybrid clouds!");
+            Log.Information("\tconfig.json, rules.json and hosts,json are used for configure.");
+            Log.Information("========================================================================================");
+            Log.Information("starts up " + ApplicationInformation.DefaultTitle + " ...");
+            Log.Information("==================================================================================");
         }
     }
 }

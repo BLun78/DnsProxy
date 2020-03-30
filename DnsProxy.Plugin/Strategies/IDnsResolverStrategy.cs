@@ -18,8 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using ARSoft.Tools.Net.Dns;
 using DnsProxy.Plugin.Common;
-using DnsProxy.Plugin.Models.Dns;
 using DnsProxy.Plugin.Models.Rules;
 
 namespace DnsProxy.Plugin.Strategies
@@ -29,9 +29,9 @@ namespace DnsProxy.Plugin.Strategies
         string StrategyName { get; }
         bool NeedsQueryTimeout { get; }
         IRule Rule { get; }
-        Task<List<IDnsRecordBase>> ResolveAsync(IDnsQuestion dnsQuestion, CancellationToken cancellationToken);
+        Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken);
         void SetRule(IRule rule);
-        bool MatchPattern(IDnsQuestion dnsQuestion);
+        bool MatchPattern(DnsQuestion dnsQuestion);
     }
 
     public interface IDnsResolverStrategy<TRule> : IDnsResolverStrategy

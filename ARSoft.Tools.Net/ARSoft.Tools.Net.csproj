@@ -41,8 +41,4 @@
     <PackageReference Include="Portable.BouncyCastle" Version="1.8.6" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\DnsProxy.Plugin\DnsProxy.Plugin.csproj" />
-  </ItemGroup>
-
 </Project>

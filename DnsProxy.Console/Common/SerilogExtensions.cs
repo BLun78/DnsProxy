@@ -28,6 +28,10 @@ namespace DnsProxy.Console.Common
             }
 
             Log.Logger = loggerConfig.CreateLogger();
+#if true
+            Serilog.Debugging.SelfLog.Enable(System.Console.Error);
+            Serilog.Debugging.SelfLog.Enable(System.Console.WriteLine);
+#endif
             return Log.Logger;
         }
 

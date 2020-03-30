@@ -4,9 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using ARSoft.Tools.Net;
+using DnsProxy.Common;
 using DnsProxy.Plugin;
 using DnsProxy.Plugin.Configuration;
 using DnsProxy.Plugin.DI;
+using DnsProxy.Plugin.Models.Rules;
+using DnsProxy.Server;
 using McMaster.NETCore.Plugins;
 using Microsoft.Extensions.Configuration;
 using Serilog;
@@ -21,7 +25,7 @@ namespace DnsProxy.Console.Common
         public List<IPlugin> Plugin { get; }
         public List<IDnsProxyConfiguration> Configurations { get; }
         public List<DependencyRegistration> DependencyRegistration { get; }
-
+        public List<IRuleFactory> RuleFactories { get; }
         private List<PluginLoader> PluginLoaders { get; }
 
         public PluginManager(ILogger logger)
@@ -30,6 +34,7 @@ namespace DnsProxy.Console.Common
             Configurations = new List<IDnsProxyConfiguration>();
             DependencyRegistration = new List<DependencyRegistration>();
             PluginLoaders = new List<PluginLoader>();
+            RuleFactories = new List<IRuleFactory>();
             _logger = logger;
             InitialPluginManager();
         }
@@ -64,6 +69,7 @@ namespace DnsProxy.Console.Common
                     _logger.Information("Loaded Plugin: {pluginName}", plugins?.FirstOrDefault()?.PluginName);
 
                     Configurations.AddRange(Plugin.Select(x => (IDnsProxyConfiguration)x.DnsProxyConfiguration));
+                    RuleFactories.AddRange(Plugin.Select(x => x.RuleFactory));
                 }
             }
             catch (ReflectionTypeLoadException ex)
@@ -112,9 +118,17 @@ namespace DnsProxy.Console.Common
             var assemblyName = new AssemblyName(pathSplit[pathSplit.Length - 1]);
             var pluginDll = $"{pluginLocation}\\{assemblyName}.dll";
 
+            List<Type> sharedTypes = new List<Type>() { typeof(DomainName) };
+            sharedTypes.AddRange(PluginSharedTypes.SharedTypes);
+            sharedTypes.AddRange(typeof(PluginSharedTypes).Assembly.GetTypes());
+            sharedTypes.AddRange(typeof(CommonDnsProxyConfiguration).Assembly.GetTypes());
+            sharedTypes.AddRange(typeof(DomainName).Assembly.GetTypes());
+            sharedTypes.AddRange(typeof(ServerDnsProxyConfiguration).Assembly.GetTypes());
+            sharedTypes.AddRange(typeof(Log).Assembly.GetTypes());
+
             var loader = PluginLoader.CreateFromAssemblyFile(
                 pluginDll,
-                sharedTypes: PluginSharedTypes.SharedTypes);
+                sharedTypes: sharedTypes.ToArray());
 
             PluginLoaders.Add(loader);
 

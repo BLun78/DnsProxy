@@ -16,7 +16,6 @@
 
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common.Models;
-using DnsProxy.Common.Models.Context;
 using DnsProxy.Common.Strategies;
 using DnsProxy.Dns.Models.Rules;
 using Microsoft.Extensions.Caching.Memory;
@@ -28,7 +27,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DnsProxy.Plugin.Models.Dns;
+using ARSoft.Tools.Net;
+using DnsProxy.Common.Models.Context;
 using DnsProxy.Plugin.Strategies;
 
 namespace DnsProxy.Dns.Strategies
@@ -43,24 +43,24 @@ namespace DnsProxy.Dns.Strategies
         {
             NeedsQueryTimeout = false;
             StrategyName = "DNS";
+            IsCache = false;
         }
 
-        public override async Task<List<IDnsRecordBase>> ResolveAsync(IDnsQuestion dnsQuestionInput,
+        public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
             CancellationToken cancellationToken)
         {
             var logger = DnsContextAccessor.DnsContext.Logger;
-            var dnsQuestion = dnsQuestionInput as DnsQuestion;
             using (logger.BeginScope($"{StrategyName} =>"))
             {
                 var stopwatch = new Stopwatch();
                 LogDnsQuestion(dnsQuestion, stopwatch);
-                var result = new List<IDnsRecordBase>();
+                var result = new List<DnsRecordBase>();
 
                 try
                 {
                     var dnsClient = new DnsClient(Rule.NameServerIpAddresses, Rule.QueryTimeout);
 
-                    var response = await dnsClient.ResolveAsync(dnsQuestion.Name, dnsQuestion.RecordType,
+                    var response = await dnsClient.ResolveAsync(dnsQuestion.Name as DomainName, dnsQuestion.RecordType,
                             dnsQuestion.RecordClass, null, cancellationToken)
                         .ConfigureAwait(false);
 

@@ -20,7 +20,6 @@ using ARSoft.Tools.Net.Dns;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DnsProxy.Plugin.Models.Dns;
 
 namespace ARSoft.Tools.Net.Spf
 {

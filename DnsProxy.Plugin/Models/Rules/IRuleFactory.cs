@@ -14,22 +14,14 @@
 //    limitations under the License.
 #endregion
 
-using DnsProxy.Common.Models.Rules;
 using System;
 using System.Collections.Generic;
-using DnsProxy.Plugin.Models.Rules;
+using System.Text;
 
-namespace DnsProxy.Server.Models
+namespace DnsProxy.Plugin.Models.Rules
 {
-#pragma warning disable CA2227 // Collection properties should be read only
-    internal class RulesConfig : ICloneable
+    public interface IRuleFactory
     {
-        public List<Rule> Rules { get; set; }
-
-        public object Clone()
-        {
-            return MemberwiseClone();
-        }
+        IRule Create(string ruleName, IRule rule);
     }
-#pragma warning restore CA2227 // Collection properties should be read only
 }

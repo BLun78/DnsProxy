@@ -15,7 +15,6 @@
 #endregion
 
 using ARSoft.Tools.Net.Dns;
-using DnsProxy.Common.Models.Context;
 using DnsProxy.Server.Models;
 using DnsProxy.Server.Models.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,9 +25,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DnsProxy.Plugin.Models.Dns;
+using DnsProxy.Common.Models.Context;
 using DnsProxy.Plugin.Models.Rules;
 using DnsProxy.Plugin.Strategies;
+using DnsProxy.Server.Models.Rules;
 
 namespace DnsProxy.Server.Strategies
 {
@@ -44,16 +44,19 @@ namespace DnsProxy.Server.Strategies
         private readonly IDisposable _rulesConfigListener;
         private readonly IOptionsMonitor<RulesConfig> _rulesConfigOptionsMonitor;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IRuleFactories _ruleFactories;
         private readonly List<IRule> Rules;
 
         public StrategyManager(
             IServiceProvider serviceProvider,
+            IRuleFactories ruleFactories,
             IOptionsMonitor<RulesConfig> rulesConfigOptionsMonitor,
             IOptionsMonitor<HostsConfig> hostsConfigOptionsMonitor,
             IOptionsMonitor<DnsDefaultServer> dnsDefaultServerOptionsMonitor,
             IOptionsMonitor<DnsHostConfig> dnsHostConfigOptionsMonitor)
         {
             _serviceProvider = serviceProvider;
+            _ruleFactories = ruleFactories;
             _lockObjectRules = new object();
             Rules = new List<IRule>();
 
@@ -96,7 +99,7 @@ namespace DnsProxy.Server.Strategies
             lock (_lockObjectRules)
             {
                 Rules.Clear();
-                Rules.AddRange(rulesConfig.Rules.Select(x => x.GetInternalRule()).ToList());
+                Rules.AddRange(rulesConfig.Rules.Select(x => x.GetInternalRule(_ruleFactories.Factories)).ToList());
             }
         }
 
@@ -117,6 +120,7 @@ namespace DnsProxy.Server.Strategies
             using (var scope = _serviceProvider.CreateScope())
             {
                 var dnsWriteContext = GetWriteDnsContext(scope, dnsMessage, ipEndPoint, cancellationToken);
+              
 
                 foreach (var dnsQuestion in dnsWriteContext.Response.Questions)
                 {
@@ -175,6 +179,7 @@ namespace DnsProxy.Server.Strategies
         private async Task DoStrategyAsync(IDnsResolverStrategy dnsResolverStrategy, DnsQuestion dnsQuestion,
             IWriteDnsContext dnsWriteContext, CancellationToken joinedGlobalCtx)
         {
+           
             if (!dnsWriteContext.Response.AnswerRecords.Any() && dnsResolverStrategy != null)
             {
                 try
@@ -209,13 +214,14 @@ namespace DnsProxy.Server.Strategies
             }
         }
 
-        private static async Task DoResolveAsync(IDnsResolverStrategy dnsResolverStrategy, IDnsQuestion dnsQuestion,
+        private static async Task DoResolveAsync(IDnsResolverStrategy dnsResolverStrategy, DnsQuestion dnsQuestion,
             IWriteDnsContext dnsWriteContext, CancellationToken cancellationToken)
         {
             var answer = await dnsResolverStrategy
                 .ResolveAsync(dnsQuestion, cancellationToken)
                 .ConfigureAwait(false);
-            dnsWriteContext.Response.AnswerRecords.AddRange(answer.Cast<DnsRecordBase>());
+            var response = (DnsMessage)dnsWriteContext.Response;
+            response.AnswerRecords.AddRange(answer.Cast<DnsRecordBase>());
         }
 
         private IWriteDnsContext GetWriteDnsContext(IServiceScope scope, DnsMessage dnsMessage, string ipEndPoint,
@@ -231,7 +237,7 @@ namespace DnsProxy.Server.Strategies
             dnsWriteContext.Response = dnsMessage.CreateResponseInstance();
 
             dnsWriteContext.DefaultDnsStrategy =
-                CreateStrategy(_dnsDefaultServerOptionsMonitor.CurrentValue.Servers.GetInternalRule(), scope);
+                CreateStrategy(_dnsDefaultServerOptionsMonitor.CurrentValue.Servers.GetInternalRule(_ruleFactories.Factories), scope);
             dnsWriteContext.CacheResolverStrategy = _hostsConfigOptionsMonitor.CurrentValue.Rule.IsEnabled
                 ? CreateStrategy(_hostsConfigOptionsMonitor.CurrentValue.Rule, scope)
                 : null;
@@ -251,7 +257,7 @@ namespace DnsProxy.Server.Strategies
                 }
 
                 dnsWriteContext.DnsResolverStrategies = Rules
-                    .Where(y => !strategies.Contains(y.StrategyName) && y.IsEnabled && y.IsCache == false)
+                    .Where(y => !strategies.Contains(y.StrategyName) && y.IsEnabled )
                     .Select(x => CreateStrategy(x, scope)).ToList();
             }
 

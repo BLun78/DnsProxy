@@ -25,7 +25,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using DnsProxy.Plugin.Models.Dns;
 using DnsProxy.Plugin.Models.Rules;
 
 namespace DnsProxy.Aws.Strategies
@@ -53,7 +52,7 @@ namespace DnsProxy.Aws.Strategies
             NeedsQueryTimeout = true;
         }
 
-        public override async Task<List<IDnsRecordBase>> ResolveAsync(IDnsQuestion dnsQuestion,
+        public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
             CancellationToken cancellationToken)
         {
             if (AwsContext == null)
@@ -61,7 +60,7 @@ namespace DnsProxy.Aws.Strategies
                 AwsContext = ServiceProvider.GetService<AwsContext>();
             }
 
-            var result = new List<IDnsRecordBase>();
+            var result = new List<DnsRecordBase>();
             AwsClient?.Dispose();
             foreach (var awsSettingsUserAccount in AwsContext.AwsSettings.UserAccounts)
             {
@@ -76,10 +75,10 @@ namespace DnsProxy.Aws.Strategies
             return result;
         }
 
-        private async Task DoScanAsync(IDnsQuestion dnsQuestion,
+        private async Task DoScanAsync(DnsQuestion dnsQuestion,
             CancellationToken cancellationToken,
             IAwsScanRules awsDoScan,
-            List<IDnsRecordBase> result)
+            List<DnsRecordBase> result)
         {
             if (awsDoScan.DoScan)
             {
@@ -92,7 +91,7 @@ namespace DnsProxy.Aws.Strategies
             }
         }
 
-        public abstract Task<List<IDnsRecordBase>> AwsResolveAsync(IDnsQuestion dnsQuestion, List<string> ScanVpcIds,
+        public abstract Task<List<DnsRecordBase>> AwsResolveAsync(DnsQuestion dnsQuestion, List<string> ScanVpcIds,
             CancellationToken cancellationToken);
 
         protected override void Dispose(bool disposing)

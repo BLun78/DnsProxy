@@ -100,6 +100,8 @@ namespace DnsProxy.Server
             _server.QueryReceived += OnQueryReceived;
 
             _server.Start();
+
+            _logger.LogInformation("Server is started");
         }
 
         public void StopServer()

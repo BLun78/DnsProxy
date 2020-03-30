@@ -22,15 +22,21 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using DnsProxy.Plugin.DI;
+using DnsProxy.Plugin.Models.Rules;
+using DnsProxy.Server.Models.Rules;
 
 namespace DnsProxy.Server
 {
     public class ServerDependencyRegistration : DependencyRegistration, IDependencyRegistration
     {
-        public ServerDependencyRegistration(IConfigurationRoot configuration) : base(configuration)
+        private readonly List<IRuleFactory> _ruleFactories;
+
+        public ServerDependencyRegistration(IConfigurationRoot configuration, List<IRuleFactory> ruleFactories) : base(configuration)
         {
+            _ruleFactories = ruleFactories;
         }
 
         public override IServiceCollection Register(IServiceCollection services)
@@ -40,6 +46,7 @@ namespace DnsProxy.Server
 
             // Stratgies
             services.AddSingleton<StrategyManager>();
+            services.AddSingleton<IRuleFactories>(new RuleFactories(_ruleFactories));
 
             // common
             services.AddSingleton(CreateHttpProxyConfig);

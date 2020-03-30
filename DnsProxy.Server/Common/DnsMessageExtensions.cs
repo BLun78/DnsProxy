@@ -14,16 +14,16 @@
 //    limitations under the License.
 #endregion
 
-using ARSoft.Tools.Net;
-using ARSoft.Tools.Net.Dns;
-using DnsProxy.Server.Models.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
+using ARSoft.Tools.Net;
+using ARSoft.Tools.Net.Dns;
+using DnsProxy.Server.Models.Models;
 
-namespace DnsProxy.Hosts.Common
+namespace DnsProxy.Server.Common
 {
     internal static class DnsMessageExtensions
     {

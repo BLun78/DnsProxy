@@ -17,7 +17,6 @@
 #endregion
 
 using System.Collections.Generic;
-using DnsProxy.Plugin.Models.Dns;
 
 namespace ARSoft.Tools.Net.Dns
 {

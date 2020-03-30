@@ -16,14 +16,14 @@
 
 #endregion
 
-namespace DnsProxy.Plugin.Models.Dns
+using System;
+using System.Collections.Generic;
+using DnsProxy.Plugin.Models.Rules;
+
+namespace DnsProxy.Server.Models.Rules
 {
-    public interface IDomainName
+    public interface IRuleFactories
     {
-        /// <summary>
-        ///   Returns the string representation of the domain name
-        /// </summary>
-        /// <returns>The string representation of the domain name</returns>
-        string ToString();
+        List<IRuleFactory> Factories { get; }
     }
 }

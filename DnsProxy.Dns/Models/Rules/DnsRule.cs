@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using DnsProxy.Plugin.Models.Rules;
-using Rule = DnsProxy.Common.Models.Rules.Rule;
+using Rule = DnsProxy.Plugin.Models.Rules.Rule;
 
 namespace DnsProxy.Dns.Models.Rules
 {

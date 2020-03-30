@@ -16,7 +16,10 @@
 
 using DnsProxy.Aws.Models.Rules;
 using System;
+using DnsProxy.Common.Models.Rules;
 using DnsProxy.Plugin;
+using DnsProxy.Plugin.Configuration;
+using DnsProxy.Plugin.Models.Rules;
 
 namespace DnsProxy.Aws
 {
@@ -24,7 +27,8 @@ namespace DnsProxy.Aws
     {
         public string PluginName => " DnsProxy.Aws";
         public Type DependencyRegistration => typeof(AwsDependencyRegistration);
-        public object DnsProxyConfiguration => new AwsDnsProxyConfiguration();
+        public IDnsProxyConfiguration DnsProxyConfiguration => new AwsDnsProxyConfiguration();
+        public IRuleFactory RuleFactory => new RuleFactory(this.Rules);
         public Type[] Rules => new[] { typeof(AwsApiGatewayRule), typeof(AwsDocDbRule), typeof(AwsElasticCacheRule) };
     }
 }

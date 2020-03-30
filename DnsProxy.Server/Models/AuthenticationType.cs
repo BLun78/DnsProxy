@@ -17,7 +17,7 @@
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
-namespace DnsProxy.Common.Models
+namespace DnsProxy.Server.Models
 {
     [JsonConverter(typeof(JsonStringEnumConverter))]
     internal enum AuthenticationType

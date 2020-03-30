@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using DnsProxy.Plugin.Models.Dns;
 
 namespace ARSoft.Tools.Net.Dns
 {
@@ -27,7 +26,7 @@ namespace ARSoft.Tools.Net.Dns
     /// <summary>
     ///   A single entry of the Question section of a dns query
     /// </summary>
-    public class DnsQuestion : DnsMessageEntryBase, IEquatable<DnsQuestion>, IDnsQuestion
+    public class DnsQuestion : DnsMessageEntryBase, IEquatable<DnsQuestion>
     {
         /// <summary>
         ///   Creates a new instance of the DnsQuestion class
@@ -48,15 +47,7 @@ namespace ARSoft.Tools.Net.Dns
         internal DnsQuestion()
         {
         }
-
-        /// <summary>
-        ///   Domain name
-        /// </summary>
-        IDomainName IDnsQuestion.Name
-        {
-            get => this.Name;
-        }
-
+        
         internal override int MaximumLength => Name.MaximumRecordDataLength + 6;
 
         internal void Encode(byte[] messageData, int offset, ref int currentPosition, Dictionary<DomainName, ushort> domainNames)

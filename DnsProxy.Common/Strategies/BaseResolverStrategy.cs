@@ -27,7 +27,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DnsProxy.Plugin.Common;
-using DnsProxy.Plugin.Models.Dns;
 using DnsProxy.Plugin.Models.Rules;
 using DnsProxy.Plugin.Strategies;
 
@@ -61,7 +60,7 @@ namespace DnsProxy.Common.Strategies
         public bool IsCache { get; protected internal set; }
         public string StrategyName { get; protected set; }
 
-        public abstract Task<List<IDnsRecordBase>> ResolveAsync(IDnsQuestion dnsQuestion, CancellationToken cancellationToken);
+        public abstract Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken);
 
         public int Order { get; protected set; }
 
@@ -75,7 +74,7 @@ namespace DnsProxy.Common.Strategies
             Rule = rule;
         }
 
-        public virtual bool MatchPattern(IDnsQuestion dnsQuestion)
+        public virtual bool MatchPattern(DnsQuestion dnsQuestion)
         {
             string pattern = null;
             if (!string.IsNullOrWhiteSpace(Rule.DomainNamePattern))
@@ -93,7 +92,7 @@ namespace DnsProxy.Common.Strategies
             return match.Success;
         }
 
-        protected void LogDnsQuestion(IDnsQuestion dnsQuestion, Stopwatch stopwatch)
+        protected void LogDnsQuestion(DnsQuestion dnsQuestion, Stopwatch stopwatch)
         {
             stopwatch.Start();
             var dnsContext = DnsContextAccessor.DnsContext;
@@ -104,7 +103,7 @@ namespace DnsProxy.Common.Strategies
                 dnsQuestion.RecordClass.ToString());
         }
 
-        protected void LogDnsCanncelQuestion(IDnsQuestion dnsQuestion, OperationCanceledException operationCanceledException, Stopwatch stopwatch)
+        protected void LogDnsCanncelQuestion(DnsQuestion dnsQuestion, OperationCanceledException operationCanceledException, Stopwatch stopwatch)
         {
             stopwatch.Stop();
             var dnsContext = DnsContextAccessor.DnsContext;
@@ -116,7 +115,7 @@ namespace DnsProxy.Common.Strategies
                 stopwatch.ElapsedMilliseconds);
         }
 
-        protected void LogDnsQuestionAndResult(IDnsQuestion dnsQuestion, List<IDnsRecordBase> answers, Stopwatch stopwatch)
+        protected void LogDnsQuestionAndResult(DnsQuestion dnsQuestion, List<DnsRecordBase> answers, Stopwatch stopwatch)
         {
             stopwatch.Stop();
             var logger = DnsContextAccessor.DnsContext.Logger;
@@ -124,7 +123,7 @@ namespace DnsProxy.Common.Strategies
             var i = 1;
             var count = answers.Count(x => x != null);
 
-            foreach (IDnsRecordBase dnsRecordBase in answers.Where(x => x != null))
+            foreach (DnsRecordBase dnsRecordBase in answers.Where(x => x != null))
             {
                 if (i == 1)
                 {
@@ -152,7 +151,7 @@ namespace DnsProxy.Common.Strategies
 
         }
 
-        private static void LogMultiResolverLog(Stopwatch stopwatch, ILogger<IDnsCtx> logger, IDnsCtx dnsContext, int i, int count, IDnsRecordBase dnsRecordBase)
+        private static void LogMultiResolverLog(Stopwatch stopwatch, ILogger<IDnsCtx> logger, IDnsCtx dnsContext, int i, int count, DnsRecordBase dnsRecordBase)
         {
             var messageTemplate = "ClientIpAddress: {0} resolve[{1}/{2}] {3} => {4} ({5}, {6}) after [{7} ms]";
             if (dnsRecordBase is CNameRecord cNameRecord)
@@ -228,7 +227,7 @@ namespace DnsProxy.Common.Strategies
             }
         }
 
-        protected void StoreInCache(IDnsQuestion dnsQuestionInput, List<IDnsRecordBase> data,
+        protected void StoreInCache(DnsQuestion dnsQuestionInput, List<DnsRecordBase> data,
             MemoryCacheEntryOptions cacheEntryOptions)
         {
             var dnsQuestion = dnsQuestionInput as DnsQuestion;

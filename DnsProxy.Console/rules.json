@@ -8,7 +8,7 @@
           "10.240.74.137"
         ],
         "StrategyName": "DNS",
-        "IsEnabled": true,
+        "IsEnabled": false,
         "CompressionMutation": true,
         "QueryTimeout": 30000
       },
@@ -24,7 +24,7 @@
           "https://dns.google/dns-query",
           "https://dns.quad9.net/dns-query"
         ],
-        "IsEnabled": true,
+        "IsEnabled": false,
         "QueryTimeout": 30000
       }
       //,{
