@@ -19,6 +19,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using DnsProxy.Plugin.DI;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 
 namespace DnsProxy.Console.Common
 {
@@ -56,21 +58,21 @@ namespace DnsProxy.Console.Common
             //services.AddLogging(builder =>
             //{
             //    builder
-            //        .SetMinimumLevel(LogLevel.Debug)
+            //        .SetMinimumLevel(LogLevel.Trace)
             //        .AddFilter("Microsoft", LogLevel.Warning)
             //        .AddFilter("System", LogLevel.Warning)
-            //        //.AddFilter("DnsProxy.Program", LogLevel.Trace)
-            //        //.AddFilter("DnsProxy.Dns", LogLevel.Trace)
-            //        //.AddFilter("DnsProxy.Dns.DnsServer", LogLevel.Trace)
-            //        //.AddFilter("DnsProxy", LogLevel.Trace)
-            //        //.AddConsole(options =>
-            //        //{
-            //        //    options.IncludeScopes = true;
-            //        //    options.Format = ConsoleLoggerFormat.Systemd;
-            //        //    options.LogToStandardErrorThreshold = LogLevel.Warning;
-            //        //    options.DisableColors = false;
-            //        //    options.TimestampFormat = "[dd.MM.yyyy hh:mm:ss]";
-            //        //})
+            //        .AddFilter("DnsProxy.Program", LogLevel.Trace)
+            //        .AddFilter("DnsProxy.Dns", LogLevel.Trace)
+            //        .AddFilter("DnsProxy.Dns.DnsServer", LogLevel.Trace)
+            //        .AddFilter("DnsProxy", LogLevel.Trace)
+            //        .AddConsole(options =>
+            //        {
+            //            options.IncludeScopes = true;
+            //            options.Format = ConsoleLoggerFormat.Systemd;
+            //            options.LogToStandardErrorThreshold = LogLevel.Warning;
+            //            options.DisableColors = false;
+            //            options.TimestampFormat = "[dd.MM.yyyy hh:mm:ss]";
+            //        })
             //        ;
             //});
             services.AddMemoryCache();

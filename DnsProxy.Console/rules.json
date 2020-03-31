@@ -16,7 +16,6 @@
         "DomainNamePattern": "(.*)\\.amazonaws.com.",
         "StrategyName": "DOH",
         "NameServer": [
-          "https://doh.securedns.eu/dns-query",
           "https://doh.xfinity.com/dns-query",
           "https://dns.adguard.com/dns-query",
           "https://dns.digitale-gesellschaft.ch/dns-query",

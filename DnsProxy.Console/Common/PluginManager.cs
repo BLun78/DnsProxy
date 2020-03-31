@@ -124,7 +124,11 @@ namespace DnsProxy.Console.Common
             sharedTypes.AddRange(typeof(CommonDnsProxyConfiguration).Assembly.GetTypes());
             sharedTypes.AddRange(typeof(DomainName).Assembly.GetTypes());
             sharedTypes.AddRange(typeof(ServerDnsProxyConfiguration).Assembly.GetTypes());
-            sharedTypes.AddRange(typeof(Log).Assembly.GetTypes());
+            sharedTypes.AddRange(typeof(Serilog.ILogger).Assembly.GetTypes());
+            sharedTypes.AddRange(typeof(Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme).Assembly.GetTypes());
+            sharedTypes.AddRange(typeof(System.Console).Assembly.GetTypes());
+            sharedTypes.AddRange(typeof(Microsoft.Extensions.Logging.Console.ConsoleLoggerProvider).Assembly.GetTypes());
+            sharedTypes.AddRange(typeof(Microsoft.Extensions.Logging.LoggerFactory).Assembly.GetTypes());
 
             var loader = PluginLoader.CreateFromAssemblyFile(
                 pluginDll,

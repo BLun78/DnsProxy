@@ -19,7 +19,8 @@ namespace DnsProxy.Console.Common
                 .Enrich.WithMachineName()
                 .Enrich.WithUserName()
                 .Enrich.WithAssemblyName()
-                .WriteTo.Console(LogEventLevel.Debug);
+                .WriteTo.Debug(LogEventLevel.Verbose)
+                .WriteTo.Console(LogEventLevel.Verbose);
 
             if (configuration != null)
             {
@@ -38,7 +39,7 @@ namespace DnsProxy.Console.Common
         public static IServiceCollection AddSerilog(this IServiceCollection services)
         {
             services.AddLogging(loggingBuilder =>
-                loggingBuilder.AddSerilog(dispose: true));
+                loggingBuilder.AddSerilog(Log.Logger, dispose: false));
 
             return services;
         }
