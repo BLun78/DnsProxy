@@ -82,6 +82,7 @@
     <None Remove=".rules.json" />
     <None Remove="config.json" />
     <None Remove="hosts.json" />
+    <None Remove="logging.json" />
     <None Remove="Plugins\README.MD" />
     <None Remove="rules.json" />
     <None Remove="_config.json" />
@@ -89,6 +90,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="logging.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Plugins\README.MD">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -59,8 +59,7 @@ namespace DnsProxy.Doh.Strategies
         public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
             CancellationToken cancellationToken)
         {
-            var logger = DnsContextAccessor.DnsContext.Logger;
-            using (logger.BeginScope($"{StrategyName} =>"))
+            using (DnsContextAccessor.DnsContext.Logger.BeginScope($"{StrategyName} =>"))
             {
                 var stopwatch = new Stopwatch();
                 LogDnsQuestion(dnsQuestion, stopwatch);
@@ -100,7 +99,7 @@ namespace DnsProxy.Doh.Strategies
                     }
                     catch (Exception e)
                     {
-                        logger.LogError(e, "DoH [{0}]: unexpected error [{1}]", nameServerUri, e.Message);
+                        DnsContextAccessor.DnsContext.Logger.LogError(e, "DoH [{0}]: unexpected error [{1}]", nameServerUri, e.Message);
                     }
 
                     if (result.Any())
@@ -132,6 +131,7 @@ namespace DnsProxy.Doh.Strategies
                 {
                     // TODO: dispose managed state (managed objects).
                     _dohClient?.Dispose();
+                    _dohClient = null;
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.

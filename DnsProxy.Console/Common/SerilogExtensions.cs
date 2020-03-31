@@ -14,12 +14,12 @@ namespace DnsProxy.Console.Common
         {
             var loggerConfig = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Verbose)
+                //.MinimumLevel.Override("Microsoft", LogEventLevel.Verbose)
                 .Enrich.FromLogContext()
                 .Enrich.WithMachineName()
                 .Enrich.WithUserName()
                 .Enrich.WithAssemblyName()
-                .WriteTo.Console();
+                .WriteTo.Console(LogEventLevel.Debug);
 
             if (configuration != null)
             {

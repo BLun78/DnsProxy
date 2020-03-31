@@ -27,7 +27,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ARSoft.Tools.Net;
 using DnsProxy.Common.Models.Context;
 using DnsProxy.Plugin.Strategies;
 
@@ -49,8 +48,7 @@ namespace DnsProxy.Dns.Strategies
         public override async Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion,
             CancellationToken cancellationToken)
         {
-            var logger = DnsContextAccessor.DnsContext.Logger;
-            using (logger.BeginScope($"{StrategyName} =>"))
+            using (DnsContextAccessor.DnsContext.Logger.BeginScope($"{StrategyName} =>"))
             {
                 var stopwatch = new Stopwatch();
                 LogDnsQuestion(dnsQuestion, stopwatch);
@@ -60,7 +58,7 @@ namespace DnsProxy.Dns.Strategies
                 {
                     var dnsClient = new DnsClient(Rule.NameServerIpAddresses, Rule.QueryTimeout);
 
-                    var response = await dnsClient.ResolveAsync(dnsQuestion.Name as DomainName, dnsQuestion.RecordType,
+                    var response = await dnsClient.ResolveAsync(dnsQuestion.Name, dnsQuestion.RecordType,
                             dnsQuestion.RecordClass, null, cancellationToken)
                         .ConfigureAwait(false);
 

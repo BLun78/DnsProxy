@@ -61,8 +61,7 @@ namespace DnsProxy.Server.Strategies
 
         public override Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken)
         {
-            var logger = DnsContextAccessor.DnsContext.Logger;
-            using (logger.BeginScope($"{StrategyName} =>"))
+            using (DnsContextAccessor.DnsContext.Logger.BeginScope($"{StrategyName} =>"))
             {
                 var stopwatch = new Stopwatch();
                 LogDnsQuestion(dnsQuestion, stopwatch);

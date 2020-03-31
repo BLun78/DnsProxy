@@ -87,8 +87,12 @@ namespace DnsProxy.Common.Strategies
             }
 
             var match = Rule.GetDomainNameRegex().Match(dnsQuestion.Name.ToString());
-            DnsContextAccessor.DnsContext.Logger.LogTrace("--> Pattern: {pattern} --> Question {Question}  ->> IsMatch=={match}", pattern,
-                dnsQuestion.Name.ToString(), match.Success);
+
+            DnsContextAccessor.DnsContext.Logger.LogTrace("--> Pattern: {pattern} --> Question {Question}  ->> IsMatch=={match}", 
+                pattern,
+                dnsQuestion.Name.ToString(), 
+                match.Success);
+
             return match.Success;
         }
 
@@ -96,7 +100,7 @@ namespace DnsProxy.Common.Strategies
         {
             stopwatch.Start();
             var dnsContext = DnsContextAccessor.DnsContext;
-            DnsContextAccessor.DnsContext.Logger.LogDebug("ClientIpAddress: {0} requested {1} ({2}, {3})",
+            dnsContext.Logger.LogDebug("ClientIpAddress: {0} requested {1} ({2}, {3})",
                 dnsContext?.IpEndPoint,
                 dnsQuestion.Name.ToString(),
                 dnsQuestion.RecordType.ToString(),
@@ -107,8 +111,8 @@ namespace DnsProxy.Common.Strategies
         {
             stopwatch.Stop();
             var dnsContext = DnsContextAccessor.DnsContext;
-            DnsContextAccessor.DnsContext.Logger.LogDebug(operationCanceledException, @"Timeout for ClientIpAddress: {0} requested {1} ({2}, {3}) after [{4} ms]",
-                dnsContext?.IpEndPoint,
+            dnsContext.Logger.LogDebug(operationCanceledException, @"Timeout for ClientIpAddress: {0} requested {1} ({2}, {3}) after [{4} ms]",
+                DnsContextAccessor.DnsContext?.IpEndPoint,
                 dnsQuestion.Name.ToString(),
                 dnsQuestion.RecordType.ToString(),
                 dnsQuestion.RecordClass.ToString(),

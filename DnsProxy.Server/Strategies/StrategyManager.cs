@@ -120,8 +120,7 @@ namespace DnsProxy.Server.Strategies
             using (var scope = _serviceProvider.CreateScope())
             {
                 var dnsWriteContext = GetWriteDnsContext(scope, dnsMessage, ipEndPoint, cancellationToken);
-              
-
+                
                 foreach (var dnsQuestion in dnsWriteContext.Response.Questions)
                 {
                     try
@@ -179,7 +178,7 @@ namespace DnsProxy.Server.Strategies
         private async Task DoStrategyAsync(IDnsResolverStrategy dnsResolverStrategy, DnsQuestion dnsQuestion,
             IWriteDnsContext dnsWriteContext, CancellationToken joinedGlobalCtx)
         {
-           
+
             if (!dnsWriteContext.Response.AnswerRecords.Any() && dnsResolverStrategy != null)
             {
                 try
@@ -229,6 +228,7 @@ namespace DnsProxy.Server.Strategies
         {
             var dnsContextAccessor = _serviceProvider.GetService<IWriteDnsContextAccessor>();
             var dnsWriteContext = _serviceProvider.GetService<IWriteDnsContext>();
+            dnsWriteContext.Logger = _serviceProvider.GetService<ILogger<IDnsCtx>>();
             dnsContextAccessor.WriteDnsContext = dnsWriteContext;
 
             dnsWriteContext.IpEndPoint = ipEndPoint;
@@ -241,23 +241,11 @@ namespace DnsProxy.Server.Strategies
             dnsWriteContext.CacheResolverStrategy = _hostsConfigOptionsMonitor.CurrentValue.Rule.IsEnabled
                 ? CreateStrategy(_hostsConfigOptionsMonitor.CurrentValue.Rule, scope)
                 : null;
-
-            dnsWriteContext.Logger = _serviceProvider.GetService<ILogger<IDnsCtx>>();
-
+            
             lock (_lockObjectRules)
             {
-                var strategies = new List<string>();
-                if (dnsWriteContext.CacheResolverStrategy != null)
-                {
-                    strategies.Add(dnsWriteContext.CacheResolverStrategy.StrategyName);
-                }
-                if (dnsWriteContext.DefaultDnsStrategy != null)
-                {
-                    strategies.Add(dnsWriteContext.DefaultDnsStrategy.StrategyName);
-                }
-
                 dnsWriteContext.DnsResolverStrategies = Rules
-                    .Where(y => !strategies.Contains(y.StrategyName) && y.IsEnabled )
+                    .Where(y => y.IsEnabled)
                     .Select(x => CreateStrategy(x, scope)).ToList();
             }
 

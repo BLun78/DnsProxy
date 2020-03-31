@@ -221,8 +221,10 @@ namespace ARSoft.Tools.Net.Dns
         {
             Task<List<TMessage>> result = SendMessageParallelAsync(message, default(CancellationToken));
 
+            // ReSharper disable once AsyncConverter.AsyncWait
             result.Wait();
 
+            // ReSharper disable once AsyncConverter.AsyncWait
             return result.Result;
         }
 

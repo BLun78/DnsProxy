@@ -45,7 +45,8 @@ namespace DnsProxy.Console
             get
             {
                 IConfigurationBuilder builder = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory());
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("logging.json", false, true);
 
                 builder = new ServerDnsProxyConfiguration().ConfigurationBuilder(builder);
                 builder = new CommonDnsProxyConfiguration().ConfigurationBuilder(builder);
