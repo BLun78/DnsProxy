@@ -15,9 +15,9 @@
 #endregion
 
 using Microsoft.Extensions.Logging;
+using Serilog;
 using System;
 using System.Reflection;
-using Serilog;
 
 namespace DnsProxy.Console.Common
 {
@@ -41,7 +41,7 @@ namespace DnsProxy.Console.Common
             //_logger.LogTrace(@"Title: '{title}' Version: '{version}' Builddate: '{buildTime}'", title, version,
             //    buildTime);
             Log.Information(@"Title: '{0}' Version: '{1}' Builddate: '{2}'", title, version,
-                buildTime.ToLongDateString()) ;
+                buildTime.ToLongDateString());
         }
     }
 }

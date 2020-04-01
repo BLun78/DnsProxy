@@ -14,10 +14,8 @@
 //    limitations under the License.
 #endregion
 
-using Microsoft.Extensions.Configuration;
-using System;
-using DnsProxy.Plugin;
 using DnsProxy.Plugin.Configuration;
+using Microsoft.Extensions.Configuration;
 
 namespace DnsProxy.Aws
 {

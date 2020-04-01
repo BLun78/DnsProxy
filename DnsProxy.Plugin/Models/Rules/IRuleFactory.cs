@@ -14,10 +14,6 @@
 //    limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace DnsProxy.Plugin.Models.Rules
 {
     public interface IRuleFactory

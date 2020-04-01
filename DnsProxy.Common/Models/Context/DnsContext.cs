@@ -15,12 +15,12 @@
 #endregion
 
 using ARSoft.Tools.Net.Dns;
+using DnsProxy.Plugin.Models.Rules;
+using DnsProxy.Plugin.Strategies;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using DnsProxy.Plugin.Models.Rules;
-using DnsProxy.Plugin.Strategies;
 
 namespace DnsProxy.Common.Models.Context
 {
@@ -33,7 +33,7 @@ namespace DnsProxy.Common.Models.Context
         {
             DefaultDnsStrategy?.Dispose();
             DefaultDnsStrategy = null;
-            DnsResolverStrategies?.ForEach(x=>x?.Dispose());
+            DnsResolverStrategies?.ForEach(x => x?.Dispose());
             DnsResolverStrategies?.Clear();
             DnsResolverStrategies = null;
             _loggerScope?.Dispose();

@@ -14,12 +14,12 @@
 //    limitations under the License.
 #endregion
 
-using DnsProxy.Dns.Models.Rules;
-using System;
 using DnsProxy.Common.Models.Rules;
+using DnsProxy.Dns.Models.Rules;
 using DnsProxy.Plugin;
 using DnsProxy.Plugin.Configuration;
 using DnsProxy.Plugin.Models.Rules;
+using System;
 
 namespace DnsProxy.Dns
 {
@@ -27,7 +27,7 @@ namespace DnsProxy.Dns
     {
         public string PluginName => "DnsProxy.Dns";
         public Type DependencyRegistration => typeof(DnsDependencyRegistration);
-        public IDnsProxyConfiguration DnsProxyConfiguration =>new DnsDnsProxyConfiguration();
+        public IDnsProxyConfiguration DnsProxyConfiguration => new DnsDnsProxyConfiguration();
         public IRuleFactory RuleFactory => new RuleFactory(this.Rules);
         public Type[] Rules => new[] { typeof(DnsRule) };
     }

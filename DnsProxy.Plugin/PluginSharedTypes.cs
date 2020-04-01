@@ -14,14 +14,14 @@
 //    limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace DnsProxy.Plugin
 {

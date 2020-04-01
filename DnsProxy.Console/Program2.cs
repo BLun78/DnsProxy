@@ -14,11 +14,6 @@
 //    limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using DnsProxy.Common;
 using DnsProxy.Console.Common;
 using DnsProxy.Plugin.Configuration;
@@ -27,6 +22,11 @@ using DnsProxy.Server;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DnsProxy.Console
 {

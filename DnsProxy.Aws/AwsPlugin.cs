@@ -15,11 +15,11 @@
 #endregion
 
 using DnsProxy.Aws.Models.Rules;
-using System;
 using DnsProxy.Common.Models.Rules;
 using DnsProxy.Plugin;
 using DnsProxy.Plugin.Configuration;
 using DnsProxy.Plugin.Models.Rules;
+using System;
 
 namespace DnsProxy.Aws
 {

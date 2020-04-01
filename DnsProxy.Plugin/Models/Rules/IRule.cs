@@ -14,8 +14,8 @@
 //    limitations under the License.
 #endregion
 
-using System.Text.RegularExpressions;
 using DnsProxy.Plugin.Common;
+using System.Text.RegularExpressions;
 
 namespace DnsProxy.Plugin.Models.Rules
 {

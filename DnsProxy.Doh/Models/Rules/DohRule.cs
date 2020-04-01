@@ -16,9 +16,9 @@
 
 using DnsProxy.Common.Models.Rules;
 using DnsProxy.Doh.Strategies;
+using DnsProxy.Plugin.Models.Rules;
 using System;
 using System.Collections.Generic;
-using DnsProxy.Plugin.Models.Rules;
 
 namespace DnsProxy.Doh.Models.Rules
 {

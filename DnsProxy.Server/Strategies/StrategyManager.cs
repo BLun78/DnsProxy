@@ -15,8 +15,12 @@
 #endregion
 
 using ARSoft.Tools.Net.Dns;
+using DnsProxy.Common.Models.Context;
+using DnsProxy.Plugin.Models.Rules;
+using DnsProxy.Plugin.Strategies;
 using DnsProxy.Server.Models;
 using DnsProxy.Server.Models.Models;
+using DnsProxy.Server.Models.Rules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -25,10 +29,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DnsProxy.Common.Models.Context;
-using DnsProxy.Plugin.Models.Rules;
-using DnsProxy.Plugin.Strategies;
-using DnsProxy.Server.Models.Rules;
 
 namespace DnsProxy.Server.Strategies
 {

@@ -19,13 +19,13 @@ using ARSoft.Tools.Net.Dns;
 using DnsProxy.Aws.Models;
 using DnsProxy.Common.Models.Context;
 using DnsProxy.Common.Strategies;
+using DnsProxy.Plugin.Models.Rules;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using DnsProxy.Plugin.Models.Rules;
 
 namespace DnsProxy.Aws.Strategies
 {

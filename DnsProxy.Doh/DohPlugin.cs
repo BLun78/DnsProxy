@@ -14,12 +14,12 @@
 //    limitations under the License.
 #endregion
 
-using DnsProxy.Doh.Models.Rules;
-using System;
 using DnsProxy.Common.Models.Rules;
+using DnsProxy.Doh.Models.Rules;
 using DnsProxy.Plugin;
 using DnsProxy.Plugin.Configuration;
 using DnsProxy.Plugin.Models.Rules;
+using System;
 
 namespace DnsProxy.Doh
 {

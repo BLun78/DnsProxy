@@ -18,7 +18,6 @@ using DnsProxy.Common.Models.Context;
 using DnsProxy.Plugin.DI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using DependencyRegistration = DnsProxy.Plugin.DI.DependencyRegistration;
 
 namespace DnsProxy.Common
 {

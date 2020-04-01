@@ -17,6 +17,9 @@
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common.Models;
 using DnsProxy.Common.Models.Context;
+using DnsProxy.Plugin.Common;
+using DnsProxy.Plugin.Models.Rules;
+using DnsProxy.Plugin.Strategies;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -26,9 +29,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DnsProxy.Plugin.Common;
-using DnsProxy.Plugin.Models.Rules;
-using DnsProxy.Plugin.Strategies;
 
 namespace DnsProxy.Common.Strategies
 {
@@ -88,9 +88,9 @@ namespace DnsProxy.Common.Strategies
 
             var match = Rule.GetDomainNameRegex().Match(dnsQuestion.Name.ToString());
 
-            DnsContextAccessor.DnsContext.Logger.LogTrace("--> Pattern: {pattern} --> Question {Question}  ->> IsMatch=={match}", 
+            DnsContextAccessor.DnsContext.Logger.LogTrace("--> Pattern: {pattern} --> Question {Question}  ->> IsMatch=={match}",
                 pattern,
-                dnsQuestion.Name.ToString(), 
+                dnsQuestion.Name.ToString(),
                 match.Success);
 
             return match.Success;

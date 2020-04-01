@@ -16,8 +16,11 @@
 
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common.Models;
+using DnsProxy.Common.Models.Context;
 using DnsProxy.Common.Strategies;
+using DnsProxy.Dns.Models;
 using DnsProxy.Dns.Models.Rules;
+using DnsProxy.Plugin.Strategies;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -27,9 +30,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DnsProxy.Common.Models.Context;
-using DnsProxy.Dns.Models;
-using DnsProxy.Plugin.Strategies;
 
 namespace DnsProxy.Dns.Strategies
 {

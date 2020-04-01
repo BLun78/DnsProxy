@@ -1,5 +1,4 @@
 ﻿#region Apache License-2.0
-
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,12 +12,10 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
-
 #endregion
 
-using System;
-using System.Collections.Generic;
 using DnsProxy.Plugin.Models.Rules;
+using System.Collections.Generic;
 
 namespace DnsProxy.Server.Models.Rules
 {

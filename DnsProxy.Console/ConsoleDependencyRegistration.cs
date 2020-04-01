@@ -15,10 +15,10 @@
 #endregion
 
 using DnsProxy.Console.Common;
+using DnsProxy.Plugin.DI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
-using DnsProxy.Plugin.DI;
 
 namespace DnsProxy.Console
 {
@@ -37,7 +37,7 @@ namespace DnsProxy.Console
             services.AddSingleton(this.GetType().Assembly);
             services.AddSingleton<ApplicationInformation>();
             services.AddSingleton(_cancellationTokenSource);
-            return services; 
+            return services;
         }
     }
 }

@@ -14,14 +14,15 @@
 //    limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Plugin.Models.Rules;
 using DnsProxy.Plugin.Strategies;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading;
 
+// ReSharper disable once CheckNamespace
 namespace DnsProxy
 {
     public interface IDnsCtx : IDisposable

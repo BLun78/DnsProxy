@@ -14,10 +14,13 @@
 //    limitations under the License.
 #endregion
 
+using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common.Models;
+using DnsProxy.Common.Models.Context;
 using DnsProxy.Common.Strategies;
 using DnsProxy.Doh.Common;
 using DnsProxy.Doh.Models.Rules;
+using DnsProxy.Plugin.Strategies;
 using Makaretu.Dns;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -30,9 +33,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using ARSoft.Tools.Net.Dns;
-using DnsProxy.Common.Models.Context;
-using DnsProxy.Plugin.Strategies;
 
 namespace DnsProxy.Doh.Strategies
 {

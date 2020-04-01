@@ -16,10 +16,10 @@
 
 using DnsProxy.Common.Models.Rules;
 using DnsProxy.Dns.Strategies;
+using DnsProxy.Plugin.Models.Rules;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using DnsProxy.Plugin.Models.Rules;
 using Rule = DnsProxy.Plugin.Models.Rules.Rule;
 
 namespace DnsProxy.Dns.Models.Rules
