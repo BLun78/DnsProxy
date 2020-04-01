@@ -62,8 +62,9 @@ namespace DnsProxy.Dns.Strategies
                     var response = await dnsClient.ResolveAsync(dnsQuestion.Name, dnsQuestion.RecordType,
                             dnsQuestion.RecordClass, null, cancellationToken)
                         .ConfigureAwait(false);
-
+                    
                     result.AddRange(response.AnswerRecords);
+                    dnsClient = null;
                 }
                 catch (NullReferenceException nre)
                 {
@@ -94,6 +95,5 @@ namespace DnsProxy.Dns.Strategies
                 return result;
             }
         }
-
     }
 }

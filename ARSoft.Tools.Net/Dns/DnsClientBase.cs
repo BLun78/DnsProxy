@@ -207,6 +207,9 @@ namespace ARSoft.Tools.Net.Dns
                     {
                         tcpStream?.Dispose();
                         tcpClient?.Close();
+                        tcpClient?.Dispose();
+                        tcpStream = null;
+                        tcpClient = null;
                     }
                     catch
                     {

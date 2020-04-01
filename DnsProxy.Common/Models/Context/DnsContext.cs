@@ -38,6 +38,7 @@ namespace DnsProxy.Common.Models.Context
             DnsResolverStrategies = null;
             _loggerScope?.Dispose();
             Rules = null;
+            GC.SuppressFinalize(this);
         }
 
         public List<IRule> Rules { get; set; }
