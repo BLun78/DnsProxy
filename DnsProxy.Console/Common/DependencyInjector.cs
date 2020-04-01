@@ -54,27 +54,32 @@ namespace DnsProxy.Console.Common
 
         public override IServiceCollection Register(IServiceCollection services)
         {
-            services.AddSerilog();
-            //services.AddLogging(builder =>
-            //{
-            //    builder
-            //        .SetMinimumLevel(LogLevel.Trace)
-            //        .AddFilter("Microsoft", LogLevel.Warning)
-            //        .AddFilter("System", LogLevel.Warning)
-            //        .AddFilter("DnsProxy.Program", LogLevel.Trace)
-            //        .AddFilter("DnsProxy.Dns", LogLevel.Trace)
-            //        .AddFilter("DnsProxy.Dns.DnsServer", LogLevel.Trace)
-            //        .AddFilter("DnsProxy", LogLevel.Trace)
-            //        .AddConsole(options =>
-            //        {
-            //            options.IncludeScopes = true;
-            //            options.Format = ConsoleLoggerFormat.Systemd;
-            //            options.LogToStandardErrorThreshold = LogLevel.Warning;
-            //            options.DisableColors = false;
-            //            options.TimestampFormat = "[dd.MM.yyyy hh:mm:ss]";
-            //        })
-            //        ;
-            //});
+            //services.AddSerilog();
+            services.AddLogging(builder =>
+            {
+                builder
+                    .SetMinimumLevel(LogLevel.Trace)
+                    .AddFilter("Microsoft", LogLevel.Warning)
+                    .AddFilter("System", LogLevel.Warning)
+                    .AddFilter("DnsProxy.Program", LogLevel.Trace)
+                    .AddFilter("DnsProxy.Dns", LogLevel.Trace)
+                    .AddFilter("DnsProxy.Doh", LogLevel.Trace)
+                    .AddFilter("DnsProxy.Aws", LogLevel.Trace)
+                    .AddFilter("DnsProxy.Plugin", LogLevel.Trace)
+                    .AddFilter("DnsProxy.Server", LogLevel.Trace)
+                    .AddFilter("DnsProxy.Console", LogLevel.Trace)
+                    .AddFilter("DnsProxy.Common", LogLevel.Trace)
+                    .AddFilter("ARSoft.Tools.Net", LogLevel.Trace)
+                    .AddConsole(options =>
+                    {
+                        options.IncludeScopes = true;
+                        options.Format = ConsoleLoggerFormat.Systemd;
+                        options.LogToStandardErrorThreshold = LogLevel.Warning;
+                        options.DisableColors = false;
+                        options.TimestampFormat = "[hh:mm:ss]";
+                    })
+                    ;
+            });
             services.AddMemoryCache();
 
             return services;

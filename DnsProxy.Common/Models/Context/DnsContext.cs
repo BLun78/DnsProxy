@@ -31,7 +31,13 @@ namespace DnsProxy.Common.Models.Context
 
         public void Dispose()
         {
+            DefaultDnsStrategy?.Dispose();
+            DefaultDnsStrategy = null;
+            DnsResolverStrategies?.ForEach(x=>x?.Dispose());
+            DnsResolverStrategies?.Clear();
+            DnsResolverStrategies = null;
             _loggerScope?.Dispose();
+            Rules = null;
         }
 
         public List<IRule> Rules { get; set; }

@@ -30,7 +30,7 @@ namespace DnsProxy.Dns
         public override IServiceCollection Register(IServiceCollection services)
         {
 
-            services.AddSingleton<DnsResolverStrategy>();
+            services.AddTransient<DnsResolverStrategy>();
 
             return services;
         }

@@ -22,7 +22,7 @@ using DnsProxy.Plugin.Models.Rules;
 using DnsProxy.Plugin.Strategies;
 using Microsoft.Extensions.Logging;
 
-namespace DnsProxy.Common.Models.Context
+namespace DnsProxy
 {
     public interface IDnsCtx : IDisposable
     {

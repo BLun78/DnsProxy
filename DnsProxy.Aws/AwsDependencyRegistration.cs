@@ -51,10 +51,9 @@ namespace DnsProxy.Aws
             services.AddSingleton(CreateAmazonConfig<AmazonElastiCacheConfig>);
             services.AddTransient(CreateAwsContext);
 
-            services.AddSingleton<AwsApiGatewayResolverStrategy>();
-            services.AddSingleton<AwsDocDbResolverStrategy>();
-            services.AddSingleton<AwsElasticCacheResolverStrategy>();
-            services.AddSingleton<AwsDocDbResolverStrategy>();
+            services.AddTransient<AwsApiGatewayResolverStrategy>();
+            services.AddTransient<AwsDocDbResolverStrategy>();
+            services.AddTransient<AwsElasticCacheResolverStrategy>();
 
             services.AddSingleton<AwsVpcReader>();
             services.AddSingleton<AwsAdapterBase, AwsApiGatewayAdapter>();

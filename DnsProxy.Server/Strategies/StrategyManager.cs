@@ -118,9 +118,8 @@ namespace DnsProxy.Server.Strategies
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(ipEndPoint));
 
             using (var scope = _serviceProvider.CreateScope())
+            using (var dnsWriteContext = GetWriteDnsContext(scope, dnsMessage, ipEndPoint, cancellationToken))
             {
-                var dnsWriteContext = GetWriteDnsContext(scope, dnsMessage, ipEndPoint, cancellationToken);
-                
                 foreach (var dnsQuestion in dnsWriteContext.Response.Questions)
                 {
                     try
@@ -228,20 +227,20 @@ namespace DnsProxy.Server.Strategies
         {
             var dnsContextAccessor = _serviceProvider.GetService<IWriteDnsContextAccessor>();
             var dnsWriteContext = _serviceProvider.GetService<IWriteDnsContext>();
-            dnsWriteContext.Logger = _serviceProvider.GetService<ILogger<IDnsCtx>>();
             dnsContextAccessor.WriteDnsContext = dnsWriteContext;
 
             dnsWriteContext.IpEndPoint = ipEndPoint;
             dnsWriteContext.RootCancellationToken = cancellationToken;
             dnsWriteContext.Request = dnsMessage;
             dnsWriteContext.Response = dnsMessage.CreateResponseInstance();
+            dnsWriteContext.Logger = _serviceProvider.GetService<ILogger<IDnsCtx>>();
 
             dnsWriteContext.DefaultDnsStrategy =
                 CreateStrategy(_dnsDefaultServerOptionsMonitor.CurrentValue.Servers.GetInternalRule(_ruleFactories.Factories), scope);
             dnsWriteContext.CacheResolverStrategy = _hostsConfigOptionsMonitor.CurrentValue.Rule.IsEnabled
                 ? CreateStrategy(_hostsConfigOptionsMonitor.CurrentValue.Rule, scope)
                 : null;
-            
+
             lock (_lockObjectRules)
             {
                 dnsWriteContext.DnsResolverStrategies = Rules

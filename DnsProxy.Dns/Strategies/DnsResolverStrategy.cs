@@ -28,6 +28,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DnsProxy.Common.Models.Context;
+using DnsProxy.Dns.Models;
 using DnsProxy.Plugin.Strategies;
 
 namespace DnsProxy.Dns.Strategies
@@ -62,7 +63,11 @@ namespace DnsProxy.Dns.Strategies
                             dnsQuestion.RecordClass, null, cancellationToken)
                         .ConfigureAwait(false);
 
-                    result.AddRange(response?.AnswerRecords ?? new List<DnsRecordBase>());
+                    result.AddRange(response.AnswerRecords);
+                }
+                catch (NullReferenceException nre)
+                {
+                    throw new DnsServerException("The DNS Result is Empty! Check the DNS Server IpAddresses!", nre);
                 }
                 catch (OperationCanceledException operationCanceledException)
                 {
