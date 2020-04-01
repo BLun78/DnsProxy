@@ -101,7 +101,9 @@ namespace ARSoft.Tools.Net.Dns
                     var endpointInfo = endpointInfos[i];
 
                     IPAddress responderAddress;
-                    byte[] resultData = sendByTcp ? QueryByTcp(endpointInfo.ServerAddress, messageData, messageLength, ref tcpClient, ref tcpStream, out responderAddress) : QueryByUdp(endpointInfo, messageData, messageLength, out responderAddress);
+                    byte[] resultData = sendByTcp 
+                        ? QueryByTcp(endpointInfo.ServerAddress, messageData, messageLength, ref tcpClient, ref tcpStream, out responderAddress) 
+                        : QueryByUdp(endpointInfo, messageData, messageLength, out responderAddress);
 
                     if (resultData != null)
                     {
@@ -568,7 +570,7 @@ namespace ARSoft.Tools.Net.Dns
                         udpClient.Connect(endpointInfo.ServerAddress, _port);
 
                         udpClient.Client.SendTimeout = QueryTimeout;
-                        udpClient.Client.ReceiveTimeout = QueryTimeout;
+                        udpClient.Client.ReceiveTimeout = QueryTimeout*2;
 
                         await udpClient.SendAsync(messageData, messageLength).ConfigureAwait(false);
 

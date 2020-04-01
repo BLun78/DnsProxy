@@ -67,7 +67,7 @@ namespace DnsProxy.Dns.Strategies
                 }
                 catch (NullReferenceException nre)
                 {
-                    throw new DnsServerException("The DNS Result is Empty! Check the DNS Server IpAddresses!", nre);
+                    throw new DnsServerException($"The DNS Result is Empty! Check the DNS Server IpAddresses! [{stopwatch.ElapsedMilliseconds} ms]", nre);
                 }
                 catch (OperationCanceledException operationCanceledException)
                 {
