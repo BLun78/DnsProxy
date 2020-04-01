@@ -145,6 +145,7 @@ namespace DnsProxy.Console.Common
             sharedTypes.AddRange(typeof(System.Console).Assembly.GetTypes());
             sharedTypes.AddRange(typeof(Microsoft.Extensions.Logging.Console.ConsoleLoggerProvider).Assembly.GetTypes());
             sharedTypes.AddRange(typeof(Microsoft.Extensions.Logging.LoggerFactory).Assembly.GetTypes());
+            sharedTypes.AddRange(typeof(Microsoft.Extensions.Primitives.IChangeToken).Assembly.GetTypes());
 
             var loader = PluginLoader.CreateFromAssemblyFile(
                 pluginDll,
