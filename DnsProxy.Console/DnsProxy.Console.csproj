@@ -75,7 +75,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Program.cs" />
+    <Compile Remove="ProgramOld.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -122,7 +122,7 @@
       <PackagePath></PackagePath>
       <Pack>True</Pack>
     </None>
-    <None Include="Program.cs" />
+    <None Include="ProgramOld.cs" />
   </ItemGroup>
 
   <ItemGroup>

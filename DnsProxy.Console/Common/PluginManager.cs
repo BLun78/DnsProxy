@@ -124,7 +124,7 @@ namespace DnsProxy.Console.Common
                     Path.GetDirectoryName(
                         Path.GetDirectoryName(
                             Path.GetDirectoryName(
-                                Path.GetDirectoryName(typeof(Program2).Assembly.Location)))))));
+                                Path.GetDirectoryName(typeof(Program).Assembly.Location)))))));
 
             string pluginLocation = Path.GetFullPath(Path.Combine(root, relativePath.Replace('\\', Path.DirectorySeparatorChar)));
 
