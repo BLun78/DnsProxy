@@ -17,6 +17,8 @@
 using DnsProxy.Plugin.Configuration;
 using DnsProxy.Plugin.Models.Rules;
 using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Plugin
 {
@@ -27,5 +29,9 @@ namespace DnsProxy.Plugin
         IDnsProxyConfiguration DnsProxyConfiguration { get; }
         IRuleFactory RuleFactory { get; }
         Type[] Rules { get; }
+
+        void GetHelp(ILogger logger);
+        Task CheckKeyAsync(ConsoleKeyInfo keyInfo);
+        void InitialPlugin(IServiceProvider serviceProvider);
     }
 }

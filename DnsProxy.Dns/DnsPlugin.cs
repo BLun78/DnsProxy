@@ -20,6 +20,8 @@ using DnsProxy.Plugin;
 using DnsProxy.Plugin.Configuration;
 using DnsProxy.Plugin.Models.Rules;
 using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Dns
 {
@@ -30,5 +32,21 @@ namespace DnsProxy.Dns
         public IDnsProxyConfiguration DnsProxyConfiguration => new DnsDnsProxyConfiguration();
         public IRuleFactory RuleFactory => new RuleFactory(this.Rules);
         public Type[] Rules => new[] { typeof(DnsRule) };
+        public void GetHelp(ILogger logger)
+        {
+        }
+
+        public Task CheckKeyAsync(ConsoleKeyInfo keyInfo)
+        {
+            return Task.CompletedTask;
+        }
+
+        public void InitialPlugin(IServiceProvider serviceProvider)
+        {
+        }
+
+        public void CheckKey(ConsoleKeyInfo keyInfo)
+        {
+        }
     }
 }

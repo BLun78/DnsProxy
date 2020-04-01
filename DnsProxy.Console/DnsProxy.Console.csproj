@@ -32,7 +32,7 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/BLun78/DnsProxy.git</RepositoryUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <StartupObject>DnsProxy.Console.Program</StartupObject>
+    <StartupObject>DnsProxy.Program</StartupObject>
 
     <LangVersion>latest</LangVersion>
     <Version>2.0.0.0</Version>

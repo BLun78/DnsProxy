@@ -15,6 +15,7 @@
 #endregion
 
 using DnsProxy.Common;
+using DnsProxy.Console;
 using DnsProxy.Console.Common;
 using DnsProxy.Plugin.Configuration;
 using DnsProxy.Plugin.DI;
@@ -27,13 +28,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using DnsProxy.Plugin;
+using Microsoft.Extensions.Logging;
 
-namespace DnsProxy.Console
+// ReSharper disable once CheckNamespace
+namespace DnsProxy
 {
-    public static class Program
+    public class Program
     {
         private static string _title;
         private static string[] _args;
+        private static Microsoft.Extensions.Logging.ILogger _logger;
 
         private static CancellationTokenSource CancellationTokenSource { get; set; }
         private static DependencyInjector DependencyInjector { get; set; }
@@ -115,31 +120,34 @@ namespace DnsProxy.Console
             }
         }
 
-        private static async Task<int> WaitForEndAsync()
+        private static Task<int> WaitForEndAsync()
         {
-            return await Task.Run(async () =>
-            {
-                var exit = false;
-                while (!exit)
-                {
+            return Task.Run(async () =>
+           {
+               var exit = false;
+               while (!exit)
+               {
+                   var key = System.Console.ReadKey(true);
 
-                    var key = System.Console.ReadKey(true);
-                    switch (key.Modifiers, key.Key)
-                    {
-                        case (ConsoleModifiers.Control, ConsoleKey.H):
-                            CreateHeader();
-                            break;
-                        case (ConsoleModifiers.Control, ConsoleKey.R):
-                            break;
-                        case (ConsoleModifiers.Control, ConsoleKey.Q):
-                        case (ConsoleModifiers.Control, ConsoleKey.X):
-                            exit = true;
-                            break;
-                    }
-                }
+                   switch (key.Modifiers, key.Key)
+                   {
+                       case (ConsoleModifiers.Control, ConsoleKey.H):
+                           CreateHeader();
+                           break;
+                       case (ConsoleModifiers.Control, ConsoleKey.Q):
+                       case (ConsoleModifiers.Control, ConsoleKey.X):
+                           exit = true;
+                           break;
+                   }
 
-                return 0;
-            }).ConfigureAwait(false);
+                   foreach (IPlugin plugin in PluginManager.Plugin)
+                   {
+                       await plugin.CheckKeyAsync(key).ConfigureAwait(false);
+                   }
+               }
+
+               return 0;
+           });
         }
 
         static void CurrentDomain_ProcessExit(object sender, EventArgs e)
@@ -175,6 +183,9 @@ namespace DnsProxy.Console
             dependencyRegistrations.Add(new ServerDependencyRegistration(Configuration, PluginManager.RuleFactories));
             DependencyInjector = new DependencyInjector(Configuration, dependencyRegistrations);
 
+            PluginManager.Plugin.ForEach(x=> x.InitialPlugin(ServiceProvider));
+
+            _logger = ServiceProvider.GetService<Microsoft.Extensions.Logging.ILogger<Program>>();
             ApplicationInformation = ServiceProvider.GetService<ApplicationInformation>();
 
             CreateHeader();
@@ -183,33 +194,33 @@ namespace DnsProxy.Console
         private static void CreateHeader()
         {
             Title = ApplicationInformation.DefaultTitle;
-            Log.Information("========================================================================================");
+            _logger.LogInformation("========================================================================================");
             ApplicationInformation.LogAssemblyInformation();
-            Log.Information("========================================================================================");
-            Log.Information("Copyright 2019 - 2020 Bjoern Lundstroem - (https://github.com/BLun78)");
-            Log.Information("");
-            Log.Information("Licensed under the Apache License, Version 2.0(the \"License\");");
-            Log.Information("you may not use this file except in compliance with the License.");
-            Log.Information("You may obtain a copy of the License at");
-            Log.Information("");
-            Log.Information("\thttp://www.apache.org/licenses/LICENSE-2.0");
-            Log.Information("");
-            Log.Information("Unless required by applicable law or agreed to in writing, software");
-            Log.Information("distributed under the License is distributed on an \"AS IS\" BASIS,");
-            Log.Information("WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.");
-            Log.Information("See the License for the specific language governing permissions and");
-            Log.Information("limitations under the License.");
-            Log.Information("========================================================================================");
-            Log.Information("\t[strg]+[x] or [strg]+[q] = exit Application");
-            Log.Information("\t[strg]+[r] = reload AWS-VPC's with new mfa");
-            Log.Information("\t[strg]+[h] = show this help / information");
-            Log.Information("========================================================================================");
-            Log.Information("Description:");
-            Log.Information("\tA DNS-Proxy with routing for DNS-Request for development with hybrid clouds!");
-            Log.Information("\tconfig.json, rules.json and hosts,json are used for configure.");
-            Log.Information("========================================================================================");
-            Log.Information("starts up " + ApplicationInformation.DefaultTitle + " ...");
-            Log.Information("==================================================================================");
+            _logger.LogInformation("========================================================================================");
+            _logger.LogInformation("Copyright 2019 - 2020 Bjoern Lundstroem - (https://github.com/BLun78)");
+            _logger.LogInformation("");
+            _logger.LogInformation("Licensed under the Apache License, Version 2.0(the \"License\");");
+            _logger.LogInformation("you may not use this file except in compliance with the License.");
+            _logger.LogInformation("You may obtain a copy of the License at");
+            _logger.LogInformation("");
+            _logger.LogInformation("\thttp://www.apache.org/licenses/LICENSE-2.0");
+            _logger.LogInformation("");
+            _logger.LogInformation("Unless required by applicable law or agreed to in writing, software");
+            _logger.LogInformation("distributed under the License is distributed on an \"AS IS\" BASIS,");
+            _logger.LogInformation("WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.");
+            _logger.LogInformation("See the License for the specific language governing permissions and");
+            _logger.LogInformation("limitations under the License.");
+            _logger.LogInformation("========================================================================================");
+            _logger.LogInformation("\t[strg]+[x] or [strg]+[q] = exit Application");
+            _logger.LogInformation("\t[strg]+[h] = show this help / information");
+            PluginManager.Plugin.ForEach(x => x.GetHelp(_logger));
+            _logger.LogInformation("========================================================================================");
+            _logger.LogInformation("Description:");
+            _logger.LogInformation("\tA DNS-Proxy with routing for DNS-Request for development with hybrid clouds!");
+            _logger.LogInformation("\tconfig.json, rules.json and hosts,json are used for configure.");
+            _logger.LogInformation("========================================================================================");
+            _logger.LogInformation("starts up " + ApplicationInformation.DefaultTitle + " ...");
+            _logger.LogInformation("==================================================================================");
         }
     }
 }

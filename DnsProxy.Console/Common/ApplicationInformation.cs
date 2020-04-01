@@ -40,7 +40,7 @@ namespace DnsProxy.Console.Common
             var title = DefaultTitle;
             //_logger.LogTrace(@"Title: '{title}' Version: '{version}' Builddate: '{buildTime}'", title, version,
             //    buildTime);
-            Log.Information(@"Title: '{0}' Version: '{1}' Builddate: '{2}'", title, version,
+            _logger.LogInformation(@"Title: '{0}' Version: '{1}' Builddate: '{2}'", title, version,
                 buildTime.ToLongDateString());
         }
     }

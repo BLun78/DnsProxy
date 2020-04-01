@@ -39,14 +39,14 @@ namespace DnsProxy.Aws
         private readonly ILogger<AwsVpcManager> _logger;
         private readonly IMemoryCache _memoryCache;
         private readonly AwsVpcReader _awsVpcReader;
-        private readonly AwsAdapterBase[] _awsAdapter;
+        private readonly IEnumerable<AwsAdapterBase> _awsAdapter;
         private readonly List<string> _proxyBypassList;
 
         public AwsVpcManager(
             ILogger<AwsVpcManager> logger,
             IMemoryCache memoryCache,
             AwsVpcReader awsVpcReader,
-            AwsAdapterBase[] awsAdapter,
+            IEnumerable<AwsAdapterBase> awsAdapter,
             AwsContext awsContext)
         {
             _logger = logger;
