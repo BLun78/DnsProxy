@@ -88,6 +88,20 @@ namespace DnsProxy.Console
             }
 #pragma warning disable CA1031 // Do not catch general exception types
             // Last Global Exception Handler!!!
+            catch (System.Net.Sockets.SocketException socex)
+            {
+                if (socex.ErrorCode == 10048)
+                {
+                    Log.Fatal(socex, "The Port for the DNS-Proxy-Server is in use. Stop the application that use the same Port or change the ListenerPort!");
+                }
+                else
+                {
+                    Log.Fatal(socex, "Host terminated unexpectedly {DefaultTitle}", ApplicationInformation.DefaultTitle);
+                }
+
+                await Task.Delay(100).ConfigureAwait(false);
+                return await Task.FromResult(1).ConfigureAwait(false);
+            }
             catch (Exception ex)
 #pragma warning restore CA1031 // Do not catch general exception types
             {
@@ -98,7 +112,6 @@ namespace DnsProxy.Console
             }
             finally
             {
-                CurrentDomain_ProcessExit(null, null);
             }
         }
 
@@ -125,8 +138,6 @@ namespace DnsProxy.Console
                     }
                 }
 
-                CancellationTokenSource?.Cancel();
-                CancellationTokenSource?.Dispose();
                 return 0;
             }).ConfigureAwait(false);
         }
