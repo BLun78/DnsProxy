@@ -75,15 +75,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="ProgramOld.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove=".config.json" />
-    <None Remove=".rules.json" />
     <None Remove="config.json" />
     <None Remove="hosts.json" />
-    <None Remove="logging.json" />
     <None Remove="Plugins\README.MD" />
     <None Remove="rules.json" />
     <None Remove="_config.json" />
@@ -91,9 +84,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="logging.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Plugins\README.MD">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -122,7 +112,6 @@
       <PackagePath></PackagePath>
       <Pack>True</Pack>
     </None>
-    <None Include="ProgramOld.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -160,10 +149,6 @@
     <ProjectReference Include="..\DnsProxy.Common\DnsProxy.Common.csproj" />
     <ProjectReference Include="..\DnsProxy.Plugin\DnsProxy.Plugin.csproj" />
     <ProjectReference Include="..\DnsProxy.Server\DnsProxy.Server.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EditorConfigFiles Update="Y:\c#\DnsProxy\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
 </Project>

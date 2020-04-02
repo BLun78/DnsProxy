@@ -14,13 +14,15 @@
 //    limitations under the License.
 #endregion
 
+using Microsoft.Extensions.Options;
+
 namespace DnsProxy.Aws.Models
 {
     internal class AwsContext
     {
-        public AwsContext(AwsSettings awsSettings)
+        public AwsContext(IOptionsMonitor<AwsSettings> awsSettings)
         {
-            AwsSettings = new AwsSettingsExtended(awsSettings);
+            AwsSettings = new AwsSettingsExtended(awsSettings.CurrentValue);
         }
 
         public AwsSettingsExtended AwsSettings { get; set; }

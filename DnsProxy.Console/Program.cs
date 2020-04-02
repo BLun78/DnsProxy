@@ -50,8 +50,7 @@ namespace DnsProxy
             get
             {
                 IConfigurationBuilder builder = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("logging.json", false, true);
+                    .SetBasePath(Directory.GetCurrentDirectory());
 
                 builder = new ServerDnsProxyConfiguration().ConfigurationBuilder(builder);
                 builder = new CommonDnsProxyConfiguration().ConfigurationBuilder(builder);

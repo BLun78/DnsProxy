@@ -32,9 +32,6 @@ namespace DnsProxy.Aws
 {
     public class AwsDependencyRegistration : DependencyRegistration, IDependencyRegistration
     {
-
-        internal static AwsContext AwsContext;
-
         public AwsDependencyRegistration(IConfigurationRoot configuration) : base(configuration)
         {
         }
@@ -49,7 +46,7 @@ namespace DnsProxy.Aws
             services.AddSingleton(CreateAmazonConfig<AmazonDocDBConfig>);
             services.AddSingleton(CreateAmazonConfig<AmazonAPIGatewayConfig>);
             services.AddSingleton(CreateAmazonConfig<AmazonElastiCacheConfig>);
-            services.AddTransient(CreateAwsContext);
+            services.AddTransient<AwsContext>();
 
             services.AddTransient<AwsApiGatewayResolverStrategy>();
             services.AddTransient<AwsDocDbResolverStrategy>();
@@ -61,8 +58,6 @@ namespace DnsProxy.Aws
 
             return services;
         }
-
-
 
         private TConfig CreateAmazonConfig<TConfig>(IServiceProvider provider)
             where TConfig : class, IClientConfig, new()
@@ -76,11 +71,6 @@ namespace DnsProxy.Aws
             }
 
             return config as TConfig;
-        }
-
-        private AwsContext CreateAwsContext(IServiceProvider provider)
-        {
-            return AwsContext;
         }
     }
 }
