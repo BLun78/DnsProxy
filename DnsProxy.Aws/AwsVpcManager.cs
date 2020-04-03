@@ -35,7 +35,6 @@ namespace DnsProxy.Aws
 {
     internal class AwsVpcManager
     {
-        private readonly AwsContext _awsContext;
         private readonly ILogger<AwsVpcManager> _logger;
         private readonly IMemoryCache _memoryCache;
         private readonly AwsVpcReader _awsVpcReader;
@@ -46,24 +45,22 @@ namespace DnsProxy.Aws
             ILogger<AwsVpcManager> logger,
             IMemoryCache memoryCache,
             AwsVpcReader awsVpcReader,
-            IEnumerable<AwsAdapterBase> awsAdapter,
-            AwsContext awsContext)
+            IEnumerable<AwsAdapterBase> awsAdapter)
         {
             _logger = logger;
             _memoryCache = memoryCache;
             _awsVpcReader = awsVpcReader;
             _awsAdapter = awsAdapter;
-            _awsContext = awsContext;
             _proxyBypassList = new List<string>();
         }
 
-        public async Task StartReadingVpcAsync(CancellationToken cancellationToken)
+        public async Task StartReadingVpcAsync(AwsContext awsContext, CancellationToken cancellationToken)
         {
-            if (_awsContext?.AwsSettings?.UserAccounts == null) return;
+            if (awsContext?.AwsSettings?.UserAccounts == null) return;
             _proxyBypassList.Clear();
             try
             {
-                foreach (var awsSettingsUserAccount in _awsContext.AwsSettings.UserAccounts)
+                foreach (var awsSettingsUserAccount in awsContext.AwsSettings.UserAccounts)
                 {
                     if (awsSettingsUserAccount.DoScan)
                         await ReadVpcAsync(awsSettingsUserAccount.AwsCredentials, awsSettingsUserAccount,
@@ -76,7 +73,7 @@ namespace DnsProxy.Aws
                                 .ConfigureAwait(false);
                 }
 
-                var path = Path.Combine(Environment.CurrentDirectory, _awsContext.AwsSettings.OutputFileName);
+                var path = Path.Combine(Environment.CurrentDirectory, awsContext.AwsSettings.OutputFileName);
                 _logger.LogInformation("AWS write ProxyBypassList in File: [{0}]", path);
 
                 await File.WriteAllTextAsync(path, CreateContentForProxyBypassFile(), Encoding.UTF8, cancellationToken)
@@ -106,8 +103,7 @@ namespace DnsProxy.Aws
         /// <param name="awsScanRules">Rules for Scaning</param>
         /// <param name="cancellationToken">Task Cancellation Toke</param>
         /// <returns>only a Task</returns>
-        private async Task ReadVpcAsync(AWSCredentials awsCredentials, IAwsScanRules awsScanRules,
-            CancellationToken cancellationToken)
+        private async Task ReadVpcAsync(AWSCredentials awsCredentials, IAwsScanRules awsScanRules, CancellationToken cancellationToken)
         {
             try
             {
