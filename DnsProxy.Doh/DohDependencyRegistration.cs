@@ -72,7 +72,7 @@ namespace DnsProxy.Doh
             handler.MaxConnectionsPerServer = 10000;
             handler.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
 
-            handler.SslProtocols = SslProtocols.Tls12; //| SslProtocols.Tls13;
+            handler.SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13;
 
             return handler;
         }
