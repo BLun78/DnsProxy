@@ -29,14 +29,6 @@
     <RepositoryUrl>https://github.com/BLun78/DnsProxy.git</RepositoryUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="AwsVpcExtensions.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="AwsVpcExtensions.cs" />
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.APIGateway" Version="3.3.103.77" />
     <PackageReference Include="AWSSDK.DocDB" Version="3.3.102.73" />
