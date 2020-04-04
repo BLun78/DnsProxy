@@ -26,10 +26,12 @@ using Microsoft.Extensions.Configuration;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DnsProxy.Console.Common
 {
@@ -118,15 +120,7 @@ namespace DnsProxy.Console.Common
 
         private Assembly LoadPlugin(string relativePath)
         {
-            // Navigate up to the solution root
-            string root = Path.GetFullPath(Path.Combine(
-                Path.GetDirectoryName(
-                    Path.GetDirectoryName(
-                        Path.GetDirectoryName(
-                            Path.GetDirectoryName(
-                                Path.GetDirectoryName(typeof(Program).Assembly.Location)))))));
-
-            string pluginLocation = Path.GetFullPath(Path.Combine(root, relativePath.Replace('\\', Path.DirectorySeparatorChar)));
+            string pluginLocation = Path.GetFullPath(Path.Combine( relativePath.Replace('\\', Path.DirectorySeparatorChar)));
 
             _logger.Information("Loading commands from: {pluginLocation}", pluginLocation);
 
