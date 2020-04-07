@@ -37,7 +37,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ARSoft.Tools.Net\ARSoft.Tools.Net.csproj"  />
+    <ProjectReference Include="..\3thParty\ARSoft.Tools.Net\ARSoft.Tools.Net.csproj"  />
     <ProjectReference Include="..\DnsProxy.Plugin\DnsProxy.Plugin.csproj" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
       <PrivateAssets>all</PrivateAssets>

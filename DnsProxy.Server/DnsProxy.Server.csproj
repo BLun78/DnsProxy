@@ -80,7 +80,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ARSoft.Tools.Net\ARSoft.Tools.Net.csproj" />
+    <ProjectReference Include="..\3thParty\ARSoft.Tools.Net\ARSoft.Tools.Net.csproj" />
     <ProjectReference Include="..\DnsProxy.Common\DnsProxy.Common.csproj" />
     <ProjectReference Include="..\DnsProxy.Plugin\DnsProxy.Plugin.csproj" />
   </ItemGroup>
