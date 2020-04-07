@@ -13,8 +13,8 @@ Please consider that if the administrator of your network has not connected a pu
 - own hosts configuration with hosts.json
 - read AWS VpcRndpoints for Hybrid Cloud (including ApiGateway endpoints)
 
-## Lizenz
-Frei verwendbar ohne Garantien das alles 100% nach DNS-RFC funktioniert. 
+## License
+Free use with no garante that the DNS-RFC is full implemented.
 ```Text
 Copyright 2020 Bjoern Lundstroem
 
