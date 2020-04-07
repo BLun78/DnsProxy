@@ -31,6 +31,7 @@ namespace DnsProxy.Plugin
         Type[] Rules { get; }
 
         void GetHelp(ILogger logger);
+        void GetLicense(ILogger logger);
         Task CheckKeyAsync(ConsoleKeyInfo keyInfo);
         void InitialPlugin(IServiceProvider serviceProvider);
     }

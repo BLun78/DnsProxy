@@ -30,11 +30,11 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.APIGateway" Version="3.3.103.81" />
-    <PackageReference Include="AWSSDK.DocDB" Version="3.3.102.77" />
-    <PackageReference Include="AWSSDK.EC2" Version="3.3.168.15" />
-    <PackageReference Include="AWSSDK.ElastiCache" Version="3.3.108.14" />
-    <PackageReference Include="AWSSDK.SecurityToken" Version="3.3.104.56" />
+    <PackageReference Include="AWSSDK.APIGateway" Version="3.3.103.82" />
+    <PackageReference Include="AWSSDK.DocDB" Version="3.3.102.78" />
+    <PackageReference Include="AWSSDK.EC2" Version="3.3.168.16" />
+    <PackageReference Include="AWSSDK.ElastiCache" Version="3.3.108.15" />
+    <PackageReference Include="AWSSDK.SecurityToken" Version="3.3.104.57" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
