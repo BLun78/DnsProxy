@@ -30,7 +30,7 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.APIGateway" Version="3.3.103.82" />
+    <PackageReference Include="AWSSDK.APIGateway" Version="3.3.103.83" />
     <PackageReference Include="AWSSDK.DocDB" Version="3.3.102.78" />
     <PackageReference Include="AWSSDK.EC2" Version="3.3.168.16" />
     <PackageReference Include="AWSSDK.ElastiCache" Version="3.3.108.15" />
