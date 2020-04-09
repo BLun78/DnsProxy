@@ -55,6 +55,7 @@ namespace DnsProxy.Console.Common
             PluginLoaders = new List<PluginLoader>();
             RuleFactories = new List<IRuleFactory>();
             _logger = logger;
+            _logger.Information("[PluginManager] Load Plugins >>");
             InitialPluginManager();
         }
 
@@ -74,22 +75,22 @@ namespace DnsProxy.Console.Common
                 }
 
                 var path = Path.Combine(Directory.GetCurrentDirectory(), PluginFolder);
-                _logger.Information("Pluginpath: {path}", path);
+                _logger.Information("[PluginManager] Plugins load from path: [{path}]", path);
 
                 var folder = Directory.GetDirectories(path);
                 foreach (var item in folder)
                 {
-                    _logger.Information(item);
                     Assembly pluginAssembly = LoadPlugin(item);
 
                     var plugins = CreateCommands(pluginAssembly).ToList();
                     Plugin.AddRange(plugins);
 
-                    _logger.Information("Loaded Plugin: {pluginName}", plugins?.FirstOrDefault()?.PluginName);
+                    _logger.Information("[PluginManager] Loaded Plugin: {pluginName}", plugins?.FirstOrDefault()?.PluginName);
 
                     Configurations.AddRange(Plugin.Select(x => (IDnsProxyConfiguration)x.DnsProxyConfiguration));
                     RuleFactories.AddRange(Plugin.Select(x => x.RuleFactory));
                 }
+                _logger.Information("[PluginManager] Plugins loaded >> Program starts");
             }
             catch (ReflectionTypeLoadException ex)
             {
@@ -121,9 +122,9 @@ namespace DnsProxy.Console.Common
 
         private Assembly LoadPlugin(string relativePath)
         {
-            string pluginLocation = Path.GetFullPath(Path.Combine( relativePath.Replace('\\', Path.DirectorySeparatorChar)));
+            var pluginLocation = Path.GetFullPath(Path.Combine( relativePath.Replace('\\', Path.DirectorySeparatorChar)));
 
-            _logger.Information("Loading commands from: {pluginLocation}", pluginLocation);
+            _logger.Information("[PluginManager] Loading plugin from: {pluginLocation}", pluginLocation);
 
             var splitChar = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
                 ? @"\"
@@ -133,7 +134,7 @@ namespace DnsProxy.Console.Common
             var assemblyName = new AssemblyName(pathSplit[^1]);
             var pluginDll = $"{pluginLocation}{splitChar}{assemblyName}.dll";
 
-            List<Type> sharedTypes = new List<Type>() { typeof(DomainName) };
+            var sharedTypes = new List<Type>() { typeof(DomainName) };
             sharedTypes.AddRange(PluginSharedTypes.SharedTypes);
             sharedTypes.AddRange(typeof(PluginSharedTypes).Assembly.GetTypes());
             sharedTypes.AddRange(typeof(CommonDnsProxyConfiguration).Assembly.GetTypes());
@@ -170,7 +171,7 @@ namespace DnsProxy.Console.Common
 
             if (plugins.Count == 0)
             {
-                string availableTypes = string.Join(",", assembly.GetTypes().Select(t => t.FullName));
+                var availableTypes = string.Join(",", assembly.GetTypes().Select(t => t.FullName));
                 throw new ApplicationException(
                     $"Can't find any type which implements IPlugin in {assembly} from {assembly.Location}.\n" +
                     $"Available types: {availableTypes}");
