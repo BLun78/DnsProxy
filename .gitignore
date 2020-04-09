@@ -352,3 +352,12 @@ MigrationBackup/
 _config.json
 _rules.json
 _hosts.json
+.idea/.idea.DnsProxy/riderModule.iml
+.idea/.idea.DnsProxy/.idea/.gitignore
+.idea/.idea.DnsProxy/.idea/contentModel.xml
+.idea/.idea.DnsProxy/.idea/dbnavigator.xml
+.idea/.idea.DnsProxy/.idea/indexLayout.xml
+.idea/.idea.DnsProxy/.idea/modules.xml
+.idea/.idea.DnsProxy/.idea/projectSettingsUpdater.xml
+.idea/.idea.DnsProxy/.idea/vcs.xml
+.idea/.idea.DnsProxy/.idea/codeStyles/Project.xml
