@@ -30,6 +30,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -38,7 +39,7 @@ namespace DnsProxy.Console.Common
     internal class PluginManager : IDisposable
     {
         private readonly ILogger _logger;
-        private const string PluginFolder = @".\Plugins";
+        private const string PluginFolder = @"Plugins";
 
         public List<IPlugin> Plugin { get; }
         public List<IDnsProxyConfiguration> Configurations { get; }
@@ -124,9 +125,13 @@ namespace DnsProxy.Console.Common
 
             _logger.Information("Loading commands from: {pluginLocation}", pluginLocation);
 
-            var pathSplit = pluginLocation.Split(@"\");
-            var assemblyName = new AssemblyName(pathSplit[pathSplit.Length - 1]);
-            var pluginDll = $"{pluginLocation}\\{assemblyName}.dll";
+            var splitChar = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? @"\"
+                : @"/";
+            
+            var pathSplit = pluginLocation.Split(splitChar);
+            var assemblyName = new AssemblyName(pathSplit[^1]);
+            var pluginDll = $"{pluginLocation}{splitChar}{assemblyName}.dll";
 
             List<Type> sharedTypes = new List<Type>() { typeof(DomainName) };
             sharedTypes.AddRange(PluginSharedTypes.SharedTypes);
@@ -147,9 +152,7 @@ namespace DnsProxy.Console.Common
 
             PluginLoaders.Add(loader);
 
-            return loader.LoadDefaultAssembly();
-
-        }
+            return loader.LoadDefaultAssembly();        }
 
         private IEnumerable<IPlugin> CreateCommands(Assembly assembly)
         {

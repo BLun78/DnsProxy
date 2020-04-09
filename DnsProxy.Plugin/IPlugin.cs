@@ -17,6 +17,7 @@
 using DnsProxy.Plugin.Configuration;
 using DnsProxy.Plugin.Models.Rules;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
@@ -28,7 +29,7 @@ namespace DnsProxy.Plugin
         Type DependencyRegistration { get; }
         IDnsProxyConfiguration DnsProxyConfiguration { get; }
         IRuleFactory RuleFactory { get; }
-        Type[] Rules { get; }
+        IEnumerable<Type> Rules { get; }
 
         void GetHelp(ILogger logger);
         void GetLicense(ILogger logger);

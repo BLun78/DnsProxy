@@ -20,6 +20,7 @@ using DnsProxy.Plugin;
 using DnsProxy.Plugin.Configuration;
 using DnsProxy.Plugin.Models.Rules;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
@@ -31,7 +32,7 @@ namespace DnsProxy.Dns
         public Type DependencyRegistration => typeof(DnsDependencyRegistration);
         public IDnsProxyConfiguration DnsProxyConfiguration => new DnsDnsProxyConfiguration();
         public IRuleFactory RuleFactory => new RuleFactory(this.Rules);
-        public Type[] Rules => new[] { typeof(DnsRule) };
+        public IEnumerable<Type> Rules => new List<Type>(){ typeof(DnsRule) };
         public void GetHelp(ILogger logger)
         {
         }

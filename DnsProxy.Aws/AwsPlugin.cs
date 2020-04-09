@@ -20,6 +20,7 @@ using DnsProxy.Plugin;
 using DnsProxy.Plugin.Configuration;
 using DnsProxy.Plugin.Models.Rules;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,7 +43,7 @@ namespace DnsProxy.Aws
         public Type DependencyRegistration => typeof(AwsDependencyRegistration);
         public IDnsProxyConfiguration DnsProxyConfiguration => new AwsDnsProxyConfiguration();
         public IRuleFactory RuleFactory => new RuleFactory(this.Rules);
-        public Type[] Rules => new[] { typeof(AwsApiGatewayRule), typeof(AwsDocDbRule), typeof(AwsElasticCacheRule) };
+        public IEnumerable<Type> Rules => new List<Type>() { typeof(AwsApiGatewayRule), typeof(AwsDocDbRule), typeof(AwsElasticCacheRule) };
 
         public void GetHelp(ILogger logger)
         {

@@ -45,7 +45,7 @@ namespace DnsProxy
         private static ApplicationInformation ApplicationInformation { get; set; }
         private static IServiceProvider ServiceProvider => DependencyInjector.ServiceProvider;
 
-        public static IConfigurationRoot Configuration
+        private static IConfigurationRoot Configuration
         {
             get
             {

@@ -16,15 +16,16 @@
 
 using DnsProxy.Plugin.Models.Rules;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DnsProxy.Common.Models.Rules
 {
     public class RuleFactory : IRuleFactory
     {
-        private readonly Type[] _rules;
+        private readonly IEnumerable<Type> _rules;
 
-        public RuleFactory(Type[] rules)
+        public RuleFactory(IEnumerable<Type> rules)
         {
             _rules = rules;
         }
