@@ -36,10 +36,9 @@ namespace DnsProxy.Console.Common
         {
             var version = _assembly.GetName().Version;
             var buildTime = new DateTime(2020, 4, 18);
-            var title = DefaultTitle;
             //_logger.LogTrace(@"Title: '{title}' Version: '{version}' Builddate: '{buildTime}'", title, version,
             //    buildTime);
-            _logger.LogInformation(@"Title: '{0}' Version: '{1}' Builddate: '{2}'", title, version,
+            _logger.LogInformation(@"Title: '{0}' Version: '{1}' Builddate: '{2}'", DefaultTitle, version,
                 buildTime.ToLongDateString());
         }
     }

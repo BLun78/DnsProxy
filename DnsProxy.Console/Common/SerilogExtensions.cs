@@ -25,14 +25,14 @@ namespace DnsProxy.Console.Common
 {
     internal static class SerilogExtensions
     {
-        public class dTextFormatter : ITextFormatter
-        {
-            public void Format(LogEvent logEvent, TextWriter output)
-            {
+        // public class dTextFormatter : ITextFormatter
+        // {
+        //     public void Format(LogEvent logEvent, TextWriter output)
+        //     {
 
-                var d = 1;
-            }
-        }
+        //         var d = 1;
+        //     }
+        // }
 
         public static ILogger SetupSerilog(this IConfiguration configuration)
         {
