@@ -47,7 +47,6 @@ namespace DnsProxy.Server.Strategies
             IDnsContextAccessor dnsContextAccessor)
             : base(dnsContextAccessor, cacheManager, cacheConfigOptionsMonitor)
         {
-            CacheCancellationToken = new CancellationToken();
             _hostConfigOptionsMonitor = hostConfigOptionsMonitor;
             ParseHostConfig(_hostConfigOptionsMonitor.CurrentValue);
             _parseHostConfig = _hostConfigOptionsMonitor.OnChange(ParseHostConfig);
@@ -56,8 +55,6 @@ namespace DnsProxy.Server.Strategies
             NeedsQueryTimeout = true;
             IsCache = true;
         }
-
-        internal static CancellationToken CacheCancellationToken { get; private set; }
 
         public override Task<List<DnsRecordBase>> ResolveAsync(DnsQuestion dnsQuestion, CancellationToken cancellationToken)
         {
@@ -107,8 +104,8 @@ namespace DnsProxy.Server.Strategies
                 {
                     foreach (var ipAddress in host.IpAddresses)
                     {
-                        var tempHost = host.ToPtrRecords(ipAddress);
-                        var question = new DnsQuestion(DomainName.Parse(tempHost.Item1), RecordType.Ptr, RecordClass.INet);
+                        var (domainName, ptrRecords) = host.ToPtrRecords(ipAddress);
+                        var question = new DnsQuestion(DomainName.Parse(domainName), RecordType.Ptr, RecordClass.INet);
                         RemoveCacheItem(question);
                     }
 
@@ -122,14 +119,15 @@ namespace DnsProxy.Server.Strategies
 
             _hostConfigCache = (HostsConfig)hostConfig.Clone();
 
-            if (_hostConfigCache != null)
+            if (_hostConfigCache == null) return;
+            {
                 foreach (var host in _hostConfigCache.Hosts)
                 {
                     foreach (var ipAddress in host.IpAddresses)
                     {
-                        var tempHost = host.ToPtrRecords(ipAddress);
-                        var question = new DnsQuestion(DomainName.Parse(tempHost.Item1), RecordType.Ptr, RecordClass.INet);
-                        StoreInCache(question, tempHost.Item2.Cast<DnsRecordBase>().ToList());
+                        var (domainName, ptrRecords) = host.ToPtrRecords(ipAddress);
+                        var question = new DnsQuestion(DomainName.Parse(domainName), RecordType.Ptr, RecordClass.INet);
+                        StoreInCache(question, ptrRecords.Cast<DnsRecordBase>().ToList());
                     }
 
                     foreach (var domainName in host.DomainNames)
@@ -139,6 +137,7 @@ namespace DnsProxy.Server.Strategies
                         StoreInCache(question, tempHost.Cast<DnsRecordBase>().ToList());
                     }
                 }
+            }
         }
 
         private void RemoveCacheItem(DnsQuestion dnsQuestion)

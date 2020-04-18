@@ -26,6 +26,7 @@ using Microsoft.Extensions.Configuration;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -73,14 +74,19 @@ namespace DnsProxy.Console.Common
                 }
 
                 //var path = Path.Combine(Directory.GetCurrentDirectory(), PluginFolder);
-                var path = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, PluginFolder);
-                _logger.Information("[PluginManager] Plugins load from path: [{path}]", path);
+                var path = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase 
+                                            ?? AppDomain.CurrentDomain.BaseDirectory, 
+                                               PluginFolder);
+                _logger.Information("[PluginManager] Plugins now load from path: [{path}]", path);
 
                 var folder = Directory.GetDirectories(path);
                 foreach (var item in folder)
                 {
                     try
                     {
+                        var pathSplit = GetSplitPath(item);
+
+                        _logger.Information("[PluginManager] Load Plugin Folder: {folder}", pathSplit[^1]);
                         Assembly pluginAssembly = LoadPlugin(item);
 
                         var plugins = CreateCommands(pluginAssembly).ToList();
@@ -127,19 +133,18 @@ namespace DnsProxy.Console.Common
             }
         }
 
+        private static string[] GetSplitPath(string relativePath)
+        {
+            return relativePath.Split(Path.DirectorySeparatorChar);
+        }
+
         private Assembly LoadPlugin(string relativePath)
         {
-            var pluginLocation = Path.GetFullPath(Path.Combine(relativePath.Replace('\\', Path.DirectorySeparatorChar)));
+            _logger.Information("[PluginManager] Loading plugin from: {pluginLocation}", relativePath);
 
-            _logger.Information("[PluginManager] Loading plugin from: {pluginLocation}", pluginLocation);
-
-            var splitChar = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                ? @"\"
-                : @"/";
-
-            var pathSplit = pluginLocation.Split(splitChar);
+            var pathSplit = GetSplitPath(relativePath);
             var assemblyName = new AssemblyName(pathSplit[^1]);
-            var pluginDll = $"{pluginLocation}{splitChar}{assemblyName}.dll";
+            var pluginDll = $"{relativePath}{Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)}{assemblyName}.dll";
 
             var sharedTypes = new List<Type>() { typeof(DomainName) };
             sharedTypes.AddRange(PluginSharedTypes.SharedTypes);

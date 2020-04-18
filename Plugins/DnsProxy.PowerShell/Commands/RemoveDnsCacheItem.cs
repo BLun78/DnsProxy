@@ -14,45 +14,24 @@
 //    limitations under the License.
 #endregion
 
-using System.Collections.Generic;
 using System.Management.Automation;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common.Cache;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace DnsProxy.PowerShell.Commands
 {
-    [Cmdlet(VerbsCommon.Add, "DnsCacheItem")]
-    internal class AddDnsCacheItem : DnsCmdlet
+    [Cmdlet(VerbsCommon.Remove, "DnsCacheItem")]
+    internal class RemoveDnsCacheItem : DnsCmdlet
     {
         protected CacheManager CacheManager => PowerShellRecourseLoader.CacheManager;
-
-        public AddDnsCacheItem()
-        {
-            DnsRecords = new List<DnsRecordBase>();
-        }
 
         [Parameter(Position = 0)]
         [ValidateNotNullOrEmpty]
         public DnsQuestion DnsQuestion { get; set; }
 
-        [Parameter(Position = 1)]
-        [ValidateNotNullOrEmpty]
-        public List<DnsRecordBase> DnsRecords { get; set; }
-
-        [Parameter(Position = 2)] 
-        public MemoryCacheEntryOptions MemoryCacheEntryOptions { get; set; }
-
         protected override void ProcessRecord()
         {
-            if (MemoryCacheEntryOptions == null)
-            {
-                CacheManager.StoreInCache(DnsQuestion, DnsRecords);
-            }
-            else
-            {
-                CacheManager.StoreInCache(DnsQuestion, DnsRecords, MemoryCacheEntryOptions);
-            }
+            CacheManager.RemoveCacheItem(DnsQuestion);
         }
     }
 }

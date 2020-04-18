@@ -33,6 +33,7 @@ namespace DnsProxy.Dns
         public IDnsProxyConfiguration DnsProxyConfiguration => new DnsDnsProxyConfiguration();
         public IRuleFactory RuleFactory => new RuleFactory(this.Rules);
         public IEnumerable<Type> Rules => new List<Type>(){ typeof(DnsRule) };
+        
         public void GetHelp(ILogger logger)
         {
         }
