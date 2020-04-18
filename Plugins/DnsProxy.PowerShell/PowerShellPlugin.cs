@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Management.Automation.Runspaces;
 using System.Threading.Tasks;
+using DnsProxy.Common.Models.Rules;
 using DnsProxy.Plugin;
 using DnsProxy.Plugin.Configuration;
 using DnsProxy.Plugin.Models.Rules;
@@ -34,7 +35,7 @@ namespace DnsProxy.PowerShell
         public string PluginName => "DnsProxy.PowerShell";
         public Type DependencyRegistration { get; }
         public IDnsProxyConfiguration DnsProxyConfiguration { get; }
-        public IRuleFactory RuleFactory { get; }
+        public IRuleFactory RuleFactory => new RuleFactory(this.Rules);
         public IEnumerable<Type> Rules => new List<Type>() { };
 
         public void GetHelp(ILogger logger)
