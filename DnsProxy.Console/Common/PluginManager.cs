@@ -87,7 +87,7 @@ namespace DnsProxy.Console.Common
                         _logger.Information(LogConsts.SingleLine);
                         var pathSplit = GetSplitPath(item);
 
-                        _logger.Information("[PluginManager] Load Plugin Folder: [{folder}]", pathSplit[^1]);
+                        _logger.Information("[PluginManager] Load Plugin Folder: {folder}", pathSplit[^1]);
                         Assembly pluginAssembly = LoadPlugin(item);
 
                         var plugins = CreateCommands(pluginAssembly).ToList();
@@ -142,7 +142,7 @@ namespace DnsProxy.Console.Common
 
         private Assembly LoadPlugin(string relativePath)
         {
-            _logger.Information("[PluginManager] Loading plugin from: {pluginLocation}", relativePath);
+            _logger.Information("[PluginManager] Loading plugin from: [{pluginLocation}]", relativePath);
 
             var pathSplit = GetSplitPath(relativePath);
             var assemblyName = new AssemblyName(pathSplit[^1]);
