@@ -57,7 +57,8 @@ namespace DnsProxy
 
                 if (PluginManager != null)
                 {
-                    foreach (IDnsProxyConfiguration dnsProxyConfiguration in PluginManager.Configurations)
+                    foreach (IDnsProxyConfiguration dnsProxyConfiguration 
+                        in PluginManager.Configurations)
                     {
                         builder = dnsProxyConfiguration.ConfigurationBuilder(builder);
                     }
@@ -132,7 +133,7 @@ namespace DnsProxy
                    {
                        case (ConsoleModifiers.Control, ConsoleKey.H):
                            CreateHeader();
-                           break;      
+                           break;
                        case (ConsoleModifiers.Control, ConsoleKey.L):
                            CreateLicenseInformation();
                            break;
@@ -185,7 +186,7 @@ namespace DnsProxy
             dependencyRegistrations.Add(new ServerDependencyRegistration(Configuration, PluginManager.RuleFactories));
             DependencyInjector = new DependencyInjector(Configuration, dependencyRegistrations);
 
-            PluginManager.Plugin.ForEach(x=> x.InitialPlugin(ServiceProvider));
+            PluginManager.Plugin.ForEach(x => x.InitialPlugin(ServiceProvider));
 
             _logger = ServiceProvider.GetService<Microsoft.Extensions.Logging.ILogger<Program>>();
             ApplicationInformation = ServiceProvider.GetService<ApplicationInformation>();

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29609.76
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DnsProxy.Server", "DnsProxy.Server\DnsProxy.Server.csproj", "{11741EBA-E4DC-4358-92B8-8DD161195056}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DnsProxy.Server", "Common\DnsProxy.Server\DnsProxy.Server.csproj", "{11741EBA-E4DC-4358-92B8-8DD161195056}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ARSoft.Tools.Net", "3thParty\ARSoft.Tools.Net\ARSoft.Tools.Net.csproj", "{6C980202-6BCB-478C-874D-C7448D642517}"
 EndProject
@@ -16,25 +16,27 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DnsProxy.Console", "DnsProx
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Udns", "3thParty\net-udns\src\Udns.csproj", "{98FF3522-C957-42CD-9E3E-A818D3BB3604}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DnsProxy.Aws", "DnsProxy.Aws\DnsProxy.Aws.csproj", "{448AB749-921B-455D-B888-EA406B74715D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DnsProxy.Aws", "Plugins\DnsProxy.Aws\DnsProxy.Aws.csproj", "{448AB749-921B-455D-B888-EA406B74715D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DnsProxy.Common", "DnsProxy.Common\DnsProxy.Common.csproj", "{3E7AE20E-DB6F-43A1-8817-ED93E8B178D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DnsProxy.Common", "Common\DnsProxy.Common\DnsProxy.Common.csproj", "{3E7AE20E-DB6F-43A1-8817-ED93E8B178D4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{B8D340E5-FE4A-4E3B-8945-4A577CD37DEA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{7086B1EF-1DF9-4A5B-8D97-85CDA39A3589}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DnsProxy.Doh", "DnsProxy.Doh\DnsProxy.Doh.csproj", "{1CA6E04E-CA85-4BC0-BA61-8D25A3D3D81D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DnsProxy.Doh", "Plugins\DnsProxy.Doh\DnsProxy.Doh.csproj", "{1CA6E04E-CA85-4BC0-BA61-8D25A3D3D81D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DnsProxy.Dns", "DnsProxy.Dns\DnsProxy.Dns.csproj", "{2872D3CA-D649-4F57-96B0-A0DE73804BB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DnsProxy.Dns", "Plugins\DnsProxy.Dns\DnsProxy.Dns.csproj", "{2872D3CA-D649-4F57-96B0-A0DE73804BB0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{0C23B40B-9DA4-4586-B4BE-55A2F4BA61DF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DnsProxy.Test", "DnsProxy.Test\DnsProxy.Test.csproj", "{220C9249-18E3-4013-994F-BA4224B2A36D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DnsProxy.Test", "Test\DnsProxy.Test\DnsProxy.Test.csproj", "{220C9249-18E3-4013-994F-BA4224B2A36D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DnsProxy.Plugin", "DnsProxy.Plugin\DnsProxy.Plugin.csproj", "{7C9A87A1-FDC3-460C-ABEE-84C865278FE6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DnsProxy.Plugin", "Common\DnsProxy.Plugin\DnsProxy.Plugin.csproj", "{7C9A87A1-FDC3-460C-ABEE-84C865278FE6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3thParty", "3thParty", "{6E9F05CC-56D7-4547-A566-B9425FEAA694}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DnsProxy.PowerShell", "Plugins\DnsProxy.PowerShell\DnsProxy.PowerShell.csproj", "{8E5A1F8B-E2A3-4AD4-91B0-B047993F9128}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -82,6 +84,10 @@ Global
 		{7C9A87A1-FDC3-460C-ABEE-84C865278FE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C9A87A1-FDC3-460C-ABEE-84C865278FE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C9A87A1-FDC3-460C-ABEE-84C865278FE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E5A1F8B-E2A3-4AD4-91B0-B047993F9128}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E5A1F8B-E2A3-4AD4-91B0-B047993F9128}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E5A1F8B-E2A3-4AD4-91B0-B047993F9128}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E5A1F8B-E2A3-4AD4-91B0-B047993F9128}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,7 +101,8 @@ Global
 		{1CA6E04E-CA85-4BC0-BA61-8D25A3D3D81D} = {7086B1EF-1DF9-4A5B-8D97-85CDA39A3589}
 		{2872D3CA-D649-4F57-96B0-A0DE73804BB0} = {7086B1EF-1DF9-4A5B-8D97-85CDA39A3589}
 		{220C9249-18E3-4013-994F-BA4224B2A36D} = {0C23B40B-9DA4-4586-B4BE-55A2F4BA61DF}
-		{7C9A87A1-FDC3-460C-ABEE-84C865278FE6} = {7086B1EF-1DF9-4A5B-8D97-85CDA39A3589}
+		{8E5A1F8B-E2A3-4AD4-91B0-B047993F9128} = {7086B1EF-1DF9-4A5B-8D97-85CDA39A3589}
+		{7C9A87A1-FDC3-460C-ABEE-84C865278FE6} = {B8D340E5-FE4A-4E3B-8945-4A577CD37DEA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {117AB309-245F-4D02-992B-D722057C7CCE}

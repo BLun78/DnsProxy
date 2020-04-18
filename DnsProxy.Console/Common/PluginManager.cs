@@ -26,13 +26,11 @@ using Microsoft.Extensions.Configuration;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace DnsProxy.Console.Common
 {
@@ -61,7 +59,7 @@ namespace DnsProxy.Console.Common
 
         public void RegisterDependencyRegistration(IConfigurationRoot configurationRoot)
         {
-            DependencyRegistration.AddRange(Plugin
+            DependencyRegistration.AddRange(Plugin.Where(x => x.DependencyRegistration != null)
                 .Select(x => (DependencyRegistration)Activator.CreateInstance(x.DependencyRegistration, configurationRoot)));
         }
 
@@ -74,22 +72,31 @@ namespace DnsProxy.Console.Common
                     asm.GetTypes();
                 }
 
-                var path = Path.Combine(Directory.GetCurrentDirectory(), PluginFolder);
+                //var path = Path.Combine(Directory.GetCurrentDirectory(), PluginFolder);
+                var path = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, PluginFolder);
                 _logger.Information("[PluginManager] Plugins load from path: [{path}]", path);
 
                 var folder = Directory.GetDirectories(path);
                 foreach (var item in folder)
                 {
-                    Assembly pluginAssembly = LoadPlugin(item);
+                    try
+                    {
+                        Assembly pluginAssembly = LoadPlugin(item);
 
-                    var plugins = CreateCommands(pluginAssembly).ToList();
-                    Plugin.AddRange(plugins);
+                        var plugins = CreateCommands(pluginAssembly).ToList();
+                        Plugin.AddRange(plugins);
 
-                    _logger.Information("[PluginManager] Loaded Plugin: {pluginName}", plugins?.FirstOrDefault()?.PluginName);
-
-                    Configurations.AddRange(Plugin.Select(x => (IDnsProxyConfiguration)x.DnsProxyConfiguration));
-                    RuleFactories.AddRange(Plugin.Select(x => x.RuleFactory));
+                        _logger.Information("[PluginManager] Loaded Plugin: {pluginName}", plugins?.FirstOrDefault()?.PluginName);
+                    }
+                    catch (Exception e)
+                    {
+                        System.Console.WriteLine(e);
+                    }
                 }
+                
+                Configurations.AddRange(Plugin.Where(x => x.DnsProxyConfiguration != null).Select(x => (IDnsProxyConfiguration)x.DnsProxyConfiguration));
+                RuleFactories.AddRange(Plugin.Where(x => x.RuleFactory != null).Select(x => x.RuleFactory));
+                
                 _logger.Information("[PluginManager] Plugins loaded >> Program starts");
             }
             catch (ReflectionTypeLoadException ex)
@@ -122,14 +129,14 @@ namespace DnsProxy.Console.Common
 
         private Assembly LoadPlugin(string relativePath)
         {
-            var pluginLocation = Path.GetFullPath(Path.Combine( relativePath.Replace('\\', Path.DirectorySeparatorChar)));
+            var pluginLocation = Path.GetFullPath(Path.Combine(relativePath.Replace('\\', Path.DirectorySeparatorChar)));
 
             _logger.Information("[PluginManager] Loading plugin from: {pluginLocation}", pluginLocation);
 
             var splitChar = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
                 ? @"\"
                 : @"/";
-            
+
             var pathSplit = pluginLocation.Split(splitChar);
             var assemblyName = new AssemblyName(pathSplit[^1]);
             var pluginDll = $"{pluginLocation}{splitChar}{assemblyName}.dll";
@@ -153,7 +160,8 @@ namespace DnsProxy.Console.Common
 
             PluginLoaders.Add(loader);
 
-            return loader.LoadDefaultAssembly();        }
+            return loader.LoadDefaultAssembly();
+        }
 
         private IEnumerable<IPlugin> CreateCommands(Assembly assembly)
         {

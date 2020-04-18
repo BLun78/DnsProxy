@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <PublishTrimmed>false</PublishTrimmed>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RuntimeIdentifiers>win10-x64;linux-x64;osx-x64</RuntimeIdentifiers>
     <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
     <TieredCompilation>true</TieredCompilation>
     <PublishSingleFile>false</PublishSingleFile>
@@ -146,9 +147,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DnsProxy.Common\DnsProxy.Common.csproj" />
-    <ProjectReference Include="..\DnsProxy.Plugin\DnsProxy.Plugin.csproj" />
-    <ProjectReference Include="..\DnsProxy.Server\DnsProxy.Server.csproj" />
+    <ProjectReference Include="..\Common\DnsProxy.Common\DnsProxy.Common.csproj" />
+    <ProjectReference Include="..\Common\DnsProxy.Plugin\DnsProxy.Plugin.csproj" />
+    <ProjectReference Include="..\Common\DnsProxy.Server\DnsProxy.Server.csproj" />
   </ItemGroup>
 
 </Project>

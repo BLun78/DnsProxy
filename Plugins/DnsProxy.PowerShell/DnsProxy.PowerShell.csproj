@@ -1,0 +1,87 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+    <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+    <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    <!-- Nuget specs -->
+    <PackageId>DnsProxy.PowerShell</PackageId>
+    <Authors>Björn Lundström</Authors>
+    <Copyright>© 2019-2020 Björn Lundström</Copyright>
+    <Title>BLun DNS Proxy</Title>
+    <Description>A dns-proxy for Developers!</Description>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageTags>dns</PackageTags>
+    <PackageReleaseNotes>https://github.com/BLun78/DnsProxy/releases</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/BLun78/DnsProxy</PackageProjectUrl>
+    <Company>BLun.de - Björn Lundström</Company>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/BLun78/DnsProxy.git</RepositoryUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.3" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.3" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.3" />
+    <PackageReference Include="Microsoft.PowerShell.Commands.Diagnostics" Version="7.0.0" />
+    <PackageReference Include="Microsoft.PowerShell.Commands.Management" Version="7.0.0" />
+    <PackageReference Include="Microsoft.PowerShell.Commands.Utility" Version="7.0.0" />
+    <PackageReference Include="Microsoft.PowerShell.ConsoleHost" Version="7.0.0" />
+    <PackageReference Include="Microsoft.PowerShell.CoreCLR.Eventing" Version="7.0.0" />
+    <PackageReference Include="Microsoft.PowerShell.MarkdownRender" Version="7.0.0" />
+    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.0.0" />
+    <PackageReference Include="Microsoft.PowerShell.Security" Version="7.0.0" />
+
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+
+    <PackageReference Include="System.Management.Automation" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\3thParty\ARSoft.Tools.Net\ARSoft.Tools.Net.csproj">
+      <Private>false</Private>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\DnsProxy.Common\DnsProxy.Common.csproj">
+      <Private>false</Private>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\DnsProxy.Plugin\DnsProxy.Plugin.csproj">
+      <Private>false</Private>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PluginHostTf Include="netcoreapp3.1" />
+  </ItemGroup>
+
+  <Target Name="PluginCopy" AfterTargets="Build">
+
+    <ItemGroup>
+      <ServerOutput Include="$(OutputPath)/*.*" />
+    </ItemGroup>
+
+    <!-- Deploy all required server outputs -->
+    <Copy SourceFiles="@(ServerOutput)" DestinationFolder="../../DnsProxy.Console/$(BaseOutputPath)$(Configuration)/%(PluginHostTf.Identity)/Plugins/$(MSBuildProjectName)/" />
+  </Target>
+</Project>
