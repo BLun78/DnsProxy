@@ -41,10 +41,8 @@ namespace DnsProxy.Console.Common
             var version = _assembly.GetName().Version;
             var buildTime = new DateTime(2020, 4, 18);
             buildTime = GetTimestamp();
-            _logger.LogInformation(@"Title: '{title}' Version: '{version}' Builddate: '{date} {time}'", DefaultTitle,
-                version,
-                buildTime.ToLongDateString(), 
-                buildTime.ToLongTimeString());
+            _logger.LogInformation(@"Title: '{title}' Version: '{version}'", DefaultTitle, version);
+            _logger.LogInformation(@"Build Time: '{date} {time}'", buildTime.ToLongDateString(), buildTime.ToLongTimeString());
         }
 
         public DateTime GetTimestamp()

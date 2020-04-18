@@ -74,11 +74,10 @@
     <Compile Remove="Plugins\DnsProxy.Aws\**" />
     <EmbeddedResource Remove="Plugins\DnsProxy.Aws\**" />
     <None Remove="Plugins\DnsProxy.Aws\**" />
-    <None Remove="BuildTimeStamp.txt" />
-    <EmbeddedResource Include="BuildTimeStamp.txt" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="BuildTimeStamp.txt" />
     <None Remove="config.json" />
     <None Remove="hosts.json" />
     <None Remove="Plugins\README.MD" />
@@ -109,6 +108,10 @@
     <Content Include="_rules.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="BuildTimeStamp.txt" />
   </ItemGroup>
 
   <ItemGroup>
