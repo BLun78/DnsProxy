@@ -14,6 +14,7 @@
 //    limitations under the License.
 #endregion
 
+using DnsProxy.Common.Cache;
 using DnsProxy.Common.Models.Context;
 using DnsProxy.Plugin.DI;
 using Microsoft.Extensions.Configuration;
@@ -32,6 +33,7 @@ namespace DnsProxy.Common
 
         public override IServiceCollection Register(IServiceCollection services)
         {
+            services.AddSingleton<CacheManager>();
             // Dns Context
             services.AddSingleton<IDnsContextAccessor>(_dnsContextAccessor);
             services.AddSingleton<IWriteDnsContextAccessor>(_dnsContextAccessor);
@@ -39,7 +41,7 @@ namespace DnsProxy.Common
 
             // .net core frameworks
             services.AddOptions();
-
+            
             return services;
         }
     }
