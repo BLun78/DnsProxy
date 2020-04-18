@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,10 +13,13 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
 using Microsoft.Extensions.Logging;
 using System;
+using System.Globalization;
+using System.IO;
 using System.Reflection;
 
 namespace DnsProxy.Console.Common
@@ -36,10 +40,21 @@ namespace DnsProxy.Console.Common
         {
             var version = _assembly.GetName().Version;
             var buildTime = new DateTime(2020, 4, 18);
-            //_logger.LogTrace(@"Title: '{title}' Version: '{version}' Builddate: '{buildTime}'", title, version,
-            //    buildTime);
-            _logger.LogInformation(@"Title: '{0}' Version: '{1}' Builddate: '{2}'", DefaultTitle, version,
-                buildTime.ToLongDateString());
+            buildTime = GetTimestamp();
+            _logger.LogInformation(@"Title: '{title}' Version: '{version}' Builddate: '{date} {time}'", DefaultTitle,
+                version,
+                buildTime.ToLongDateString(), 
+                buildTime.ToLongTimeString());
+        }
+
+        public DateTime GetTimestamp()
+        {
+            using (var stream = _assembly.GetManifestResourceStream("DnsProxy.Console.BuildTimeStamp.txt"))
+            using (var reader = new StreamReader(stream))
+            {
+                var result = reader.ReadToEnd();
+                return DateTime.Parse(result);
+            }
         }
     }
 }

@@ -41,7 +41,7 @@
     <FileVersion>2.0.2.0</FileVersion>
     <PackageVersion>2.0.2.0</PackageVersion>
     <ApplicationIcon>proxy_server_29251.ico</ApplicationIcon>
-
+    <Today>$([System.DateTime]::Now)</Today>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(OS))'=='osx-x64'">
@@ -74,6 +74,8 @@
     <Compile Remove="Plugins\DnsProxy.Aws\**" />
     <EmbeddedResource Remove="Plugins\DnsProxy.Aws\**" />
     <None Remove="Plugins\DnsProxy.Aws\**" />
+    <None Remove="BuildTimeStamp.txt" />
+    <EmbeddedResource Include="BuildTimeStamp.txt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -153,4 +155,7 @@
     <ProjectReference Include="..\Common\DnsProxy.Server\DnsProxy.Server.csproj" />
   </ItemGroup>
 
+  <Target Name="CreateBuildTime" BeforeTargets="Build">
+    <Exec Command="echo $(today) &gt; $(ProjectDir)BuildTimeStamp.txt" />
+  </Target>
 </Project>
