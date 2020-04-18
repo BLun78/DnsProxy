@@ -30,8 +30,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text;
+using DnsProxy.Plugin.Common;
 
 namespace DnsProxy.Console.Common
 {
@@ -84,9 +84,10 @@ namespace DnsProxy.Console.Common
                 {
                     try
                     {
+                        _logger.Information(LogConsts.SingleLine);
                         var pathSplit = GetSplitPath(item);
 
-                        _logger.Information("[PluginManager] Load Plugin Folder: {folder}", pathSplit[^1]);
+                        _logger.Information("[PluginManager] Load Plugin Folder: [{folder}]", pathSplit[^1]);
                         Assembly pluginAssembly = LoadPlugin(item);
 
                         var plugins = CreateCommands(pluginAssembly).ToList();
@@ -103,6 +104,7 @@ namespace DnsProxy.Console.Common
                 Configurations.AddRange(Plugin.Where(x => x.DnsProxyConfiguration != null).Select(x => (IDnsProxyConfiguration)x.DnsProxyConfiguration));
                 RuleFactories.AddRange(Plugin.Where(x => x.RuleFactory != null).Select(x => x.RuleFactory));
                 
+                _logger.Information(LogConsts.SingleLine);
                 _logger.Information("[PluginManager] Plugins loaded >> Program starts");
             }
             catch (ReflectionTypeLoadException ex)

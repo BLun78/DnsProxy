@@ -25,6 +25,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DnsProxy.Aws.Models;
+using DnsProxy.Plugin.Common;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -53,7 +54,7 @@ namespace DnsProxy.Aws
         public void GetLicense(ILogger logger)
         {
             logger.LogInformation($"Plugin: {PluginName}");
-            logger.LogInformation("----------------------------------------------------------------------------------------");
+            logger.LogInformation(LogConsts.SingleLine);
             logger.LogInformation("     Copyright 2019 - 2020 Bjoern Lundstroem - (https://github.com/BLun78/DnsProxy)");
             logger.LogInformation("      ");
             logger.LogInformation("     Licensed under the Apache License, Version 2.0(the \"License\");");
@@ -67,9 +68,9 @@ namespace DnsProxy.Aws
             logger.LogInformation("     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.");
             logger.LogInformation("     See the License for the specific language governing permissions and");
             logger.LogInformation("     limitations under the License.");
-            logger.LogInformation("----------------------------------------------------------------------------------------");
+            logger.LogInformation(LogConsts.SingleLine);
             logger.LogInformation(" Used libraries:");
-            logger.LogInformation("----------------------------------------------------------------------------------------");
+            logger.LogInformation(LogConsts.SingleLine);
             logger.LogInformation("     AWSSDK - A .net Framework/ .net core DNS Library");
             logger.LogInformation("      ");
             logger.LogInformation("     Copyright https://aws.amazon.com/sdkfornet/ - (https://github.com/aws/aws-sdk-net/)");

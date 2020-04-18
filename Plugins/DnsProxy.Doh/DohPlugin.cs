@@ -22,6 +22,7 @@ using DnsProxy.Plugin.Models.Rules;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DnsProxy.Plugin.Common;
 using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.Doh
@@ -41,7 +42,7 @@ namespace DnsProxy.Doh
         public void GetLicense(ILogger logger)
         {
             logger.LogInformation($"Plugin: {PluginName}");
-            logger.LogInformation("----------------------------------------------------------------------------------------");
+            logger.LogInformation(LogConsts.SingleLine);
             logger.LogInformation("     Copyright 2019 - 2020 Bjoern Lundstroem - (https://github.com/BLun78/DnsProxy)");
             logger.LogInformation("     ");
             logger.LogInformation("     Licensed under the Apache License, Version 2.0(the \"License\");");
@@ -55,9 +56,9 @@ namespace DnsProxy.Doh
             logger.LogInformation("     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.");
             logger.LogInformation("     See the License for the specific language governing permissions and");
             logger.LogInformation("     limitations under the License.");
-            logger.LogInformation("----------------------------------------------------------------------------------------");
+            logger.LogInformation(LogConsts.SingleLine);
             logger.LogInformation(" Used libraries:");
-            logger.LogInformation("----------------------------------------------------------------------------------------");
+            logger.LogInformation(LogConsts.SingleLine);
             logger.LogInformation("     Makaretu.Dns.Unicast  - Clients for unicast DNS servers");
             logger.LogInformation("      ");
             logger.LogInformation("     MIT License");

@@ -14,7 +14,6 @@
 //    limitations under the License.
 #endregion
 
-using DnsProxy.Console.Common;
 using DnsProxy.Plugin.DI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,7 +34,6 @@ namespace DnsProxy.Console
         {
             // Program
             services.AddSingleton(this.GetType().Assembly);
-            services.AddSingleton<ApplicationInformation>();
             services.AddSingleton(_cancellationTokenSource);
             return services;
         }

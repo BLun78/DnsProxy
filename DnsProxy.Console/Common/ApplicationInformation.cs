@@ -16,38 +16,30 @@
 
 #endregion
 
-using Microsoft.Extensions.Logging;
 using System;
-using System.Globalization;
 using System.IO;
-using System.Reflection;
+using DnsProxy.Plugin.Common;
+using Serilog;
 
 namespace DnsProxy.Console.Common
 {
-    internal class ApplicationInformation
+    internal static class ApplicationInformation
     {
         internal const string DefaultTitle = "BLun.de DNS Proxy";
-        private readonly Assembly _assembly;
-        private readonly ILogger<ApplicationInformation> _logger;
 
-        public ApplicationInformation(Assembly assembly, ILogger<ApplicationInformation> logger)
+        public static void LogAssemblyInformation()
         {
-            _assembly = assembly;
-            _logger = logger;
+            var version = typeof(ApplicationInformation).Assembly.GetName().Version;
+            var buildTime = GetTimestamp();
+            Log.Logger.Information(LogConsts.DoubleLine);
+            Log.Logger.Information(@"Title: '{title}' Version: '{version}'", DefaultTitle, version);
+            Log.Logger.Information(@"Build Time: '{date} {time}'", buildTime.ToLongDateString(), buildTime.ToLongTimeString());
+            Log.Logger.Information(LogConsts.DoubleLine);
         }
 
-        public void LogAssemblyInformation()
+        public static DateTime GetTimestamp()
         {
-            var version = _assembly.GetName().Version;
-            var buildTime = new DateTime(2020, 4, 18);
-            buildTime = GetTimestamp();
-            _logger.LogInformation(@"Title: '{title}' Version: '{version}'", DefaultTitle, version);
-            _logger.LogInformation(@"Build Time: '{date} {time}'", buildTime.ToLongDateString(), buildTime.ToLongTimeString());
-        }
-
-        public DateTime GetTimestamp()
-        {
-            using (var stream = _assembly.GetManifestResourceStream("DnsProxy.Console.BuildTimeStamp.txt"))
+            using (var stream = typeof(ApplicationInformation).Assembly.GetManifestResourceStream("DnsProxy.Console.BuildTimeStamp.txt"))
             using (var reader = new StreamReader(stream))
             {
                 var result = reader.ReadToEnd();

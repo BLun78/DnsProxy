@@ -29,6 +29,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using DnsProxy.Plugin;
+using DnsProxy.Plugin.Common;
 using Microsoft.Extensions.Logging;
 
 // ReSharper disable once CheckNamespace
@@ -42,7 +43,6 @@ namespace DnsProxy
 
         private static CancellationTokenSource CancellationTokenSource { get; set; }
         private static DependencyInjector DependencyInjector { get; set; }
-        private static ApplicationInformation ApplicationInformation { get; set; }
         private static IServiceProvider ServiceProvider => DependencyInjector.ServiceProvider;
 
         private static IConfigurationRoot Configuration
@@ -77,6 +77,7 @@ namespace DnsProxy
             _args = args;
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
             SerilogExtensions.SetupSerilog(null);
+            ApplicationInformation.LogAssemblyInformation();
             try
             {
                 using (PluginManager = new PluginManager(Log.Logger))
@@ -189,16 +190,15 @@ namespace DnsProxy
             PluginManager.Plugin.ForEach(x => x.InitialPlugin(ServiceProvider));
 
             _logger = ServiceProvider.GetService<Microsoft.Extensions.Logging.ILogger<Program>>();
-            ApplicationInformation = ServiceProvider.GetService<ApplicationInformation>();
 
             CreateHeader();
         }
 
         private static void CreateLicenseInformation()
         {
-            _logger.LogInformation("========================================================================================");
+            _logger.LogInformation(LogConsts.DoubleLine);
             ApplicationInformation.LogAssemblyInformation();
-            _logger.LogInformation("========================================================================================");
+            _logger.LogInformation(LogConsts.DoubleLine);
             _logger.LogInformation("Copyright 2019 - 2020 Bjoern Lundstroem - (https://github.com/BLun78/DnsProxy)");
             _logger.LogInformation("      ");
             _logger.LogInformation("Licensed under the Apache License, Version 2.0(the \"License\");");
@@ -212,9 +212,9 @@ namespace DnsProxy
             _logger.LogInformation("WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.");
             _logger.LogInformation("See the License for the specific language governing permissions and");
             _logger.LogInformation("limitations under the License.");
-            _logger.LogInformation("----------------------------------------------------------------------------------------");
+            _logger.LogInformation(LogConsts.SingleLine);
             _logger.LogInformation(" Used framework and technology:");
-            _logger.LogInformation("----------------------------------------------------------------------------------------");
+            _logger.LogInformation(LogConsts.SingleLine);
             _logger.LogInformation("     .NET Core SDK");
             _logger.LogInformation("      ");
             _logger.LogInformation("     The MIT License (MIT)");
@@ -238,7 +238,7 @@ namespace DnsProxy
             _logger.LogInformation("     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,");
             _logger.LogInformation("     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE");
             _logger.LogInformation("     SOFTWARE.");
-            _logger.LogInformation("----------------------------------------------------------------------------------------");
+            _logger.LogInformation(LogConsts.SingleLine);
             _logger.LogInformation("     Microsoft.Extensions.xxxxxx");
             _logger.LogInformation("      ");
             _logger.LogInformation("     Copyright © .NET Foundation and Contributors -  (https://github.com/dotnet/extensions/tree/release/3.1)");
@@ -254,9 +254,9 @@ namespace DnsProxy
             _logger.LogInformation("     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.");
             _logger.LogInformation("     See the License for the specific language governing permissions and");
             _logger.LogInformation("     limitations under the License.");
-            _logger.LogInformation("----------------------------------------------------------------------------------------");
+            _logger.LogInformation(LogConsts.SingleLine);
             _logger.LogInformation(" Used libraries:");
-            _logger.LogInformation("----------------------------------------------------------------------------------------");
+            _logger.LogInformation(LogConsts.SingleLine);
             _logger.LogInformation("     McMaster.NETCore.Plugins - .NET Core library for dynamically loading code");
             _logger.LogInformation("      ");
             _logger.LogInformation("     Copyright 2019 - 2020 Nate McMaster - (https://github.com/natemcmaster/DotNetCorePlugins)");
@@ -272,7 +272,7 @@ namespace DnsProxy
             _logger.LogInformation("     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.");
             _logger.LogInformation("     See the License for the specific language governing permissions and");
             _logger.LogInformation("     limitations under the License.");
-            _logger.LogInformation("----------------------------------------------------------------------------------------");
+            _logger.LogInformation(LogConsts.SingleLine);
             _logger.LogInformation("     Serilog - simple .NET logging with fully-structured events and more plugins");
             _logger.LogInformation("      ");
             _logger.LogInformation("     Copyright © and maintained by its contributors. - (https://github.com/serilog/serilog/graphs/contributors)");
@@ -288,22 +288,20 @@ namespace DnsProxy
             _logger.LogInformation("     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.");
             _logger.LogInformation("     See the License for the specific language governing permissions and");
             _logger.LogInformation("     limitations under the License.");
-            _logger.LogInformation("========================================================================================");
+            _logger.LogInformation(LogConsts.DoubleLine);
             LicenseInformation.GetLicense(_logger);
-            _logger.LogInformation("========================================================================================");
+            _logger.LogInformation(LogConsts.DoubleLine);
             foreach (IPlugin plugin in PluginManager.Plugin)
             {
                 plugin.GetLicense(_logger);
-                _logger.LogInformation("========================================================================================");
+                _logger.LogInformation(LogConsts.DoubleLine);
             }
         }
 
         private static void CreateHeader()
         {
             Title = ApplicationInformation.DefaultTitle;
-            _logger.LogInformation("========================================================================================");
             ApplicationInformation.LogAssemblyInformation();
-            _logger.LogInformation("========================================================================================");
             _logger.LogInformation("Copyright 2019 - 2020 Bjoern Lundstroem - (https://github.com/BLun78/DnsProxy)");
             _logger.LogInformation("      ");
             _logger.LogInformation("Licensed under the Apache License, Version 2.0(the \"License\");");
@@ -317,18 +315,18 @@ namespace DnsProxy
             _logger.LogInformation("WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.");
             _logger.LogInformation("See the License for the specific language governing permissions and");
             _logger.LogInformation("limitations under the License.");
-            _logger.LogInformation("========================================================================================");
+            _logger.LogInformation(LogConsts.DoubleLine);
             _logger.LogInformation("    \t[strg]+[x] or [strg]+[q] = exit Application");
             _logger.LogInformation("    \t[strg]+[h] = show this help / information");
             PluginManager.Plugin.ForEach(x => x.GetHelp(_logger));
             _logger.LogInformation("    \t[strg]+[l] = show this licens information");
-            _logger.LogInformation("========================================================================================");
+            _logger.LogInformation(LogConsts.DoubleLine);
             _logger.LogInformation("Description:");
             _logger.LogInformation("    \tA DNS-Proxy with routing for DNS-Request for development with hybrid clouds!");
             _logger.LogInformation("    \tconfig.json, rules.json and hosts,json are used for configure.");
-            _logger.LogInformation("========================================================================================");
+            _logger.LogInformation(LogConsts.DoubleLine);
             _logger.LogInformation("starts up " + ApplicationInformation.DefaultTitle + " ...");
-            _logger.LogInformation("==================================================================================");
+            _logger.LogInformation(LogConsts.DoubleLine);
         }
     }
 }
