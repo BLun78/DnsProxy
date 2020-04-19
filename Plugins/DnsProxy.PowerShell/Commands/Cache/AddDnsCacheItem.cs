@@ -20,7 +20,7 @@ using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common.Cache;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace DnsProxy.PowerShell.Commands
+namespace DnsProxy.PowerShell.Commands.Cache
 {
     [Cmdlet(VerbsCommon.Add, "DnsCacheItem")]
     internal class AddDnsCacheItem : DnsCmdlet
@@ -37,7 +37,7 @@ namespace DnsProxy.PowerShell.Commands
         public DnsQuestion DnsQuestion { get; set; }
 
         [Parameter(Position = 1)]
-        [ValidateNotNullOrEmpty]
+        [ValidateNotNullOrEmpty]    
         public List<DnsRecordBase> DnsRecords { get; set; }
 
         [Parameter(Position = 2)] 

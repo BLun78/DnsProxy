@@ -23,6 +23,7 @@ using DnsProxy.Plugin;
 using DnsProxy.Plugin.Configuration;
 using DnsProxy.Plugin.Models.Rules;
 using DnsProxy.PowerShell.Commands;
+using DnsProxy.PowerShell.Commands.Cache;
 using Microsoft.Extensions.Logging;
 
 namespace DnsProxy.PowerShell

@@ -44,6 +44,7 @@ namespace DnsProxy
         private static CancellationTokenSource CancellationTokenSource { get; set; }
         private static DependencyInjector DependencyInjector { get; set; }
         private static IServiceProvider ServiceProvider => DependencyInjector.ServiceProvider;
+        private static PluginManager PluginManager { get; set; }
 
         private static IConfigurationRoot Configuration
         {
@@ -69,8 +70,6 @@ namespace DnsProxy
                 return builder.Build();
             }
         }
-
-        private static PluginManager PluginManager { get; set; }
 
         public static async Task<int> Main(string[] args)
         {

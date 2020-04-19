@@ -18,7 +18,7 @@ using System.Management.Automation;
 using ARSoft.Tools.Net.Dns;
 using DnsProxy.Common.Cache;
 
-namespace DnsProxy.PowerShell.Commands
+namespace DnsProxy.PowerShell.Commands.Cache
 {
     [Cmdlet(VerbsCommon.Remove, "DnsCacheItem")]
     internal class RemoveDnsCacheItem : DnsCmdlet

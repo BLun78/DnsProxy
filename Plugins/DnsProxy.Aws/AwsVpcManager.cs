@@ -1,4 +1,5 @@
 ﻿#region Apache License-2.0
+
 // Copyright 2020 Bjoern Lundstroem
 // 
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +13,7 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 #endregion
 
 using Amazon.EC2;
@@ -29,6 +31,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DnsProxy.Common.Cache;
 using DomainName = ARSoft.Tools.Net.DomainName;
 
 namespace DnsProxy.Aws
@@ -36,20 +39,20 @@ namespace DnsProxy.Aws
     internal class AwsVpcManager
     {
         private readonly ILogger<AwsVpcManager> _logger;
-        private readonly IMemoryCache _memoryCache;
         private readonly AwsVpcReader _awsVpcReader;
+        private readonly CacheManager _cacheManager;
         private readonly IEnumerable<AwsAdapterBase> _awsAdapter;
         private readonly List<string> _proxyBypassList;
 
         public AwsVpcManager(
             ILogger<AwsVpcManager> logger,
-            IMemoryCache memoryCache,
             AwsVpcReader awsVpcReader,
+            CacheManager cacheManager,
             IEnumerable<AwsAdapterBase> awsAdapter)
         {
             _logger = logger;
-            _memoryCache = memoryCache;
             _awsVpcReader = awsVpcReader;
+            _cacheManager = cacheManager;
             _awsAdapter = awsAdapter;
             _proxyBypassList = new List<string>();
         }
@@ -103,7 +106,8 @@ namespace DnsProxy.Aws
         /// <param name="awsScanRules">Rules for Scaning</param>
         /// <param name="cancellationToken">Task Cancellation Toke</param>
         /// <returns>only a Task</returns>
-        private async Task ReadVpcAsync(AWSCredentials awsCredentials, IAwsScanRules awsScanRules, CancellationToken cancellationToken)
+        private async Task ReadVpcAsync(AWSCredentials awsCredentials, IAwsScanRules awsScanRules,
+            CancellationToken cancellationToken)
         {
             try
             {
@@ -114,20 +118,22 @@ namespace DnsProxy.Aws
 
                 foreach (AwsAdapterBase adapter in _awsAdapter)
                 {
-                    var adapterResult = await adapter.GetAdapterResultAsync(awsCredentials, endpoints, cancellationToken)
+                    var adapterResult = await adapter
+                        .GetAdapterResultAsync(awsCredentials, endpoints, cancellationToken)
                         .ConfigureAwait(false);
                     result.AddRange(adapterResult.DnsRecords);
                     _proxyBypassList.AddRange(adapterResult.ProxyBypassList);
                 }
 
                 var groupedResult = (from record in result
-                                     group record by record.Name.ToString()
-                into newRecords
-                                     orderby newRecords.Key
-                                     select newRecords).ToList();
+                    group record by record.Name.ToString()
+                    into newRecords
+                    orderby newRecords.Key
+                    select newRecords).ToList();
                 foreach (var dnsRecordBases in groupedResult)
                 {
-                    var dnsQuestion = new DnsQuestion(DomainName.Parse(dnsRecordBases.Key), RecordType.A, RecordClass.INet);
+                    var dnsQuestion = new DnsQuestion(DomainName.Parse(dnsRecordBases.Key), RecordType.A,
+                        RecordClass.INet);
                     StoreInCache(dnsQuestion, dnsRecordBases.ToList());
                 }
             }
@@ -145,28 +151,15 @@ namespace DnsProxy.Aws
             }
         }
 
-        private void StoreInCache(DnsQuestion dnsQuestionInput, List<DnsRecordBase> data,
+        private void StoreInCache(DnsQuestion dnsQuestion, List<DnsRecordBase> data,
             MemoryCacheEntryOptions cacheEntryOptions)
         {
-            var dnsQuestion = dnsQuestionInput as DnsQuestion;
-            var key = dnsQuestion.ToString();
-            var key2 = new DnsQuestion(dnsQuestion.Name, RecordType.A, dnsQuestion.RecordClass).ToString();
-
-            var cacheItem = new CacheItem(dnsQuestion.RecordType, data);
-            _memoryCache.Set(key, cacheItem, cacheEntryOptions);
-
-            if (dnsQuestion.RecordType != RecordType.A)
-            {
-                _memoryCache.Set(key2, cacheItem, cacheEntryOptions);
-            }
+            _cacheManager.StoreInCache(dnsQuestion, data, cacheEntryOptions);
         }
 
         private void StoreInCache(DnsQuestion dnsQuestion, List<DnsRecordBase> data)
         {
-            var cacheoptions = new MemoryCacheEntryOptions();
-            cacheoptions.SetPriority(CacheItemPriority.NeverRemove);
-
-            StoreInCache(dnsQuestion, data, cacheoptions);
+            _cacheManager.StoreInCache(dnsQuestion, data);
         }
     }
 }
