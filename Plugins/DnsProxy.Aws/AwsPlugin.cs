@@ -48,7 +48,7 @@ namespace DnsProxy.Aws
 
         public void GetHelp(ILogger logger)
         {
-            logger?.LogInformation("\t[strg]+[r] = reload AWS-VPC's with new mfa");
+            logger?.LogInformation("\t[strg]+[a] = reload AWS-VPC's with new mfa");
         }
 
         public void GetLicense(ILogger logger)
@@ -92,7 +92,7 @@ namespace DnsProxy.Aws
         {
             switch (keyInfo.Modifiers, keyInfo.Key)
             {
-                case (ConsoleModifiers.Control, ConsoleKey.R):
+                case (ConsoleModifiers.Control, ConsoleKey.A):
                     if (_awsSettingsOptionsMonitor?.CurrentValue != null
                         && !string.IsNullOrWhiteSpace(_awsSettingsOptionsMonitor.CurrentValue.Region)
                         && _awsSettingsOptionsMonitor.CurrentValue.UserAccounts != null

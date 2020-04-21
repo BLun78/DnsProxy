@@ -7,15 +7,49 @@
           "10.240.69.153",
           "10.240.74.137"
         ],
-        "StrategyName": "DNS",
-        "IsEnabled": false,
+        "StrategyName": "Dns",
+        "IsEnabled": true,
+        "CompressionMutation": true,
+        "QueryTimeout": 30000
+      },
+      {
+        "DomainNamePattern": "amznfsxqzp1dngq.corp.eden.",
+        "NameServer": [
+          "10.240.69.153",
+          "10.240.74.137"
+        ],
+        "StrategyName": "Dns",
+        "IsEnabled": true,
+        "CompressionMutation": true,
+        "QueryTimeout": 30000
+      },
+      {
+        "DomainNamePattern": "amznfsxputvsj11.corp.eden.",
+        "NameServer": [
+          "10.240.69.153",
+          "10.240.74.137"
+        ],
+        "StrategyName": "Dns",
+        "IsEnabled": true,
+        "CompressionMutation": true,
+        "QueryTimeout": 30000
+      },
+      {
+        "DomainNamePattern": "amznfsxmy5nyb9a.corp.eden.",
+        "NameServer": [
+          "10.240.69.153",
+          "10.240.74.137"
+        ],
+        "StrategyName": "Dns",
+        "IsEnabled": true,
         "CompressionMutation": true,
         "QueryTimeout": 30000
       },
       {
         "DomainNamePattern": "(.*)\\.amazonaws.com.",
-        "StrategyName": "DOH",
+        "StrategyName": "DoH",
         "NameServer": [
+          "https://doh.securedns.eu/dns-query",
           "https://doh.xfinity.com/dns-query",
           "https://dns.adguard.com/dns-query",
           "https://dns.digitale-gesellschaft.ch/dns-query",
@@ -23,7 +57,7 @@
           "https://dns.google/dns-query",
           "https://dns.quad9.net/dns-query"
         ],
-        "IsEnabled": false,
+        "IsEnabled": true,
         "QueryTimeout": 30000
       }
       //,{
@@ -33,7 +67,7 @@
       //    ""
       //  ],
       //  "IpAddress": "",
-      //  "StrategyName": "", // DNS, DOH
+      //  "Strategy": "", // Dns, DoH
       //  "IsEnabled": false,
       //  "CompressionMutation": false,
       //  "QueryTimeout": 30000

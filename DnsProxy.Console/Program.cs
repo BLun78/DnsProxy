@@ -147,6 +147,7 @@ namespace DnsProxy
                    {
                        await plugin.CheckKeyAsync(key).ConfigureAwait(false);
                    }
+                   await Task.Delay(250).ConfigureAwait(true);
                }
 
                return 0;
