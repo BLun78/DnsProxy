@@ -1,21 +1,15 @@
 using System;
 using System.Diagnostics;
 using System.Management.Automation;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DnsProxy.PowerShell.Test
 {
-    internal class TestHost : IDisposable
+    public abstract class TestPowerShellHost
     {
-        protected System.Management.Automation.PowerShell PowerShell { get; set; }
-
-        public TestHost(string script)
+        public System.Management.Automation.PowerShell Start(string script)
         {
-            PowerShell = System.Management.Automation.PowerShell.Create().AddScript(script);
-        }
-        
-        public void Dispose()
-        {
-            PowerShell.Dispose();
+            return System.Management.Automation.PowerShell.Create().AddScript(script);
         }
     }
 }

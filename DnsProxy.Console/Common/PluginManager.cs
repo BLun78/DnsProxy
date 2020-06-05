@@ -74,8 +74,8 @@ namespace DnsProxy.Console.Common
                 }
 
                 //var path = Path.Combine(Directory.GetCurrentDirectory(), PluginFolder);
-                var path = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase 
-                                            ?? AppDomain.CurrentDomain.BaseDirectory, 
+                var path = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase
+                                            ?? AppDomain.CurrentDomain.BaseDirectory,
                                                PluginFolder);
                 _logger.Information("[PluginManager] Plugins now load from path: [{path}]", path);
 
@@ -100,10 +100,10 @@ namespace DnsProxy.Console.Common
                         System.Console.WriteLine(e);
                     }
                 }
-                
+
                 Configurations.AddRange(Plugin.Where(x => x.DnsProxyConfiguration != null).Select(x => (IDnsProxyConfiguration)x.DnsProxyConfiguration));
                 RuleFactories.AddRange(Plugin.Where(x => x.RuleFactory != null).Select(x => x.RuleFactory));
-                
+
                 _logger.Information(LogConsts.SingleLine);
                 _logger.Information("[PluginManager] Plugins loaded >> Program starts");
             }
@@ -153,7 +153,7 @@ namespace DnsProxy.Console.Common
             sharedTypes.AddRange(typeof(PluginSharedTypes).Assembly.GetTypes());
             sharedTypes.AddRange(typeof(CommonDnsProxyConfiguration).Assembly.GetTypes());
             sharedTypes.AddRange(typeof(DomainName).Assembly.GetTypes());
-            sharedTypes.AddRange(typeof(ServerDnsProxyConfiguration).Assembly.GetTypes());
+            sharedTypes.AddRange(typeof(DnsProxy.Server.ServerDependencyRegistration).Assembly.GetTypes());
             sharedTypes.AddRange(typeof(Serilog.ILogger).Assembly.GetTypes());
             sharedTypes.AddRange(typeof(Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme).Assembly.GetTypes());
             sharedTypes.AddRange(typeof(System.Console).Assembly.GetTypes());

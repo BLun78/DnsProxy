@@ -30,8 +30,13 @@ namespace DnsProxy.Server.Common
         [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "<Pending>")]
         public static List<AddressRecordBase> ToAddressRecord(this Host host, string domainName)
         {
+            return host.IpAddresses.ToAddressRecord(domainName);
+        }
+        
+        public static List<AddressRecordBase> ToAddressRecord(this List<string> ipAddresses, string domainName)
+        {
             var result = new List<AddressRecordBase>();
-            foreach (var ipAddress in host.IpAddresses)
+            foreach (var ipAddress in ipAddresses)
             {
                 var ip = IPAddress.Parse(ipAddress);
                 switch (ip.AddressFamily)
@@ -53,10 +58,15 @@ namespace DnsProxy.Server.Common
         [SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly", Justification = "<Pending>")]
         public static (string, List<PtrRecord>) ToPtrRecords(this Host host, string ipAddress)
         {
+            return host.DomainNames.ToPtrRecords(ipAddress);
+        }
+        
+        public static (string, List<PtrRecord>) ToPtrRecords(this List<string> domainNames, string ipAddress)
+        {
             var result = new List<PtrRecord>();
             var tempIpAddress = CreatePtrIpAddressName(ipAddress);
 
-            foreach (var domainName in host.DomainNames)
+            foreach (var domainName in domainNames)
                 result.Add(new PtrRecord(DomainName.Parse(tempIpAddress), 300, DomainName.Parse(domainName)));
             return (tempIpAddress, result);
         }

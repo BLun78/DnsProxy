@@ -7,7 +7,7 @@ using ARSoft.Tools.Net.Dns;
 
 namespace DnsProxy.PowerShell.Commands.DnsQuestions
 {
-    [Cmdlet(VerbsCommon.New, "DnsQuestionARecord")]
+    [Cmdlet(VerbsCommon.New, "DnsQuestionARecord")] 
     internal class NewDnsQuestion : DnsCmdlet
     {
         [Parameter(Position = 0)]
