@@ -38,6 +38,7 @@ namespace DnsProxy.Server.Strategies
         private readonly IOptionsMonitor<DnsDefaultServer> _dnsDefaultServerOptionsMonitor;
         private readonly IDisposable _dnsHostConfigListener;
         private readonly IOptionsMonitor<DnsHostConfig> _dnsHostConfigOptionsMonitor;
+        private readonly ILogger<StrategyManager> _logger;
         private readonly IDisposable _hostsConfigListener;
         private readonly IOptionsMonitor<HostsConfig> _hostsConfigOptionsMonitor;
         private readonly object _lockObjectRules;
@@ -53,7 +54,8 @@ namespace DnsProxy.Server.Strategies
             IOptionsMonitor<RulesConfig> rulesConfigOptionsMonitor,
             IOptionsMonitor<HostsConfig> hostsConfigOptionsMonitor,
             IOptionsMonitor<DnsDefaultServer> dnsDefaultServerOptionsMonitor,
-            IOptionsMonitor<DnsHostConfig> dnsHostConfigOptionsMonitor)
+            IOptionsMonitor<DnsHostConfig> dnsHostConfigOptionsMonitor,
+            ILogger<StrategyManager> logger)
         {
             _serviceProvider = serviceProvider;
             _ruleFactories = ruleFactories;
@@ -64,6 +66,7 @@ namespace DnsProxy.Server.Strategies
             _hostsConfigOptionsMonitor = hostsConfigOptionsMonitor;
             _dnsDefaultServerOptionsMonitor = dnsDefaultServerOptionsMonitor;
             _dnsHostConfigOptionsMonitor = dnsHostConfigOptionsMonitor;
+            _logger = logger;
             _rulesConfigListener = _rulesConfigOptionsMonitor.OnChange(RulesConfigListener);
             _hostsConfigListener = _hostsConfigOptionsMonitor.OnChange(HostsConfigListener);
             _dnsDefaultServerListener = _dnsDefaultServerOptionsMonitor.OnChange(DnsDefaultServerListener);
@@ -98,8 +101,16 @@ namespace DnsProxy.Server.Strategies
         {
             lock (_lockObjectRules)
             {
-                Rules.Clear();
-                Rules.AddRange(rulesConfig.Rules.Select(x => x.GetInternalRule(_ruleFactories.Factories)).ToList());
+                try
+                {
+                    Rules.Clear();
+                    Rules.AddRange(rulesConfig.Rules.Select(x => x.GetInternalRule(_ruleFactories.Factories)).ToList());
+                }
+                catch (Exception e)
+                {
+                    _logger.LogCritical(e, e.Message);
+                    throw;
+                }
             }
         }
 
@@ -225,30 +236,38 @@ namespace DnsProxy.Server.Strategies
         private IWriteDnsContext GetWriteDnsContext(IServiceScope scope, DnsMessage dnsMessage, string ipEndPoint,
             CancellationToken cancellationToken)
         {
-            var dnsContextAccessor = _serviceProvider.GetService<IWriteDnsContextAccessor>();
-            var dnsWriteContext = _serviceProvider.GetService<IWriteDnsContext>();
-            dnsContextAccessor.WriteDnsContext = dnsWriteContext;
-
-            dnsWriteContext.IpEndPoint = ipEndPoint;
-            dnsWriteContext.RootCancellationToken = cancellationToken;
-            dnsWriteContext.Request = dnsMessage;
-            dnsWriteContext.Response = dnsMessage.CreateResponseInstance();
-            dnsWriteContext.Logger = _serviceProvider.GetService<ILogger<IDnsCtx>>();
-
-            dnsWriteContext.DefaultDnsStrategy =
-                CreateStrategy(_dnsDefaultServerOptionsMonitor.CurrentValue.Servers.GetInternalRule(_ruleFactories.Factories), scope);
-            dnsWriteContext.CacheResolverStrategy = _hostsConfigOptionsMonitor.CurrentValue.Rule.IsEnabled
-                ? CreateStrategy(_hostsConfigOptionsMonitor.CurrentValue.Rule, scope)
-                : null;
-
-            lock (_lockObjectRules)
+            try
             {
-                dnsWriteContext.DnsResolverStrategies = Rules
-                    .Where(y => y.IsEnabled)
-                    .Select(x => CreateStrategy(x, scope)).ToList();
-            }
+                var dnsContextAccessor = _serviceProvider.GetService<IWriteDnsContextAccessor>();
+                var dnsWriteContext = _serviceProvider.GetService<IWriteDnsContext>();
+                dnsContextAccessor.WriteDnsContext = dnsWriteContext;
 
-            return dnsWriteContext;
+                dnsWriteContext.IpEndPoint = ipEndPoint;
+                dnsWriteContext.RootCancellationToken = cancellationToken;
+                dnsWriteContext.Request = dnsMessage;
+                dnsWriteContext.Response = dnsMessage.CreateResponseInstance();
+                dnsWriteContext.Logger = _serviceProvider.GetService<ILogger<IDnsCtx>>();
+
+                dnsWriteContext.DefaultDnsStrategy =
+                    CreateStrategy(_dnsDefaultServerOptionsMonitor.CurrentValue.Servers.GetInternalRule(_ruleFactories.Factories), scope);
+                dnsWriteContext.CacheResolverStrategy = _hostsConfigOptionsMonitor.CurrentValue.Rule.IsEnabled
+                    ? CreateStrategy(_hostsConfigOptionsMonitor.CurrentValue.Rule, scope)
+                    : null;
+
+                lock (_lockObjectRules)
+                {
+                    dnsWriteContext.DnsResolverStrategies = Rules
+                        .Where(y => y.IsEnabled)
+                        .Select(x => CreateStrategy(x, scope)).ToList();
+                }
+
+                return dnsWriteContext;
+            }
+            catch (Exception e)
+            {
+                _logger.LogCritical(e, e.Message);
+                throw;
+            }
         }
     }
 }
