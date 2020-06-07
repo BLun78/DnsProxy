@@ -16,7 +16,9 @@
 
 using DnsProxy.Common;
 using DnsProxy.Console;
+using DnsProxy.Console.Commands;
 using DnsProxy.Console.Common;
+using DnsProxy.Plugin;
 using DnsProxy.Plugin.Configuration;
 using DnsProxy.Plugin.DI;
 using DnsProxy.Server;
@@ -28,10 +30,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using DnsProxy.Console.Commands;
-using DnsProxy.Plugin;
-using DnsProxy.Plugin.Common;
-using Microsoft.Extensions.Logging;
 using LicenseInformation = DnsProxy.Console.Commands.LicenseInformation;
 
 // ReSharper disable once CheckNamespace
@@ -63,7 +61,7 @@ namespace DnsProxy
 
                 if (PluginManager != null)
                 {
-                    foreach (IDnsProxyConfiguration dnsProxyConfiguration 
+                    foreach (IDnsProxyConfiguration dnsProxyConfiguration
                         in PluginManager.Configurations)
                     {
                         builder = dnsProxyConfiguration.ConfigurationBuilder(builder);
@@ -208,7 +206,7 @@ namespace DnsProxy
 
         private static void CreateLicenseInformation()
         {
-           _licenseInformation.CreateLicenseInformation(PluginManager);
+            _licenseInformation.CreateLicenseInformation(PluginManager);
         }
 
         private static void CreateHeader()

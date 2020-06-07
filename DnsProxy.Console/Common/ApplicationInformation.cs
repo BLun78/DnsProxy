@@ -16,10 +16,11 @@
 
 #endregion
 
-using System;
-using System.IO;
 using DnsProxy.Plugin.Common;
 using Serilog;
+using System;
+using System.Globalization;
+using System.IO;
 
 namespace DnsProxy.Console.Common
 {
@@ -43,7 +44,7 @@ namespace DnsProxy.Console.Common
             using (var reader = new StreamReader(stream))
             {
                 var result = reader.ReadToEnd();
-                return DateTime.Parse(result);
+                return DateTime.Parse(result, new DateTimeFormatInfo());
             }
         }
     }

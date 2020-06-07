@@ -14,12 +14,10 @@
 //    limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using DnsProxy.Console.Common;
 using DnsProxy.Plugin.Common;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace DnsProxy.Console.Commands
 {

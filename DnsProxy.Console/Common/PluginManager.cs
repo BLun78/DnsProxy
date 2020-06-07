@@ -17,10 +17,10 @@
 using ARSoft.Tools.Net;
 using DnsProxy.Common;
 using DnsProxy.Plugin;
+using DnsProxy.Plugin.Common;
 using DnsProxy.Plugin.Configuration;
 using DnsProxy.Plugin.DI;
 using DnsProxy.Plugin.Models.Rules;
-using DnsProxy.Server;
 using McMaster.NETCore.Plugins;
 using Microsoft.Extensions.Configuration;
 using Serilog;
@@ -31,7 +31,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using DnsProxy.Plugin.Common;
 
 namespace DnsProxy.Console.Common
 {

@@ -18,8 +18,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
-using Serilog.Formatting;
-using System.IO;
 
 namespace DnsProxy.Console.Common
 {
