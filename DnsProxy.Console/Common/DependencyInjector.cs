@@ -21,6 +21,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using System;
 using System.Collections.Generic;
+using DnsProxy.Console.Commands;
 
 namespace DnsProxy.Console.Common
 {
@@ -81,6 +82,10 @@ namespace DnsProxy.Console.Common
                     ;
             });
             services.AddMemoryCache();
+
+            services.AddSingleton<ReleaseNotes>();
+            services.AddSingleton<LicenseInformation>();
+            services.AddSingleton<HeaderInformation>();
 
             return services;
         }
