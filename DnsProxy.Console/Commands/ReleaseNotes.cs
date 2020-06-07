@@ -49,6 +49,9 @@ namespace DnsProxy.Console.Commands
             _logger.LogInformation(LogConsts.SingleLine);
             _logger.LogInformation("2.0.0.0");
             _logger.LogInformation("    - Add plugin engine");
+            _logger.LogInformation("    - Add plugin - DNS");
+            _logger.LogInformation("    - Add plugin - DNS over HTTP");
+            _logger.LogInformation("    - Add plugin - Read AWS VPC");
 
             _logger.LogInformation(LogConsts.DoubleLine);
         }
