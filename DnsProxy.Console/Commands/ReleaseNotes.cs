@@ -14,8 +14,10 @@
 //    limitations under the License.
 #endregion
 
+using DnsProxy.Console.Common;
 using DnsProxy.Plugin.Common;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace DnsProxy.Console.Commands
 {
@@ -30,11 +32,20 @@ namespace DnsProxy.Console.Commands
 
         public void WriteReleaseNotes()
         {
+            var buildTime = ApplicationInformation.GetTimestamp();
             _logger.LogInformation(LogConsts.DoubleLine);
-            _logger.LogInformation("Release Notes:");
+            if (buildTime.HasValue)
+            {
+                _logger.LogInformation(@"Release Notes of {data} {time}", buildTime.Value.ToShortDateString(), buildTime.Value.ToLongTimeString());
+            }
+            else
+            {
+                _logger.LogInformation(@"Release Notes");
+            }
 
             _logger.LogInformation(LogConsts.SingleLine);
             _logger.LogInformation("2.0.3.0");
+            _logger.LogInformation("    - add error handling for request");
             _logger.LogInformation("    - add more logs for errors with configs");
             _logger.LogInformation("    - add release notes");
 
