@@ -13,10 +13,10 @@
         "QueryTimeout": 30000
       },
       {
-        "DomainNamePattern": "amznfsxqzp1dngq.corp.eden.",
+        "DomainNamePattern": "ffsdfsfsdfsdffsd.corp.eden.",
         "NameServer": [
-          "10.240.69.153",
-          "10.240.74.137"
+          "10.240.69.140",
+          "10.240.74.173"
         ],
         "StrategyName": "Dns",
         "IsEnabled": true,
@@ -24,10 +24,10 @@
         "QueryTimeout": 30000
       },
       {
-        "DomainNamePattern": "amznfsxputvsj11.corp.eden.",
+        "DomainNamePattern": "sdfsdbfsdfsdfsdf.corp.eden.",
         "NameServer": [
-          "10.240.69.153",
-          "10.240.74.137"
+          "10.240.69.15",
+          "10.240.74.13"
         ],
         "StrategyName": "Dns",
         "IsEnabled": true,
@@ -35,10 +35,10 @@
         "QueryTimeout": 30000
       },
       {
-        "DomainNamePattern": "amznfsxmy5nyb9a.corp.eden.",
+        "DomainNamePattern": "sdfsdff3sddfsdfds.corp.eden.",
         "NameServer": [
-          "10.240.69.153",
-          "10.240.74.137"
+          "10.240.69.13",
+          "10.240.74.17"
         ],
         "StrategyName": "Dns",
         "IsEnabled": true,
@@ -49,8 +49,6 @@
         "DomainNamePattern": "(.*)\\.amazonaws.com.",
         "StrategyName": "DoH",
         "NameServer": [
-          "https://doh.securedns.eu/dns-query",
-          "https://doh.xfinity.com/dns-query",
           "https://dns.adguard.com/dns-query",
           "https://dns.digitale-gesellschaft.ch/dns-query",
           "https://doh.opendns.com/dns-query",
