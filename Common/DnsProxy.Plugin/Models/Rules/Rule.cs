@@ -62,7 +62,16 @@ namespace DnsProxy.Plugin.Models.Rules
                     return rule;
                 }
             }
-            throw new ArgumentOutOfRangeException(nameof(StrategyName), StrategyName, null);
+
+            if (string.IsNullOrWhiteSpace(StrategyName))
+            {
+                throw new ArgumentNullException(nameof(StrategyName),$"The configuration is for the {nameof(StrategyName)} is empty! Take a look for the rules.json or the config.json");
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(nameof(StrategyName), StrategyName, $"The configuration is for the {nameof(StrategyName)} not in the valid values (Dns, Doh, etc.)! Take a look for the rules.json or the config.json");
+            }
+        
         }
     }
 }

@@ -14,7 +14,7 @@
         "9.9.9.9",
         "8.8.8.8"
       ],
-      "StrategyName": "DNS",
+      "StrategyName": "Dns",
       "CompressionMutation": true,
       "QueryTimeout": 4000
     }

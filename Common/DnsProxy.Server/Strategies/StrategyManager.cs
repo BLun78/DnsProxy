@@ -208,7 +208,7 @@ namespace DnsProxy.Server.Strategies
                 }
                 catch (ArgumentOutOfRangeException aoore)
                 {
-                    dnsWriteContext.Logger.LogWarning(aoore, "A mapping is not supportet [{0}] for that dns question! >> [{1}]",
+                    dnsWriteContext.Logger.LogWarning(aoore, "A mapping is not supported [{0}] for that dns question! >> [{1}]",
                         aoore.ActualValue, aoore.Message);
                 }
                 catch (Exception e)
@@ -236,38 +236,30 @@ namespace DnsProxy.Server.Strategies
         private IWriteDnsContext GetWriteDnsContext(IServiceScope scope, DnsMessage dnsMessage, string ipEndPoint,
             CancellationToken cancellationToken)
         {
-            try
+            var dnsContextAccessor = _serviceProvider.GetService<IWriteDnsContextAccessor>();
+            var dnsWriteContext = _serviceProvider.GetService<IWriteDnsContext>();
+            dnsContextAccessor.WriteDnsContext = dnsWriteContext;
+
+            dnsWriteContext.IpEndPoint = ipEndPoint;
+            dnsWriteContext.RootCancellationToken = cancellationToken;
+            dnsWriteContext.Request = dnsMessage;
+            dnsWriteContext.Response = dnsMessage.CreateResponseInstance();
+            dnsWriteContext.Logger = _serviceProvider.GetService<ILogger<IDnsCtx>>();
+
+            dnsWriteContext.DefaultDnsStrategy =
+                CreateStrategy(_dnsDefaultServerOptionsMonitor.CurrentValue.Servers.GetInternalRule(_ruleFactories.Factories), scope);
+            dnsWriteContext.CacheResolverStrategy = _hostsConfigOptionsMonitor.CurrentValue.Rule.IsEnabled
+                ? CreateStrategy(_hostsConfigOptionsMonitor.CurrentValue.Rule, scope)
+                : null;
+
+            lock (_lockObjectRules)
             {
-                var dnsContextAccessor = _serviceProvider.GetService<IWriteDnsContextAccessor>();
-                var dnsWriteContext = _serviceProvider.GetService<IWriteDnsContext>();
-                dnsContextAccessor.WriteDnsContext = dnsWriteContext;
-
-                dnsWriteContext.IpEndPoint = ipEndPoint;
-                dnsWriteContext.RootCancellationToken = cancellationToken;
-                dnsWriteContext.Request = dnsMessage;
-                dnsWriteContext.Response = dnsMessage.CreateResponseInstance();
-                dnsWriteContext.Logger = _serviceProvider.GetService<ILogger<IDnsCtx>>();
-
-                dnsWriteContext.DefaultDnsStrategy =
-                    CreateStrategy(_dnsDefaultServerOptionsMonitor.CurrentValue.Servers.GetInternalRule(_ruleFactories.Factories), scope);
-                dnsWriteContext.CacheResolverStrategy = _hostsConfigOptionsMonitor.CurrentValue.Rule.IsEnabled
-                    ? CreateStrategy(_hostsConfigOptionsMonitor.CurrentValue.Rule, scope)
-                    : null;
-
-                lock (_lockObjectRules)
-                {
-                    dnsWriteContext.DnsResolverStrategies = Rules
-                        .Where(y => y.IsEnabled)
-                        .Select(x => CreateStrategy(x, scope)).ToList();
-                }
-
-                return dnsWriteContext;
+                dnsWriteContext.DnsResolverStrategies = Rules
+                    .Where(y => y.IsEnabled)
+                    .Select(x => CreateStrategy(x, scope)).ToList();
             }
-            catch (Exception e)
-            {
-                _logger.LogCritical(e, e.Message);
-                throw;
-            }
+
+            return dnsWriteContext;
         }
     }
 }

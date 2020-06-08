@@ -123,34 +123,98 @@ namespace DnsProxy.Server
 
         private async Task OnQueryReceived(object sender, QueryReceivedEventArgs e)
         {
-            if (e.Query is DnsMessage message
-                && message.Questions.Count == 1)
+            try
             {
-                var upstreamResponse =
-                    await DoQuery(message, e.RemoteEndpoint.Address.ToString()).ConfigureAwait(false);
-                if (upstreamResponse != null)
+                if (e.Query is DnsMessage message
+                    && message.Questions.Count == 1)
                 {
-                    upstreamResponse.ReturnCode = ReturnCode.NoError;
-                    e.Response = upstreamResponse;
+                    var upstreamResponse =
+                        await DoQuery(message, e.RemoteEndpoint.Address.ToString()).ConfigureAwait(false);
+                    if (upstreamResponse != null)
+                    {
+                        upstreamResponse.ReturnCode = ReturnCode.NoError;
+                        e.Response = upstreamResponse;
+                    }
                 }
-            }
 
-            await Task.CompletedTask.ConfigureAwait(false);
+                await Task.CompletedTask.ConfigureAwait(false);
+            }
+            catch (ArgumentNullException ane)
+            {
+                HandleArgumentNullException(ane);
+                await Task.FromException(ane).ConfigureAwait(false);
+            }
+            catch (ArgumentOutOfRangeException aoore)
+            {
+                HandleArgumentOutOfRangeException(aoore);
+                await Task.FromException(aoore).ConfigureAwait(false);
+            }
+            catch (Exception exception)
+            {
+                HandleException(exception);
+                await Task.FromException(exception).ConfigureAwait(false);
+            }
         }
 
         private Task OnClientConnected(object sender, ClientConnectedEventArgs e)
         {
-            if (!_dnsHostConfigOptionsMonitor.CurrentValue.NetworkWhitelist.Any()
-                && !IPAddress.IsLoopback(e.RemoteEndpoint.Address))
-                e.RefuseConnect = true;
-
-            if (_dnsHostConfigOptionsMonitor.CurrentValue.NetworkWhitelist.Any())
-                if (_networkWhitelist.All(pair =>
-                    !pair.Key.GetNetworkAddress(pair.Value)
-                        .Equals(e.RemoteEndpoint.Address.GetNetworkAddress(pair.Value))))
+            Exception exception = default;
+            try
+            {
+                if (!_dnsHostConfigOptionsMonitor.CurrentValue.NetworkWhitelist.Any()
+                    && !IPAddress.IsLoopback(e.RemoteEndpoint.Address))
                     e.RefuseConnect = true;
 
-            return Task.CompletedTask;
+                if (_dnsHostConfigOptionsMonitor.CurrentValue.NetworkWhitelist.Any())
+                    if (_networkWhitelist.All(pair =>
+                        !pair.Key.GetNetworkAddress(pair.Value)
+                            .Equals(e.RemoteEndpoint.Address.GetNetworkAddress(pair.Value))))
+                        e.RefuseConnect = true;
+
+                return Task.CompletedTask;
+            }
+            catch (ArgumentNullException ane)
+            {
+                exception = ane;
+                HandleArgumentNullException(ane);
+            }
+            catch (ArgumentOutOfRangeException aoore)
+            {
+                exception = aoore;
+                HandleArgumentOutOfRangeException(aoore);
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+                HandleException(ex);
+            }
+            return Task.FromException(exception);
+        }
+
+        private void HandleException(Exception exception)
+        {
+            _logger.LogCritical(exception, exception.Message);
+            _logger.LogInformation("Press key fore close!");
+            Console.ReadLine();
+            Environment.Exit(-1);
+        }
+
+        private void HandleArgumentNullException(ArgumentNullException ane)
+        {
+            _logger.LogCritical(ane, ane.Message);
+            _logger.LogCritical("Please check the configuration files! The DnsProxy will close now!");
+            _logger.LogInformation("Press key fore close!");
+            Console.ReadLine();
+            Environment.Exit(-1);
+        }
+
+        private void HandleArgumentOutOfRangeException(ArgumentOutOfRangeException aoore)
+        {
+            _logger.LogCritical(aoore, aoore.Message);
+            _logger.LogCritical("Please check the configuration files! The DnsProxy will close now!");
+            _logger.LogInformation("Press key fore close!");
+            Console.ReadLine();
+            Environment.Exit(-1);
         }
     }
 }
