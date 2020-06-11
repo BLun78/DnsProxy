@@ -33,6 +33,11 @@ namespace DnsProxy.Console.Commands
             _logger.LogInformation(LogConsts.DoubleLine);
             _logger.LogInformation("Release Notes:");
 
+
+            _logger.LogInformation(LogConsts.SingleLine);
+            _logger.LogInformation("2.0.4.0");
+            _logger.LogInformation("    - nuget/lib update");
+
             _logger.LogInformation(LogConsts.SingleLine);
             _logger.LogInformation("2.0.3.0");
             _logger.LogInformation("    - add more logs for errors with configs");
