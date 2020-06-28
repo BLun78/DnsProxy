@@ -4,8 +4,8 @@
       {
         "DomainNamePattern": "(.*)\\.aws",
         "NameServer": [
-          "10.240.69.153",
-          "10.240.74.137"
+          "10.10.69.153",
+          "10.10.74.137"
         ],
         "StrategyName": "Dns",
         "IsEnabled": true,
@@ -13,10 +13,10 @@
         "QueryTimeout": 30000
       },
       {
-        "DomainNamePattern": "ffsdfsfsdfsdffsd.corp.eden.",
+        "DomainNamePattern": "ffsdfsfsdfsdffsd.corp.blun.",
         "NameServer": [
-          "10.240.69.140",
-          "10.240.74.173"
+          "10.100.69.140",
+          "10.100.74.173"
         ],
         "StrategyName": "Dns",
         "IsEnabled": true,
@@ -24,10 +24,10 @@
         "QueryTimeout": 30000
       },
       {
-        "DomainNamePattern": "sdfsdbfsdfsdfsdf.corp.eden.",
+        "DomainNamePattern": "sdfsdbfsdfsdfsdf.corp.blun.",
         "NameServer": [
-          "10.240.69.15",
-          "10.240.74.13"
+          "10.100.69.15",
+          "10.100.74.13"
         ],
         "StrategyName": "Dns",
         "IsEnabled": true,
@@ -35,10 +35,10 @@
         "QueryTimeout": 30000
       },
       {
-        "DomainNamePattern": "sdfsdff3sddfsdfds.corp.eden.",
+        "DomainNamePattern": "sdfsdff3sddfsdfds.corp.blun.",
         "NameServer": [
-          "10.240.69.13",
-          "10.240.74.17"
+          "10.100.69.13",
+          "10.100.74.17"
         ],
         "StrategyName": "Dns",
         "IsEnabled": true,
@@ -65,7 +65,7 @@
       //    ""
       //  ],
       //  "IpAddress": "",
-      //  "Strategy": "", // Dns, DoH
+      //  "StrategyName": "", // Dns, DoH
       //  "IsEnabled": false,
       //  "CompressionMutation": false,
       //  "QueryTimeout": 30000

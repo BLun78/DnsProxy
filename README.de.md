@@ -2,7 +2,7 @@
 [[English](https://github.com/BLun78/DnsProxy/blob/master/README.md)]
 
 ## Beschreibung
-Ein DNS-Proxy für Softwareentwickler für die Hybrid-Cloud im Enterpriseumfeld.
+Ein DNS-Proxy für Softwareentwickler für die Hybrid-Cloud im Enterprise Umfeld.
 
 Bitte bedenkt wenn der Administrator eures Netzwerkes keinen Public-DNS angeschlossen hat, hat dies sicherlich einen Grund!!!
 
@@ -10,8 +10,8 @@ Bitte bedenkt wenn der Administrator eures Netzwerkes keinen Public-DNS angeschl
 - Default Dns z. B. DHCP DNS-Server
 - DNS Client
 - DNS over HTTPS Client (DoH)
-- Eigene Hosts configuration mit hosts.json
-- AWS VpcRndpoints für Hybrid Cloud einlesen (inklusive ApiGateway Endpoints)
+- Eigene Hosts konfiguration mit hosts.json
+- AWS VpcEndpoints für Hybrid Cloud einlesen (inklusive ApiGateway Endpoints)
 
 ## Lizenz
 Frei verwendbar ohne Garantien das alles 100% nach DNS-RFC funktioniert.
@@ -47,51 +47,55 @@ Für [DNS over HTTPS (DoH)](https://en.wikipedia.org/wiki/DNS_over_HTTPS) wird d
 ```Javascript
 {
   "DnsHostConfig": {
-    "ListenerPort": 53, // Port des DNS Dienstes - 53 ist default Port
-    "NetworkWhitelist": [ // Liste der erlaubten Netzwerke die auf den Dienst zugreifen dürfen
+    "ListenerPort": 53,
+    "NetworkWhitelist": [
       "127.0.0.1/32",
       "10.10.34.0/24"
     ],
-    "DefaultQueryTimeout": 50000 // Server Timeout pro DNS-Request
+    "DefaultQueryTimeout": 30000
   },
-  "DnsDefaultServer": { // Fallback DNS Server
+  "DnsDefaultServer": {
     "Servers": {
       "NameServer": [
         "1.1.1.1",
         "9.9.9.9",
-        "8.8.4.4",
         "8.8.8.8"
       ],
-      "Strategy": "Dns", // Dns or DoH empfohlen
+      "StrategyName": "Dns",
       "CompressionMutation": true,
-      "QueryTimeout": 5000 // Timeout bei anfragen an fremden Servern
+      "QueryTimeout": 4000
     }
   },
-  // Proxy einstellungen
+  "CacheConfig": {
+    "MinimalTimeToLiveInSeconds": 60
+  },
   "HttpProxyConfig": {
-    "AuthenticationType": "None",
-    "Uri": "http://127.0.0.1:8866",
+    "AuthenticationType": "None", // None, Basic, WindowsDomain, WindowsUser
+    "Address": "",
+    "Port": null,
     "User": "",
     "Password": "",
     "Domain": "",
     "BypassAddresses": ""
   },
-  "AwsSettings": { // Für Hybrid-Cloud kann man die Public IPAdresse z.B. von SQS.[zone].amazonaws.com hiermit auf den VpcEndpoint umschreiben.
+  "AwsSettings": {
+    "Region": "eu-central-1",
+    "OutputFileName": "ProxyBypassList.txt",
     "UserAccounts": [
       {
         "UserAccountId": "5xxxxxxxxxxxx7",
         "UserName": "xxxxxxxx",
         "UserAccessKey": "Axxxxxxxxxxxxxxxxxxx6",
         "UserSecretKey": "mxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxQ",
-        "DoScan": false, // Soll der Akaunt
+        "DoScan": false,
         "ScanVpcIds": [],
-        "Roles": [ // Aws Rollen für den Rollen-Wechsel
+        "Roles": [
           {
             "AwsAccountLabel": "blabla",
             "AwsAccountId": "6xxxxxxxxxxxx",
             "Role": "engineer",
             "DoScan": true,
-            "ScanVpcIds": [ "vpc-0e355e36f7f9152f6" ]
+            "ScanVpcIds": [ "vpc-0xxxxxxxxxxxxxx6" ]
           },
           {
             "AwsAccountLabel": "blublu",
@@ -103,9 +107,6 @@ Für [DNS over HTTPS (DoH)](https://en.wikipedia.org/wiki/DNS_over_HTTPS) wird d
         ]
       }
     ]
-  },
-  "Aws": { // AWS Framework Konfiguration
-    "Region": "eu-central-1"
   }
 }
 ```
@@ -116,103 +117,61 @@ Für [DNS over HTTPS (DoH)](https://en.wikipedia.org/wiki/DNS_over_HTTPS) wird d
   "RulesConfig": {
     "Rules": [
       {
-        "DomainNamePattern": "(.*)\\.box",
+        "DomainNamePattern": "(.*)\\.aws",
         "NameServer": [
-          "10.10.34.21"
+          "10.10.69.153",
+          "10.10.74.137"
         ],
-        "Strategy": "Dns",
+        "StrategyName": "Dns",
         "IsEnabled": true,
         "CompressionMutation": true,
-        "QueryTimeout": 10000
+        "QueryTimeout": 30000
+      },
+      {
+        "DomainNamePattern": "ffsdfsfsdfsdffsd.corp.blun.",
+        "NameServer": [
+          "10.100.69.140",
+          "10.100.74.173"
+        ],
+        "StrategyName": "Dns",
+        "IsEnabled": true,
+        "CompressionMutation": true,
+        "QueryTimeout": 30000
+      },
+      {
+        "DomainNamePattern": "sdfsdbfsdfsdfsdf.corp.blun.",
+        "NameServer": [
+          "10.100.69.15",
+          "10.100.74.13"
+        ],
+        "StrategyName": "Dns",
+        "IsEnabled": true,
+        "CompressionMutation": true,
+        "QueryTimeout": 30000
+      },
+      {
+        "DomainNamePattern": "sdfsdff3sddfsdfds.corp.blun.",
+        "NameServer": [
+          "10.100.69.13",
+          "10.100.74.17"
+        ],
+        "StrategyName": "Dns",
+        "IsEnabled": true,
+        "CompressionMutation": true,
+        "QueryTimeout": 30000
       },
       {
         "DomainNamePattern": "(.*)\\.amazonaws.com.",
-        "Strategy": "DoH",
+        "StrategyName": "DoH",
         "NameServer": [
+          "https://dns.adguard.com/dns-query",
           "https://dns.digitale-gesellschaft.ch/dns-query",
           "https://doh.opendns.com/dns-query",
-          "https://cloudflare-dns.com/dns-query",
           "https://dns.google/dns-query",
           "https://dns.quad9.net/dns-query"
         ],
         "IsEnabled": true,
-        "QueryTimeout": 10000
-      },
-      {
-        "DomainNamePattern": "(.*)\\.docdb.amazonaws.com.",
-        "Strategy": "DoH",
-        "NameServer": [
-          "https://dns.digitale-gesellschaft.ch/dns-query",
-          "https://doh.opendns.com/dns-query",
-          "https://cloudflare-dns.com/dns-query",
-          "https://dns.google/dns-query",
-          "https://dns.quad9.net/dns-query"
-        ],
-        "IsEnabled": true,
-        "QueryTimeout": 10000
-      },
-      {
-        "DomainNamePattern": "(.*)\\.cache.amazonaws.com.",
-        "Strategy": "DoH",
-        "NameServer": [
-          "https://dns.digitale-gesellschaft.ch/dns-query",
-          "https://doh.opendns.com/dns-query",
-          "https://cloudflare-dns.com/dns-query",
-          "https://dns.google/dns-query",
-          "https://dns.quad9.net/dns-query"
-        ],
-        "IsEnabled": true,
-        "QueryTimeout": 10000
-      },
-      {
-        "DomainNamePattern": "(.*)\\.execute-api.eu-central-1.amazonaws.com.",
-        "Strategy": "DoH",
-        "NameServer": [
-          "https://dns.digitale-gesellschaft.ch/dns-query",
-          "https://doh.opendns.com/dns-query",
-          "https://cloudflare-dns.com/dns-query",
-          "https://dns.google/dns-query",
-          "https://dns.quad9.net/dns-query"
-        ],
-        "IsEnabled": true,
-        "QueryTimeout": 10000
-      },
-      {
-        "DomainNamePattern": "(.*)\\.blun.de.",
-        "Strategy": "DoH",
-        "NameServer": [
-          "https://dns.digitale-gesellschaft.ch/dns-query",
-          "https://doh.opendns.com/dns-query",
-          "https://cloudflare-dns.com/dns-query",
-          "https://dns.google/dns-query",
-          "https://dns.quad9.net/dns-query"
-        ],
-        "IsEnabled": true,
-        "QueryTimeout": 10000
-      },
-      {
-        "DomainName": "blun.de.",
-        "Strategy": "DoH",
-        "NameServer": [
-          "https://dns.digitale-gesellschaft.ch/dns-query",
-          "https://doh.opendns.com/dns-query",
-          "https://cloudflare-dns.com/dns-query",
-          "https://dns.google/dns-query",
-          "https://dns.quad9.net/dns-query"
-        ],
-        "IsEnabled": true,
-        "QueryTimeout": 10000
-      },
-      {
-        "DomainName": "www.google.de",
-        "NameServer": [
-          "8.8.8.8",
-          "8.8.4.4"
-        ],
-        "Strategy": "Dns",
-        "IsEnabled": true,
-        "CompressionMutation": true,
-        "QueryTimeout": 10000
+        "QueryTimeout": 30000
       }
       //,{
       //  "DomainNamePattern": "",
@@ -221,10 +180,10 @@ Für [DNS over HTTPS (DoH)](https://en.wikipedia.org/wiki/DNS_over_HTTPS) wird d
       //    ""
       //  ],
       //  "IpAddress": "",
-      //  "Strategy": "", // Dns, DoH
+      //  "StrategyName": "", // Dns, DoH
       //  "IsEnabled": false,
       //  "CompressionMutation": false,
-      //  "QueryTimeout": 10000
+      //  "QueryTimeout": 30000
       //}
     ]
   }
@@ -285,10 +244,36 @@ Für [DNS over HTTPS (DoH)](https://en.wikipedia.org/wiki/DNS_over_HTTPS) wird d
       },
       {
         "IpAddresses": [
-          "10.10.34.21"
+          "176.103.130.130",
+          "176.103.130.131"
         ],
         "DomainNames": [
-          "blablabla1978.de"
+          "dns.adguard.com"
+        ]
+      },
+      {
+        "IpAddresses": [
+          "104.18.45.204",
+          "104.18.44.204"
+        ],
+        "DomainNames": [
+          "jp.tiarap.org"
+        ]
+      },
+      {
+        "IpAddresses": [
+          "146.185.167.43"
+        ],
+        "DomainNames": [
+          "doh.securedns.eu"
+        ]
+      },
+      {
+        "IpAddresses": [
+          "96.113.151.149"
+        ],
+        "DomainNames": [
+          "doh.xfinity.com"
         ]
       }
     ]
