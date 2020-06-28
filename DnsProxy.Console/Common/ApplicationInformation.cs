@@ -31,21 +31,36 @@ namespace DnsProxy.Console.Common
         public static void LogAssemblyInformation()
         {
             var version = typeof(ApplicationInformation).Assembly.GetName().Version;
-            var buildTime = GetTimestamp();
+
             Log.Logger.Information(LogConsts.DoubleLine);
             Log.Logger.Information(@"Title: '{title}' Version: '{version}'", DefaultTitle, version);
-            Log.Logger.Information(@"Build Time: '{date} {time}'", buildTime.ToLongDateString(), buildTime.ToLongTimeString());
+            var buildTime = GetTimestamp();
+            if (buildTime.HasValue)
+            {
+                Log.Logger.Information(@"Build Time: '{date} {time}'", buildTime.Value.ToLongDateString(), buildTime.Value.ToLongTimeString());
+            }
             Log.Logger.Information(LogConsts.DoubleLine);
         }
 
-        public static DateTime GetTimestamp()
+        public static DateTime? GetTimestamp()
         {
-            using (var stream = typeof(ApplicationInformation).Assembly.GetManifestResourceStream("DnsProxy.Console.BuildTimeStamp.txt"))
-            using (var reader = new StreamReader(stream))
+            try
             {
-                var result = reader.ReadToEnd();
-                return DateTime.Parse(result, new DateTimeFormatInfo());
+                using (var stream = typeof(ApplicationInformation).Assembly.GetManifestResourceStream("DnsProxy.Console.BuildTimeStamp.txt"))
+                using (var reader = new StreamReader(stream))
+                {
+                    var result = reader.ReadToEnd();
+                    if (DateTime.TryParse(result, new CultureInfo("de"), DateTimeStyles.None, out DateTime buildTime))
+                    {
+                        return buildTime;
+                    }
+                }
             }
+            catch (Exception e)
+            {
+                Log.Logger.Error(e, e.Message);
+            }
+            return null;
         }
     }
 }
