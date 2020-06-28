@@ -128,38 +128,40 @@ namespace DnsProxy
         private static Task<int> WaitForEndAsync()
         {
             return Task.Run(async () =>
-           {
-               var exit = false;
-               while (!exit)
-               {
-                   var key = System.Console.ReadKey(true);
+            {
+                var exit = false;
+                while (!exit)
+                {
+                    var key = System.Console.ReadKey(true);
 
-                   switch (key.Modifiers, key.Key)
-                   {
-                       case (ConsoleModifiers.Control, ConsoleKey.N):
-                           CreateReleaseNotes();
-                           break;
-                       case (ConsoleModifiers.Control, ConsoleKey.H):
-                           CreateHeader();
-                           break;
-                       case (ConsoleModifiers.Control, ConsoleKey.L):
-                           CreateLicenseInformation();
-                           break;
-                       case (ConsoleModifiers.Control, ConsoleKey.Q):
-                       case (ConsoleModifiers.Control, ConsoleKey.X):
-                           exit = true;
-                           break;
-                   }
+                    switch (key.Modifiers, key.Key)
+                    {
+                        case (ConsoleModifiers.Control, ConsoleKey.N):
+                            CreateReleaseNotes();
+                            break;
+                        case (ConsoleModifiers.Control, ConsoleKey.H):
+                            CreateHeader();
+                            break;
+                        case (ConsoleModifiers.Control, ConsoleKey.L):
+                            CreateLicenseInformation();
+                            break;
+                        case (ConsoleModifiers.Control, ConsoleKey.Q):
+                        case (ConsoleModifiers.Control, ConsoleKey.X):
+                            exit = true;
+                            break;
+                        default:
+                            foreach (IPlugin plugin in PluginManager.Plugin)
+                            {
+                                await plugin.CheckKeyAsync(key).ConfigureAwait(false);
+                            }
+                            break;
+                    }
 
-                   foreach (IPlugin plugin in PluginManager.Plugin)
-                   {
-                       await plugin.CheckKeyAsync(key).ConfigureAwait(false);
-                   }
-                   await Task.Delay(250).ConfigureAwait(true);
-               }
+                    await Task.Delay(250).ConfigureAwait(true);
+                }
 
-               return 0;
-           });
+                return 0;
+            });
         }
 
         static void CurrentDomain_ProcessExit(object sender, EventArgs e)
