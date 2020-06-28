@@ -17,7 +17,6 @@
 using DnsProxy.Console.Common;
 using DnsProxy.Plugin.Common;
 using Microsoft.Extensions.Logging;
-using Serilog;
 
 namespace DnsProxy.Console.Commands
 {
