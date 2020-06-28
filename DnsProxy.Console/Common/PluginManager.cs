@@ -169,7 +169,7 @@ namespace DnsProxy.Console.Common
             return loader.LoadDefaultAssembly();
         }
 
-        private IEnumerable<IPlugin> CreateCommands(Assembly assembly)
+        private static IEnumerable<IPlugin> CreateCommands(Assembly assembly)
         {
             var plugins = new List<IPlugin>();
 

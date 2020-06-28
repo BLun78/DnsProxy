@@ -151,11 +151,11 @@ namespace DnsProxy.Aws
             }
         }
 
-        private void StoreInCache(DnsQuestion dnsQuestion, List<DnsRecordBase> data,
-            MemoryCacheEntryOptions cacheEntryOptions)
-        {
-            _cacheManager.StoreInCache(dnsQuestion, data, cacheEntryOptions);
-        }
+        //private void StoreInCache(DnsQuestion dnsQuestion, List<DnsRecordBase> data,
+        //    MemoryCacheEntryOptions cacheEntryOptions)
+        //{
+        //    _cacheManager.StoreInCache(dnsQuestion, data, cacheEntryOptions);
+        //}
 
         private void StoreInCache(DnsQuestion dnsQuestion, List<DnsRecordBase> data)
         {

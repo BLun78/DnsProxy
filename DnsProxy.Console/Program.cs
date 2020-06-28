@@ -39,6 +39,7 @@ namespace DnsProxy
     {
         private static string _title;
         private static string[] _args;
+        // ReSharper disable once NotAccessedField.Local
         private static Microsoft.Extensions.Logging.ILogger _logger;
         private static LicenseInformation _licenseInformation;
         private static ReleaseNotes _releaseNotes;

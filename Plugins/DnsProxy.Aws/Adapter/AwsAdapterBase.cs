@@ -49,7 +49,7 @@ namespace DnsProxy.Aws.Adapter
         /// </summary>
         /// <param name="serviceName">Servicename (example: com.amazonaws.[zone].sqs)</param>
         /// <returns>Domainname (example: sqs.[zone].amazonaws.com)</returns>
-        protected string CreateDomainName(string serviceName)
+        protected static string CreateDomainName(string serviceName)
         {
             var domainName = string.Empty;
             var arr = serviceName.Split('.');

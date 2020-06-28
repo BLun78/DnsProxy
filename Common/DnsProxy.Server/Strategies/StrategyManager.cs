@@ -80,9 +80,11 @@ namespace DnsProxy.Server.Strategies
             _rulesConfigListener?.Dispose();
             _dnsDefaultServerListener?.Dispose();
             _dnsHostConfigListener?.Dispose();
+            _hostsConfigListener?.Dispose();
             (_rulesConfigOptionsMonitor as IDisposable)?.Dispose();
             (_dnsDefaultServerOptionsMonitor as IDisposable)?.Dispose();
             (_dnsHostConfigOptionsMonitor as IDisposable)?.Dispose();
+            (_hostsConfigOptionsMonitor as IDisposable)?.Dispose();
         }
 
         private void DnsHostConfigListener(DnsDefaultServer dnsHostConfig, string name)
@@ -185,7 +187,7 @@ namespace DnsProxy.Server.Strategies
             }
         }
 
-        private async Task DoStrategyAsync(IDnsResolverStrategy dnsResolverStrategy, DnsQuestion dnsQuestion,
+        private static async Task DoStrategyAsync(IDnsResolverStrategy dnsResolverStrategy, DnsQuestion dnsQuestion,
             IWriteDnsContext dnsWriteContext, CancellationToken joinedGlobalCtx)
         {
 
