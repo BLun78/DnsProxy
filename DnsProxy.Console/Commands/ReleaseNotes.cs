@@ -46,6 +46,8 @@ namespace DnsProxy.Console.Commands
             _logger.LogInformation(LogConsts.SingleLine);
             _logger.LogInformation("2.0.4.0");
             _logger.LogInformation("    - nuget/lib update");
+            _logger.LogInformation("    - fix: hot key order");
+            _logger.LogInformation("    - plugin: powershell plugin only works for debug flag");
 
             _logger.LogInformation(LogConsts.SingleLine);
             _logger.LogInformation("2.0.3.0");
@@ -59,14 +61,15 @@ namespace DnsProxy.Console.Commands
 
             _logger.LogInformation(LogConsts.SingleLine);
             _logger.LogInformation("2.0.1.0");
-            _logger.LogInformation("    - Fix: plugin engine problem for macos");
+            _logger.LogInformation("    - fix: plugin engine problem for macos");
 
             _logger.LogInformation(LogConsts.SingleLine);
             _logger.LogInformation("2.0.0.0");
-            _logger.LogInformation("    - Add plugin engine");
-            _logger.LogInformation("    - Add plugin - DNS");
-            _logger.LogInformation("    - Add plugin - DNS over HTTP");
-            _logger.LogInformation("    - Add plugin - Read AWS VPC");
+            _logger.LogInformation("    - add plugin engine");
+            _logger.LogInformation("    - add plugin - DNS");
+            _logger.LogInformation("    - add plugin - DNS over HTTP");
+            _logger.LogInformation("    - add plugin - Read AWS VPC");
+            _logger.LogInformation("    - nuget/lib update");
 
             _logger.LogInformation(LogConsts.DoubleLine);
         }

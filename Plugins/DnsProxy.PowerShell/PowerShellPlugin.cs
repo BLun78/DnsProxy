@@ -22,10 +22,11 @@ using DnsProxy.Common.Models.Rules;
 using DnsProxy.Plugin;
 using DnsProxy.Plugin.Configuration;
 using DnsProxy.Plugin.Models.Rules;
-using DnsProxy.PowerShell.Commands;
 using DnsProxy.PowerShell.Commands.Cache;
 using Microsoft.Extensions.Logging;
 
+#if DEBUG
+    
 namespace DnsProxy.PowerShell
 {
     /// <summary>
@@ -62,3 +63,5 @@ namespace DnsProxy.PowerShell
         internal PowerShellRecourseLoader PowerShellRecourseLoader { get; private set; }
     }
 }
+
+#endif

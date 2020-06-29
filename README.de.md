@@ -8,10 +8,12 @@ Bitte bedenkt wenn der Administrator eures Netzwerkes keinen Public-DNS angeschl
 
 ## Feature
 - Default Dns z. B. DHCP DNS-Server
-- DNS Client
-- DNS over HTTPS Client (DoH)
 - Eigene Hosts konfiguration mit hosts.json
-- AWS VpcEndpoints für Hybrid Cloud einlesen (inklusive ApiGateway Endpoints)
+- Plugins
+    - DNS Client
+    - DNS over HTTPS Client (DoH)
+    - AWS VpcEndpoints für Hybrid Cloud einlesen (inklusive ApiGateway Endpoints)
+    - PowerShell (geplannt)
 
 ## Lizenz
 Frei verwendbar ohne Garantien das alles 100% nach DNS-RFC funktioniert.

@@ -8,10 +8,12 @@ Please consider that if the administrator of your network has not connected a pu
 
 ## Feature
 - Default Dns e. g. DHCP DNS server
-- DNS client
-- DNS over HTTPS client (DoH)
 - own hosts configuration with hosts.json
-- read AWS VpcEndpoints for Hybrid Cloud (including ApiGateway endpoints)
+- Plugins
+    - DNS client
+    - DNS over HTTPS client (DoH)
+    - read AWS VpcEndpoints for Hybrid Cloud (including ApiGateway endpoints)
+    - PowerShell (planed)
 
 ## License
 Free use with no warranty that the DNS-RFC is full implemented.
