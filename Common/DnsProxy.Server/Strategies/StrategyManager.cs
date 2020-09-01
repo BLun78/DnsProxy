@@ -46,7 +46,7 @@ namespace DnsProxy.Server.Strategies
         private readonly IOptionsMonitor<RulesConfig> _rulesConfigOptionsMonitor;
         private readonly IServiceProvider _serviceProvider;
         private readonly IRuleFactories _ruleFactories;
-        private readonly List<IRule> Rules;
+        private readonly List<IRule> _rules;
 
         public StrategyManager(
             IServiceProvider serviceProvider,
@@ -60,7 +60,7 @@ namespace DnsProxy.Server.Strategies
             _serviceProvider = serviceProvider;
             _ruleFactories = ruleFactories;
             _lockObjectRules = new object();
-            Rules = new List<IRule>();
+            _rules = new List<IRule>();
 
             _rulesConfigOptionsMonitor = rulesConfigOptionsMonitor;
             _hostsConfigOptionsMonitor = hostsConfigOptionsMonitor;
@@ -105,8 +105,8 @@ namespace DnsProxy.Server.Strategies
             {
                 try
                 {
-                    Rules.Clear();
-                    Rules.AddRange(rulesConfig.Rules.Select(x => x.GetInternalRule(_ruleFactories.Factories)).ToList());
+                    _rules.Clear();
+                    _rules.AddRange(rulesConfig.Rules.Select(x => x.GetInternalRule(_ruleFactories.Factories)).ToList());
                 }
                 catch (Exception e)
                 {
@@ -256,7 +256,7 @@ namespace DnsProxy.Server.Strategies
 
             lock (_lockObjectRules)
             {
-                dnsWriteContext.DnsResolverStrategies = Rules
+                dnsWriteContext.DnsResolverStrategies = _rules
                     .Where(y => y.IsEnabled)
                     .Select(x => CreateStrategy(x, scope)).ToList();
             }
