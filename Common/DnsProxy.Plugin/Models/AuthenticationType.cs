@@ -14,26 +14,17 @@
 //    limitations under the License.
 #endregion
 
-using DnsProxy.Dns.Strategies;
-using DnsProxy.Plugin.DI;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
-namespace DnsProxy.Dns
+namespace DnsProxy.Plugin.Models
 {
-    public class DnsDependencyRegistration : DependencyRegistration, IDependencyRegistration
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    internal enum AuthenticationType
     {
-        public DnsDependencyRegistration(IConfigurationRoot configuration) : base(configuration)
-        {
-        }
-
-        public override IServiceCollection Register(IServiceCollection services)
-        {
-            base.Register(services);
-
-            services.AddTransient<DnsResolverStrategy>();
-
-            return services;
-        }
+        [EnumMember(Value = nameof(None))] None = 0,
+        [EnumMember(Value = nameof(Basic))] Basic = 1,
+        [EnumMember(Value = nameof(WindowsDomain))] WindowsDomain = 2,
+        [EnumMember(Value = nameof(WindowsUser))] WindowsUser = 3
     }
 }

@@ -34,6 +34,8 @@ namespace DnsProxy.Doh
 
         public override IServiceCollection Register(IServiceCollection services)
         {
+            base.Register(services);
+
             //services.AddSingleton<DohResolverStrategy>(); // take a look for services.AddHttpClient
 
             services.AddSingleton<DohClient>();

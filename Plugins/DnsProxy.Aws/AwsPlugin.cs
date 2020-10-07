@@ -22,8 +22,10 @@ using DnsProxy.Plugin.Models.Rules;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Amazon.SecurityToken;
 using DnsProxy.Aws.Models;
 using DnsProxy.Plugin.Common;
 using Microsoft.Extensions.Logging;
@@ -116,7 +118,7 @@ namespace DnsProxy.Aws
                 var awsSettings = _awsSettingsOptionsMonitor.CurrentValue;
                 if (!awsSettings.UserAccounts.Any()) return;
 
-                var mfa = new AwsMfa();
+                var mfa = new AwsMfa((AmazonSecurityTokenServiceConfig)_serviceProvider.GetService(typeof(AmazonSecurityTokenServiceConfig)));
 
                 foreach (var userAccount in _awsContext.AwsSettings.UserAccounts)
                 {
@@ -143,7 +145,7 @@ namespace DnsProxy.Aws
             try
             {
                 _awsContext = (AwsContext)serviceProvider.GetService(typeof(AwsContext));
-                
+
                 _awsSettingsOptionsMonitor = (IOptionsMonitor<AwsSettings>)serviceProvider.GetService(typeof(IOptionsMonitor<AwsSettings>));
                 _logger = (ILogger<AwsPlugin>)_serviceProvider.GetService(typeof(ILogger<AwsPlugin>));
                 _awsVpcManager = (AwsVpcManager)_serviceProvider.GetService(typeof(AwsVpcManager));

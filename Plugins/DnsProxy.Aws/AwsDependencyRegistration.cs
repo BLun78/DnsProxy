@@ -27,6 +27,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net;
+using Amazon.SecurityToken;
 
 namespace DnsProxy.Aws
 {
@@ -38,10 +39,13 @@ namespace DnsProxy.Aws
 
         public override IServiceCollection Register(IServiceCollection services)
         {
+            base.Register(services);
+
             services.Configure<AwsSettings>(Configuration.GetSection(nameof(AwsSettings)));
 
             services.AddSingleton<AwsVpcManager>();
 
+            services.AddSingleton(CreateAmazonConfig<AmazonSecurityTokenServiceConfig>);
             services.AddSingleton(CreateAmazonConfig<AmazonEC2Config>);
             services.AddSingleton(CreateAmazonConfig<AmazonDocDBConfig>);
             services.AddSingleton(CreateAmazonConfig<AmazonAPIGatewayConfig>);

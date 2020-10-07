@@ -14,26 +14,25 @@
 //    limitations under the License.
 #endregion
 
-using DnsProxy.Dns.Strategies;
-using DnsProxy.Plugin.DI;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Text.Json.Serialization;
 
-namespace DnsProxy.Dns
+namespace DnsProxy.Plugin.Models
 {
-    public class DnsDependencyRegistration : DependencyRegistration, IDependencyRegistration
+    internal class HttpProxyConfig
     {
-        public DnsDependencyRegistration(IConfigurationRoot configuration) : base(configuration)
-        {
-        }
+        public string Address { get; set; }
+        public int? Port { get; set; }
+        public string User { get; set; }
+        public string Password { get; set; }
+        public string Domain { get; set; }
+        public string BypassAddresses { get; set; }
 
-        public override IServiceCollection Register(IServiceCollection services)
-        {
-            base.Register(services);
+        [JsonIgnore]
+        public string[] BypassAddressesArray => string.IsNullOrWhiteSpace(BypassAddresses)
+            ? Array.Empty<string>()
+            : BypassAddresses.Split(';');
 
-            services.AddTransient<DnsResolverStrategy>();
-
-            return services;
-        }
+        public AuthenticationType AuthenticationType { get; set; }
     }
 }

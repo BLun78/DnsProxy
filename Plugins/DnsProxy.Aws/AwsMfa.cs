@@ -19,6 +19,7 @@ using Amazon.SecurityToken;
 using Amazon.SecurityToken.Model;
 using DnsProxy.Aws.Models;
 using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,6 +27,13 @@ namespace DnsProxy.Aws
 {
     internal class AwsMfa
     {
+        private readonly AmazonSecurityTokenServiceConfig _config;
+
+        public AwsMfa(AmazonSecurityTokenServiceConfig config)
+        {
+            _config = config;
+        }
+
         public Task<string> GetMfaAsync(UserAccountExtended userAccount, CancellationToken cancellationToken)
         {
             if (userAccount == null) throw new ArgumentNullException(nameof(userAccount));
@@ -70,7 +78,7 @@ namespace DnsProxy.Aws
 
             var basicAwsCredentials = new BasicAWSCredentials(userAccount.UserAccessKey, userAccount.UserSecretKey);
 
-            using (var stsClient = new AmazonSecurityTokenServiceClient(basicAwsCredentials))
+            using (var stsClient = new AmazonSecurityTokenServiceClient(basicAwsCredentials, _config))
             {
                 var getSessionTokenRequest = new GetSessionTokenRequest
                 {
@@ -93,7 +101,7 @@ namespace DnsProxy.Aws
             if (userRole == null) throw new ArgumentNullException(nameof(userRole));
             if (cancellationToken == null) throw new ArgumentNullException(nameof(cancellationToken));
 
-            using (var stsClient = new AmazonSecurityTokenServiceClient(userAccount.AwsCredentials))
+            using (var stsClient = new AmazonSecurityTokenServiceClient(userAccount.AwsCredentials, _config))
             {
                 var request = new AssumeRoleRequest
                 {
