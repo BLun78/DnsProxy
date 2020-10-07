@@ -42,12 +42,18 @@ namespace DnsProxy.Console.Commands
                 _logger.LogInformation(@"Release Notes");
             }
 
+#if DEBUG
+            _logger.LogInformation(LogConsts.SingleLine);
+            _logger.LogInformation("2.0.5.0");
+            _logger.LogInformation("    - nuget/lib update");
+            _logger.LogInformation("    - plugin: powershell plugin only works for debug flag");
+#endif
 
             _logger.LogInformation(LogConsts.SingleLine);
             _logger.LogInformation("2.0.4.0");
+            _logger.LogInformation("    - fix: WebProxyConfig would now used by AWS Plugin and DOH Plugin.");
             _logger.LogInformation("    - nuget/lib update");
             _logger.LogInformation("    - fix: hot key order");
-            _logger.LogInformation("    - plugin: powershell plugin only works for debug flag");
 
             _logger.LogInformation(LogConsts.SingleLine);
             _logger.LogInformation("2.0.3.0");

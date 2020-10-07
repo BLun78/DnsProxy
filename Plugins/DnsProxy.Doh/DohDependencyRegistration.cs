@@ -36,48 +36,20 @@ namespace DnsProxy.Doh
         {
             base.Register(services);
 
-            //services.AddSingleton<DohResolverStrategy>(); // take a look for services.AddHttpClient
-
             services.AddSingleton<DohClient>();
 
             // https://github.com/aspnet/Extensions/tree/master/src/HttpClientFactory
             // https://docs.microsoft.com/de-de/dotnet/standard/microservices-architecture/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests
-            //services.AddHttpClient("httpClient", c => { })
-            //    .ConfigurePrimaryHttpMessageHandler(ConfigureHandler)
-            //    .AddTypedClient((client, provider) =>
-            //    {
-            //        var dohClient = new DohClient
-            //        {
-            //            HttpClient = client,
-            //            ThrowResponseError = false
-            //    };
-            //        return dohClient;
-            //    });
-            services.AddHttpClient<DohResolverStrategy>();
+            services.AddHttpClient<DohResolverStrategy>()
+                .ConfigurePrimaryHttpMessageHandler((provider) => new HttpClientHandler()
+                {
+                    Proxy = (IWebProxy)provider.GetService(typeof(IWebProxy)),
+                    SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13,
+                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip,
+                    MaxConnectionsPerServer = 1000
+                });
 
             return services;
         }
-
-        //private static HttpMessageHandler ConfigureHandler(IServiceProvider provider)
-        //{
-        //    var handler = new HttpClientHandler();
-
-        //    var webProxy = provider.GetService<IWebProxy>();
-        //    if (webProxy != null)
-        //    {
-        //        handler.Proxy = webProxy;
-        //        handler.UseDefaultCredentials = true;
-        //        handler.PreAuthenticate = true;
-        //        handler.UseProxy = true;
-        //    }
-
-        //    handler.MaxConnectionsPerServer = 10000;
-        //    handler.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
-
-        //    handler.SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13;
-
-        //    return handler;
-        //}
-
     }
 }
