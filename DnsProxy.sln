@@ -40,7 +40,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DnsProxy.PowerShell", "Plug
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DnsProxy.PowerShell.Test", "Test\DnsProxy.PowerShell.Test\DnsProxy.PowerShell.Test.csproj", "{93F04F6C-D2DC-4443-BA35-6D74F1A23CEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DnsProxy.Windows", "Common\DnsProxy.Windows\DnsProxy.Windows.csproj", "{22CA7AE1-0BEC-4ED9-8A40-8B73B2DE4778}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DnsProxy.Windows", "Common\DnsProxy.Windows\DnsProxy.Windows.csproj", "{22CA7AE1-0BEC-4ED9-8A40-8B73B2DE4778}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DnsProxy.Gui", "DnsProxy.Gui\DnsProxy.Gui.csproj", "{10129C2F-0F47-4CAD-8ECD-6FF2DDAD1EC2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -98,6 +100,10 @@ Global
 		{22CA7AE1-0BEC-4ED9-8A40-8B73B2DE4778}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22CA7AE1-0BEC-4ED9-8A40-8B73B2DE4778}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22CA7AE1-0BEC-4ED9-8A40-8B73B2DE4778}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10129C2F-0F47-4CAD-8ECD-6FF2DDAD1EC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10129C2F-0F47-4CAD-8ECD-6FF2DDAD1EC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10129C2F-0F47-4CAD-8ECD-6FF2DDAD1EC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10129C2F-0F47-4CAD-8ECD-6FF2DDAD1EC2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

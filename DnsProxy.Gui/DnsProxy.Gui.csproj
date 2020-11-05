@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>proxy_server_29251.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="BuildTimeStamp.txt" />
+    <None Remove="Plugins\README.MD" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Plugins\README.MD">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="BuildTimeStamp.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Common\DnsProxy.Common\DnsProxy.Common.csproj" />
+    <ProjectReference Include="..\Common\DnsProxy.Plugin\DnsProxy.Plugin.csproj" />
+    <ProjectReference Include="..\Common\DnsProxy.Server\DnsProxy.Server.csproj" />
+    <ProjectReference Include="..\Common\DnsProxy.Windows\DnsProxy.Windows.csproj" />
+  </ItemGroup>
+
+  <Target Name="CreateBuildTime" BeforeTargets="build">
+    <Exec Command="echo $(today) &gt; $(ProjectDir)BuildTimeStamp.txt" />
+  </Target>
+</Project>

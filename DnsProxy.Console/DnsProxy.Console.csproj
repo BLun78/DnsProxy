@@ -79,16 +79,9 @@
   <ItemGroup>
     <None Remove="config.json" />
     <None Remove="hosts.json" />
-    <None Remove="Plugins\README.MD" />
     <None Remove="rules.json" />
     <None Remove="_config.json" />
     <None Remove="_rules.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Plugins\README.MD">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -156,6 +149,10 @@
     <ProjectReference Include="..\Common\DnsProxy.Common\DnsProxy.Common.csproj" />
     <ProjectReference Include="..\Common\DnsProxy.Plugin\DnsProxy.Plugin.csproj" />
     <ProjectReference Include="..\Common\DnsProxy.Server\DnsProxy.Server.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Plugins\" />
   </ItemGroup>
 
   <Target Name="CreateBuildTime" BeforeTargets="build">
