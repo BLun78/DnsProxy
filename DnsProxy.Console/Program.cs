@@ -35,7 +35,9 @@ using LicenseInformation = DnsProxy.Console.Commands.LicenseInformation;
 // ReSharper disable once CheckNamespace
 namespace DnsProxy
 {
+#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable
     public class Program
+#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
     {
         private static string _title;
         private static string[] _args;
@@ -92,8 +94,6 @@ namespace DnsProxy
                     {
                         return await WaitForEndAsync().ConfigureAwait(false);
                     }
-
-                    return 0;
                 }
             }
 #pragma warning disable CA1031 // Do not catch general exception types
