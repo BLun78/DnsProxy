@@ -4,12 +4,18 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>proxy_server_29251.ico</ApplicationIcon>
+    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+    <ApplicationIcon>TrayIcon\proxy_server_29251.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="BuildTimeStamp.txt" />
     <None Remove="Plugins\README.MD" />
+    <None Remove="TrayIcon\proxy_server_29251.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="NotifyIconResources.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\3thParty\NotifyIconWpf\NotifyIconWpf.csproj" />
     <ProjectReference Include="..\Common\DnsProxy.Common\DnsProxy.Common.csproj" />
     <ProjectReference Include="..\Common\DnsProxy.Plugin\DnsProxy.Plugin.csproj" />
     <ProjectReference Include="..\Common\DnsProxy.Server\DnsProxy.Server.csproj" />
@@ -32,4 +39,12 @@
   <Target Name="CreateBuildTime" BeforeTargets="build">
     <Exec Command="echo $(today) &gt; $(ProjectDir)BuildTimeStamp.txt" />
   </Target>
+
+  <ItemGroup>
+    <Resource Include="TrayIcon\proxy_server_29251.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile DependentUpon="%(Filename)" SubType="Code" Update="**\obj\**\*.g$(DefaultLanguageSourceExtension)" />
+    <Compile DependentUpon="%(Filename)" SubType="Designer" Update="**\*.xaml$(DefaultLanguageSourceExtension)" />
+  </ItemGroup>
 </Project>
