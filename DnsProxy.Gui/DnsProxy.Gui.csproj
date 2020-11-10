@@ -29,6 +29,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MahApps.Metro" Version="2.3.4" />
+    <PackageReference Include="MahApps.Metro.IconPacks" Version="4.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\3thParty\NotifyIconWpf\NotifyIconWpf.csproj" />
     <ProjectReference Include="..\Common\DnsProxy.Common\DnsProxy.Common.csproj" />
     <ProjectReference Include="..\Common\DnsProxy.Plugin\DnsProxy.Plugin.csproj" />
