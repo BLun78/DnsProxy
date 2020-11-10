@@ -44,10 +44,14 @@ namespace DnsProxy.Console.Commands
 
 #if DEBUG
             _logger.LogInformation(LogConsts.SingleLine);
-            _logger.LogInformation("2.0.5.0");
+            _logger.LogInformation("2.2.0.0");
             _logger.LogInformation("    - nuget/lib update");
             _logger.LogInformation("    - plugin: powershell plugin only works for debug flag");
 #endif
+            _logger.LogInformation(LogConsts.SingleLine);
+            _logger.LogInformation("2.1.0.0");
+            _logger.LogInformation("    - update on net5.0");
+            _logger.LogInformation("    - nuget/lib update");
 
             _logger.LogInformation(LogConsts.SingleLine);
             _logger.LogInformation("2.0.4.0");
