@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Navigation;
+using DnsProxy.Common.Helper;
 using MahApps.Metro.Controls;
 using MenuItem = DnsProxy.Gui.ViewModels.MenuItem;
 namespace DnsProxy.Gui.Windows
@@ -15,11 +16,11 @@ namespace DnsProxy.Gui.Windows
     public partial class MainWindow : MetroWindow
     {
         private readonly Navigation.NavigationServiceEx navigationServiceEx;
-        
+
         public MainWindow()
         {
             InitializeComponent();
-            
+
             // https://github.com/punker76/code-samples/tree/main/MahAppsMetroHamburgerMenuNavigation
             this.navigationServiceEx = new Navigation.NavigationServiceEx();
             this.navigationServiceEx.Navigated += this.NavigationServiceEx_OnNavigated;
@@ -28,12 +29,12 @@ namespace DnsProxy.Gui.Windows
             // Navigate to the home page.
             this.Loaded += (sender, args) => this.navigationServiceEx.Navigate(new Uri("Views/MainPage.xaml", UriKind.RelativeOrAbsolute));
         }
-        
+
         protected override void OnClosing(CancelEventArgs e)
         {
             //clean up notifyicon (would otherwise stay open until application finishes)
             MyNotifyIcon.Dispose();
-            
+
             base.OnClosing(e);
         }
 
@@ -81,40 +82,12 @@ namespace DnsProxy.Gui.Windows
 
         private void MyNotifyIcon_PreviewTrayContextMenuOpen(object sender, RoutedEventArgs e)
         {
-           
-        }
-        private void LaunchGitHubSite(object sender, RoutedEventArgs e)
-        {
-            OpenBrowser(@"https://github.com/BLun78/DnsProxy/");
+
         }
 
-        public static void OpenBrowser(string url)
+        private void LaunchGitHubSite(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                Process.Start(url);
-            }
-            catch
-            {
-                // hack because of this: https://github.com/dotnet/corefx/issues/10361
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    url = url.Replace("&", "^&");
-                    Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                {
-                    Process.Start("xdg-open", url);
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                {
-                    Process.Start("open", url);
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            Browser.Open(@"https://github.com/BLun78/DnsProxy/");
         }
     }
 }
