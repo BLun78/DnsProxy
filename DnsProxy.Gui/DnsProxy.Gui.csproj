@@ -11,6 +11,7 @@
   <ItemGroup>
     <None Remove="BuildTimeStamp.txt" />
     <None Remove="Plugins\README.MD" />
+    <None Remove="Windows\proxy_server_29251_green.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,6 +46,7 @@
   </Target>
 
   <ItemGroup>
+    <Resource Include="Windows\proxy_server_29251_green.ico" />
     <Resource Include="Windows\proxy_server_29251.ico" />
   </ItemGroup>
   <ItemGroup>
