@@ -16,24 +16,25 @@
 
 #endregion
 
-using DnsProxy.Plugin.Common;
-using Serilog;
 using System;
 using System.Globalization;
 using System.IO;
+using DnsProxy.Plugin.Common;
+using Serilog;
 
-namespace DnsProxy.Console.Common
+namespace DnsProxy.Console
 {
-    internal static class ApplicationInformation
+    public static class ApplicationInformation
     {
-        internal const string DefaultTitle = "BLun.de DNS Proxy";
+        private const string _defaultTitle = "BLun.de DNS Proxy";
+        public static string DefaultTitle => _defaultTitle;
 
         public static void LogAssemblyInformation()
         {
             var version = typeof(ApplicationInformation).Assembly.GetName().Version;
 
             Log.Logger.Information(LogConsts.DoubleLine);
-            Log.Logger.Information(@"Title: '{title}' Version: '{version}'", DefaultTitle, version);
+            Log.Logger.Information(@"Title: '{title}' Version: '{version}'", _defaultTitle, version);
             var buildTime = GetTimestamp();
             if (buildTime.HasValue)
             {

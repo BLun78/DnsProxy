@@ -33,7 +33,7 @@
 
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <OutputType>Library</OutputType>
-    <RootNamespace>DnsProxy.Ru nnnner</RootNamespace>
+    <RootNamespace>DnsProxy.Runner</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

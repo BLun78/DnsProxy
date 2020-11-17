@@ -16,8 +16,6 @@
 
 using DnsProxy.Common;
 using DnsProxy.Console;
-using DnsProxy.Console.Commands;
-using DnsProxy.Console.Common;
 using DnsProxy.Plugin;
 using DnsProxy.Plugin.Configuration;
 using DnsProxy.Plugin.DI;
@@ -30,7 +28,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using LicenseInformation = DnsProxy.Console.Commands.LicenseInformation;
+using DnsProxy.Plugin.Common;
+using DnsProxy.Runner.Commands;
+using DnsProxy.Runner.Common;
+using Microsoft.Extensions.Logging;
 
 // ReSharper disable once CheckNamespace
 namespace DnsProxy
@@ -43,9 +44,9 @@ namespace DnsProxy
         private static string[] _args;
         // ReSharper disable once NotAccessedField.Local
         private static Microsoft.Extensions.Logging.ILogger _logger;
-        private static LicenseInformation _licenseInformation;
-        private static ReleaseNotes _releaseNotes;
-        private static HeaderInformation _headerInformation;
+        private static LicenseInformation<Program> _licenseInformation;
+        private static ReleaseNotes<Program> _releaseNotes;
+        private static HeaderInformation<Program> _headerInformation;
 
         private static CancellationTokenSource CancellationTokenSource { get; set; }
         private static DependencyInjector DependencyInjector { get; set; }
@@ -186,7 +187,7 @@ namespace DnsProxy
 
         private static void Setup()
         {
-            Configuration.SetupSerilog();
+            SerilogExtensions.SetupSerilog(Configuration);
             PluginManager.RegisterDependencyRegistration(Configuration);
             CancellationTokenSource = new CancellationTokenSource();
 
@@ -200,26 +201,29 @@ namespace DnsProxy
             PluginManager.Plugin.ForEach(x => x.InitialPlugin(ServiceProvider));
 
             _logger = ServiceProvider.GetService<Microsoft.Extensions.Logging.ILogger<Program>>();
-            _licenseInformation = ServiceProvider.GetService<LicenseInformation>();
-            _releaseNotes = ServiceProvider.GetService<ReleaseNotes>();
-            _headerInformation = ServiceProvider.GetService<HeaderInformation>();
+            _licenseInformation = ServiceProvider.GetService<LicenseInformation<Program>>();
+            _releaseNotes = ServiceProvider.GetService<ReleaseNotes<Program>>();
+            _headerInformation = ServiceProvider.GetService<HeaderInformation<Program>>();
 
             CreateHeader();
         }
 
         private static void CreateLicenseInformation()
         {
+            _logger.LogInformation(LogConsts.DoubleLine);
+            ApplicationInformation.LogAssemblyInformation();
             _licenseInformation.CreateLicenseInformation(PluginManager);
         }
 
         private static void CreateHeader()
         {
-            _headerInformation.WriteHeader(PluginManager);
+            ApplicationInformation.LogAssemblyInformation();
+            _headerInformation.WriteHeader(PluginManager, ApplicationInformation.DefaultTitle);
         }
 
         private static void CreateReleaseNotes()
         {
-            _releaseNotes.WriteReleaseNotes();
+            _releaseNotes.WriteReleaseNotes(ApplicationInformation.GetTimestamp());
         }
     }
 }
