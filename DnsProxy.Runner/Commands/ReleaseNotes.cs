@@ -14,24 +14,24 @@
 //    limitations under the License.
 #endregion
 
-using DnsProxy.Console.Common;
+using System;
 using DnsProxy.Plugin.Common;
+using DnsProxy.Runner.Common;
 using Microsoft.Extensions.Logging;
 
-namespace DnsProxy.Console.Commands
+namespace DnsProxy.Runner.Commands
 {
-    internal class ReleaseNotes
+    public class ReleaseNotes<TApp>
     {
-        private readonly ILogger<Program> _logger;
+        private readonly ILogger<TApp> _logger;
 
-        public ReleaseNotes(ILogger<Program> logger)
+        public ReleaseNotes(ILogger<TApp> logger)
         {
             _logger = logger;
         }
 
-        public void WriteReleaseNotes()
+        public void WriteReleaseNotes(DateTime? buildTime )
         {
-            var buildTime = ApplicationInformation.GetTimestamp();
             _logger.LogInformation(LogConsts.DoubleLine);
             if (buildTime.HasValue)
             {

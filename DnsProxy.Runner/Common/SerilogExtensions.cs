@@ -19,9 +19,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
 
-namespace DnsProxy.Console.Common
+namespace DnsProxy.Runner.Common
 {
-    internal static class SerilogExtensions
+    public static class SerilogExtensions
     {
         // public class dTextFormatter : ITextFormatter
         // {

@@ -14,27 +14,26 @@
 //    limitations under the License.
 #endregion
 
-using DnsProxy.Console.Common;
-using DnsProxy.Plugin.Common;
-using Microsoft.Extensions.Logging;
 using System;
+using DnsProxy.Plugin.Common;
+using DnsProxy.Runner.Common;
+using Microsoft.Extensions.Logging;
 
-namespace DnsProxy.Console.Commands
+namespace DnsProxy.Runner.Commands
 {
-    internal class HeaderInformation
+    public class HeaderInformation<TApp>
     {
-        private readonly ILogger<Program> _logger;
+        private readonly ILogger<TApp> _logger;
 
-        public HeaderInformation(ILogger<Program> logger)
+        public HeaderInformation(ILogger<TApp> logger)
         {
             _logger = logger;
         }
 
-        public void WriteHeader(PluginManager pluginManager)
+        public void WriteHeader(PluginManager pluginManager, string defaultTitle)
         {
             if (pluginManager == null) throw new ArgumentNullException(nameof(pluginManager));
 
-            ApplicationInformation.LogAssemblyInformation();
             _logger.LogInformation("Copyright 2019 - 2020 Bjoern Lundstroem - (https://github.com/BLun78/DnsProxy)");
             _logger.LogInformation("      ");
             _logger.LogInformation("Licensed under the Apache License, Version 2.0(the \"License\");");
@@ -59,7 +58,7 @@ namespace DnsProxy.Console.Commands
             _logger.LogInformation("    \tA DNS-Proxy with routing for DNS-Request for development with hybrid clouds!");
             _logger.LogInformation("    \tconfig.json, rules.json and hosts,json are used for configure.");
             _logger.LogInformation(LogConsts.DoubleLine);
-            _logger.LogInformation("starts up " + ApplicationInformation.DefaultTitle + " ...");
+            _logger.LogInformation("starts up " + defaultTitle + " ...");
             _logger.LogInformation(LogConsts.DoubleLine);
         }
     }

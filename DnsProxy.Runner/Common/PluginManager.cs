@@ -14,6 +14,13 @@
 //    limitations under the License.
 #endregion
 
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 using ARSoft.Tools.Net;
 using DnsProxy.Common;
 using DnsProxy.Plugin;
@@ -24,17 +31,10 @@ using DnsProxy.Plugin.Models.Rules;
 using McMaster.NETCore.Plugins;
 using Microsoft.Extensions.Configuration;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 
-namespace DnsProxy.Console.Common
+namespace DnsProxy.Runner.Common
 {
-    internal class PluginManager : IDisposable
+    public class PluginManager : IDisposable
     {
         private readonly ILogger _logger;
         private const string PluginFolder = @"Plugins";

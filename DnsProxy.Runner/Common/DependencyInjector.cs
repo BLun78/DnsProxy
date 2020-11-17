@@ -14,18 +14,19 @@
 //    limitations under the License.
 #endregion
 
-using DnsProxy.Console.Commands;
+using System;
+using System.Collections.Generic;
 using DnsProxy.Plugin.DI;
+using DnsProxy.Runner.Commands;
+using DnsProxy.Server;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
-using System;
-using System.Collections.Generic;
 
-namespace DnsProxy.Console.Common
+namespace DnsProxy.Runner.Common
 {
-    internal class DependencyInjector : DependencyRegistration, IDependencyRegistration
+    public class DependencyInjector : DependencyRegistration, IDependencyRegistration
     {
         private readonly List<IDependencyRegistration> _dependencyRegistration;
 
@@ -83,9 +84,9 @@ namespace DnsProxy.Console.Common
             });
             services.AddMemoryCache();
 
-            services.AddSingleton<ReleaseNotes>();
-            services.AddSingleton<LicenseInformation>();
-            services.AddSingleton<HeaderInformation>();
+            services.AddSingleton(typeof(ReleaseNotes<>));
+            services.AddSingleton(typeof(LicenseInformation<>));
+            services.AddSingleton(typeof(HeaderInformation<>));
 
             return services;
         }

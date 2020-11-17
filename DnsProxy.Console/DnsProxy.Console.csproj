@@ -156,6 +156,7 @@
     <ProjectReference Include="..\Common\DnsProxy.Common\DnsProxy.Common.csproj" />
     <ProjectReference Include="..\Common\DnsProxy.Plugin\DnsProxy.Plugin.csproj" />
     <ProjectReference Include="..\Common\DnsProxy.Server\DnsProxy.Server.csproj" />
+    <ProjectReference Include="..\DnsProxy.Runner\DnsProxy.Runner.csproj" />
   </ItemGroup>
 
   <Target Name="CreateBuildTime" BeforeTargets="build">

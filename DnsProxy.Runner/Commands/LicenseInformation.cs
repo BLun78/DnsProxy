@@ -14,19 +14,19 @@
 //    limitations under the License.
 #endregion
 
-using DnsProxy.Console.Common;
+using System;
 using DnsProxy.Plugin;
 using DnsProxy.Plugin.Common;
+using DnsProxy.Runner.Common;
 using Microsoft.Extensions.Logging;
-using System;
 
-namespace DnsProxy.Console.Commands
+namespace DnsProxy.Runner.Commands
 {
-    internal class LicenseInformation
+    public class LicenseInformation<TApp>
     {
-        private readonly ILogger<Program> _logger;
+        private readonly ILogger<TApp> _logger;
 
-        public LicenseInformation(ILogger<Program> logger)
+        public LicenseInformation(ILogger<TApp> logger)
         {
             _logger = logger;
         }
@@ -35,8 +35,7 @@ namespace DnsProxy.Console.Commands
         {
             if (pluginManager == null) throw new ArgumentNullException(nameof(pluginManager));
 
-            _logger.LogInformation(LogConsts.DoubleLine);
-            ApplicationInformation.LogAssemblyInformation();
+            
             _logger.LogInformation(LogConsts.DoubleLine);
             _logger.LogInformation("Copyright 2019 - 2020 Bjoern Lundstroem - (https://github.com/BLun78/DnsProxy)");
             _logger.LogInformation("      ");
