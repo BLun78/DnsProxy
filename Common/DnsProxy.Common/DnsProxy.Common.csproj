@@ -53,6 +53,18 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+
+    <PackageReference Include="System.Reactive" Version="5.0.0" />
+
+    <PackageReference Include="System.Reactive.Core" Version="5.0.0" />
+
+    <PackageReference Include="System.Reactive.Interfaces" Version="5.0.0" />
+
+    <PackageReference Include="System.Reactive.Linq" Version="5.0.0" />
+
+    <PackageReference Include="System.Reactive.Observable.Aliases" Version="5.0.0" />
+
+    <PackageReference Include="System.Reactive.Providers" Version="5.0.0" />
   </ItemGroup>
 
 </Project>
