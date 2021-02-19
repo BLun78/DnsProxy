@@ -72,7 +72,7 @@ namespace DnsProxy.Common.Models.Rules
                         }
                         else if (!string.IsNullOrWhiteSpace(DomainName))
                         {
-                            pattern = $"^{DomainName.Replace(".", @"\.", StringComparison.InvariantCulture)}$";
+                            pattern = $"^{DomainName.Replace(".", @"\.")}$";
                         }
                         else
                         {

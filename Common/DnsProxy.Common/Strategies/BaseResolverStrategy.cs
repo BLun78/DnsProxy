@@ -84,7 +84,7 @@ namespace DnsProxy.Common.Strategies
             }
             else if (!string.IsNullOrWhiteSpace(Rule.DomainName))
             {
-                pattern = $"^{Rule.DomainName.Replace(".", @"\.", StringComparison.InvariantCulture)}$";
+                pattern = $"^{Rule.DomainName.Replace(".", @"\.")}$";
             }
 
             var match = Rule.GetDomainNameRegex().Match(dnsQuestion.Name.ToString());
